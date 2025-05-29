@@ -90,6 +90,52 @@ class ReportRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("부모 Repository로 Report 삭제 테스트 (다형성)")
+    void deleteReportByParentRepositoryTest() {
+        // Given
+        List<Report> allReports = reportRepository.findAll();
+        assertThat(allReports).hasSize(3);
+
+        Report reportToDelete = allReports.get(0); // MissingReport
+        Long reportId = reportToDelete.getId();
+
+        // When - 부모 Repository로 삭제
+        reportRepository.deleteById(reportId);
+        em.flush();
+        em.clear();
+
+        // Then
+        List<Report> remainingReports = reportRepository.findAll();
+        assertThat(remainingReports).hasSize(2);
+        assertThat(reportRepository.findById(reportId)).isEmpty();
+
+        // 삭제된 것이 MissingReport였는지 확인
+        List<Report> missingReports = reportRepository.findByTag(ReportTag.MISSING);
+        assertThat(missingReports).isEmpty();
+    }
+
+    @Test
+    @DisplayName("모든 Report 삭제 테스트")
+    void deleteAllReportsTest() {
+        // Given
+        assertThat(reportRepository.findAll()).hasSize(3);
+
+        // When
+        reportRepository.deleteAll();
+        em.flush();
+        em.clear();
+
+        // Then
+        assertThat(reportRepository.findAll()).isEmpty();
+        assertThat(missingReportRepository.findAll()).isEmpty();
+        assertThat(witnessReportRepository.findAll()).isEmpty();
+        assertThat(protectingReportRepository.findAll()).isEmpty();
+
+        // User는 여전히 존재해야 함
+        assertThat(userRepository.findById(testUser.getId())).isPresent();
+    }
+
 
     private void createTestReports() {
         missingReport = MissingReport.builder()
