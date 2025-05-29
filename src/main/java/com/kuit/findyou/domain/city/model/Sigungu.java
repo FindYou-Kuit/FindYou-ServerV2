@@ -27,8 +27,9 @@ public class Sigungu extends BaseEntity {
     private Sido sido;
 
     //==생성 메서드==// -> 생성자 말고 생성 메서드를 별도로 만든 형태
-    public static Sigungu createSigungu(Sido sido) {
+    public static Sigungu createSigungu(String name, Sido sido) {
         Sigungu sigungu = new Sigungu();
+        sigungu.name = name;
         sigungu.setSido(sido);
         return sigungu;
     }
