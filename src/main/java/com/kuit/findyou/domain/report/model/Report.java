@@ -44,7 +44,7 @@ public abstract class Report extends BaseEntity {
     protected String address;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     protected User user;
 
     // 최근 본 글 삭제를 위한 양방향 연관관계 설정
