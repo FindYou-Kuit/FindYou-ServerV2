@@ -18,10 +18,10 @@ public class AnimalDepartment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "organization", length = 100, nullable = false)
     private String organization;
 
-    @Column(length = 70, nullable = false)
+    @Column(name = "department", length = 70, nullable = false)
     private String department;
 
     @Column(name = "phone_number", length = 20, nullable = false)
