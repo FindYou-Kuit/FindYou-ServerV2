@@ -49,20 +49,20 @@ class WitnessReportRepositoryTest {
     @DisplayName("WitnessReport 생성 및 저장 테스트")
     void save() {
         // Given
-        WitnessReport witnessReport = WitnessReport.builder()
-                .breed("골든 리트리버")
-                .species("개")
-                .tag(ReportTag.WITNESS)
-                .date(LocalDate.of(2024, 1, 20))
-                .address("서울시 서초구 서초대로 456")
-                .user(testUser)
-                .furColor("금색")
-                .significant("목줄을 하고 있었음")
-                .reporterInfo("이영희 010-9876-5432")
-                .landmark("서초역 1번 출구")
-                .latitude(new BigDecimal("37.483569"))
-                .longitude(new BigDecimal("127.032675"))
-                .build();
+        WitnessReport witnessReport = WitnessReport.createWitnessReport(
+                "골든 리트리버",
+                "개",
+                ReportTag.WITNESS,
+                LocalDate.of(2024, 1, 20),
+                "서울시 서초구 서초대로 456",
+                testUser,
+                "금색",
+                "목줄을 하고 있었음",
+                "이영희 010-9876-5432",
+                "서초역 1번 출구",
+                new BigDecimal("37.483569"),
+                new BigDecimal("127.032675")
+        );
 
         // When
         WitnessReport savedReport = witnessReportRepository.save(witnessReport);

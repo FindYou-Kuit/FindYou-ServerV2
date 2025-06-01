@@ -36,7 +36,7 @@ public class WitnessReport extends Report {
     @Column(precision = 9, scale = 6, nullable = false)
     private BigDecimal longitude;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private WitnessReport(String breed, String species, ReportTag tag, LocalDate date,
                           String address, User user, String furColor, String significant,
                           String reporterInfo, String landmark, BigDecimal latitude,

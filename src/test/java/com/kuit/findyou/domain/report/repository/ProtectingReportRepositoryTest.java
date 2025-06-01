@@ -50,28 +50,29 @@ class ProtectingReportRepositoryTest {
     @DisplayName("ProtectingReport 저장 테스트")
     void save() {
         // Given
-        ProtectingReport protectingReport = ProtectingReport.builder()
-                .breed("믹스견")
-                .species("개")
-                .tag(ReportTag.PROTECTING)
-                .date(LocalDate.of(2024, 1, 25))
-                .address("서울시 마포구 홍대입구로 789")
-                .user(testUser)
-                .sex(Sex.F)
-                .age("추정 2살")
-                .weight("5kg")
-                .furColor("갈색")
-                .neutering(Neutering.Y)
-                .significant("오른쪽 다리를 절뚝거림")
-                .foundLocation("홍대입구역 9번 출구 앞")
-                .noticeNumber("NOTICE2024001")
-                .noticeStartDate(LocalDate.of(2024, 1, 25))
-                .noticeEndDate(LocalDate.of(2024, 2, 25))
-                .careName("서울시 동물보호센터")
-                .careAddr("서울시 중랑구 용마산로 560")
-                .careTel("02-2290-8840")
-                .authority("서울시 마포구청")
-                .build();
+        ProtectingReport protectingReport = ProtectingReport.createProtectingReport(
+                "믹스견",
+                "개",
+                ReportTag.PROTECTING,
+                LocalDate.of(2024, 1, 25),
+                "서울시 마포구 홍대입구로 789",
+                testUser,
+                Sex.F,
+                "추정 2살",
+                "5kg",
+                "갈색",
+                Neutering.Y,
+                "오른쪽 다리를 절뚝거림",
+                "홍대입구역 9번 출구 앞",
+                "NOTICE2024001",
+                LocalDate.of(2024, 1, 25),
+                LocalDate.of(2024, 2, 25),
+                "서울시 동물보호센터",
+                "서울시 중랑구 용마산로 560",
+                "02-2290-8840",
+                "서울시 마포구청"
+        );
+
 
         // When
         ProtectingReport savedReport = protectingReportRepository.save(protectingReport);

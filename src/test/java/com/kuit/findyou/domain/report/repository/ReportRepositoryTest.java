@@ -138,62 +138,65 @@ class ReportRepositoryTest {
 
 
     private void createTestReports() {
-        missingReport = MissingReport.builder()
-                .breed("골든 리트리버")
-                .species("개")
-                .tag(ReportTag.MISSING)
-                .date(LocalDate.now().minusDays(5))
-                .address("서울시 강남구")
-                .user(testUser)
-                .sex(Sex.M)
-                .rfid("RFID123456")
-                .age("3살")
-                .weight("25kg")
-                .furColor("황금색")
-                .significant("목에 빨간 목걸이")
-                .reporterInfo("김철수 010-1234-5678")
-                .landmark("강남역 근처")
-                .latitude(new BigDecimal("37.497952"))
-                .longitude(new BigDecimal("127.027619"))
-                .build();
+        missingReport = MissingReport.createMissingReport(
+                "골든 리트리버",
+                "개",
+                ReportTag.MISSING,
+                LocalDate.now().minusDays(5),
+                "서울시 강남구",
+                testUser,
+                Sex.M,
+                "RFID123456",
+                "3살",
+                "25kg",
+                "황금색",
+                "목에 빨간 목걸이",
+                "김철수 010-1234-5678",
+                "강남역 근처",
+                new BigDecimal("37.497952"),
+                new BigDecimal("127.027619")
+        );
 
-        witnessReport = WitnessReport.builder()
-                .breed("믹스견")
-                .species("개")
-                .tag(ReportTag.WITNESS)
-                .date(LocalDate.now().minusDays(3))
-                .address("서울시 서초구")
-                .user(testUser)
-                .furColor("검은색")
-                .significant("오른쪽 다리 절뚝임")
-                .reporterInfo("이영희 010-9876-5432")
-                .landmark("서초역 2번 출구")
-                .latitude(new BigDecimal("37.483569"))
-                .longitude(new BigDecimal("127.032455"))
-                .build();
 
-        protectingReport = ProtectingReport.builder()
-                .breed("페르시안")
-                .species("고양이")
-                .tag(ReportTag.PROTECTING)
-                .date(LocalDate.now().minusDays(1))
-                .address("서울시 마포구")
-                .user(testUser)
-                .sex(Sex.F)
-                .age("2살")
-                .weight("4kg")
-                .furColor("흰색")
-                .neutering(Neutering.Y)
-                .significant("왼쪽 귀에 상처")
-                .foundLocation("마포대교 근처")
-                .noticeNumber("NOTICE-2024-001")
-                .noticeStartDate(LocalDate.now())
-                .noticeEndDate(LocalDate.now().plusDays(14))
-                .careName("마포구 동물보호센터")
-                .careAddr("서울시 마포구 월드컵북로 212")
-                .careTel("02-123-4567")
-                .authority("마포구청")
-                .build();
+        witnessReport = WitnessReport.createWitnessReport(
+                "믹스견",
+                "개",
+                ReportTag.WITNESS,
+                LocalDate.now().minusDays(3),
+                "서울시 서초구",
+                testUser,
+                "검은색",
+                "오른쪽 다리 절뚝임",
+                "이영희 010-9876-5432",
+                "서초역 2번 출구",
+                new BigDecimal("37.483569"),
+                new BigDecimal("127.032455")
+        );
+
+
+        protectingReport = ProtectingReport.createProtectingReport(
+                "페르시안",
+                "고양이",
+                ReportTag.PROTECTING,
+                LocalDate.now().minusDays(1),
+                "서울시 마포구",
+                testUser,
+                Sex.F,
+                "2살",
+                "4kg",
+                "흰색",
+                Neutering.Y,
+                "왼쪽 귀에 상처",
+                "마포대교 근처",
+                "NOTICE-2024-001",
+                LocalDate.now(),
+                LocalDate.now().plusDays(14),
+                "마포구 동물보호센터",
+                "서울시 마포구 월드컵북로 212",
+                "02-123-4567",
+                "마포구청"
+        );
+
 
         missingReportRepository.save(missingReport);
         witnessReportRepository.save(witnessReport);

@@ -50,24 +50,25 @@ class MissingReportRepositoryTest {
     @DisplayName("MissingReport 생성 및 저장 테스트")
     void save() {
         // Given
-        MissingReport missingReport = MissingReport.builder()
-                .breed("포메라니안")
-                .species("개")
-                .tag(ReportTag.MISSING)
-                .date(LocalDate.of(2024, 1, 15))
-                .address("서울시 강남구 테헤란로 123")
-                .user(testUser)
-                .sex(Sex.M)
-                .rfid("RFID123456789")
-                .age("3살")
-                .weight("3.5kg")
-                .furColor("흰색")
-                .significant("왼쪽 귀에 검은 점이 있음")
-                .reporterInfo("김철수 010-1234-5678")
-                .landmark("강남역 2번 출구 근처")
-                .latitude(new BigDecimal("37.498095"))
-                .longitude(new BigDecimal("127.027610"))
-                .build();
+        MissingReport missingReport = MissingReport.createMissingReport(
+                "포메라니안",
+                "개",
+                ReportTag.MISSING,
+                LocalDate.of(2024, 1, 15),
+                "서울시 강남구 테헤란로 123",
+                testUser,
+                Sex.M,
+                "RFID123456789",
+                "3살",
+                "3.5kg",
+                "흰색",
+                "왼쪽 귀에 검은 점이 있음",
+                "김철수 010-1234-5678",
+                "강남역 2번 출구 근처",
+                new BigDecimal("37.498095"),
+                new BigDecimal("127.027610")
+        );
+
 
         // When
         MissingReport savedReport = missingReportRepository.save(missingReport);
