@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.recommend.model;
+package com.kuit.findyou.domain.recommendation.model;
 
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
@@ -7,13 +7,13 @@ import org.hibernate.annotations.SQLRestriction;
 
 
 @Entity
-@Table(name = "recommend_article")
+@Table(name = "recommend_video")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @SQLRestriction("status = 'Y'")
-public class RecommendArticle extends BaseEntity{
+public class RecommendedVideo extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +23,9 @@ public class RecommendArticle extends BaseEntity{
     @Column(name = "title", length = 255, nullable = false)
     private String title;
 
-    @Column(name = "source", length = 255, nullable = false)
-    private String source;
-
     @Column(name = "link", length = 255, nullable = false)
     private String link;
+
+    @Column(name = "uploader", length = 100, nullable = false)
+    private String uploader;
 }
