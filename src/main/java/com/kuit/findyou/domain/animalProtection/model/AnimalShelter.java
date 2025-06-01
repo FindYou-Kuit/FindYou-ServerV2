@@ -16,6 +16,7 @@ public class AnimalShelter extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "location", length = 100, nullable = false)

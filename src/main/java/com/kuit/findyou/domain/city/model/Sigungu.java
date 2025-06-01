@@ -16,7 +16,7 @@ public class Sigungu extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sigungu_id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "name", length = 50, nullable = false)

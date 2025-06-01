@@ -17,6 +17,7 @@ public class RecommendArticle extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "title", length = 255, nullable = false)

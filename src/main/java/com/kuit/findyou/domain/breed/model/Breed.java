@@ -15,7 +15,7 @@ import org.hibernate.annotations.SQLRestriction;
 public class Breed extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "report_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "breed_name", length = 100, nullable = false)
