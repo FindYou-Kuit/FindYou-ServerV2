@@ -51,5 +51,28 @@ public class WitnessReport extends Report {
         this.longitude = longitude;
     }
 
+    public static WitnessReport createWitnessReport(String breed, String species, ReportTag tag, LocalDate date,
+                                                    String address, User user, String furColor, String significant,
+                                                    String reporterInfo, String landmark,
+                                                    BigDecimal latitude, BigDecimal longitude) {
+        WitnessReport report = WitnessReport.builder()
+                .breed(breed)
+                .species(species)
+                .tag(tag)
+                .date(date)
+                .address(address)
+                .user(user)
+                .furColor(furColor)
+                .significant(significant)
+                .reporterInfo(reporterInfo)
+                .landmark(landmark)
+                .latitude(latitude)
+                .longitude(longitude)
+                .build();
+        user.addReport(report); // 양방향 연관관계 설정
+        return report;
+    }
+
+
 }
 

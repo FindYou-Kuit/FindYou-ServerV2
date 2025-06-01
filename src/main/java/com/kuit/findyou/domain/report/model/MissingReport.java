@@ -66,5 +66,33 @@ public class MissingReport extends Report {
         this.longitude = longitude;
     }
 
+    public static MissingReport createMissingReport(String breed, String species, ReportTag tag, LocalDate date,
+                                                    String address, User user, Sex sex, String rfid, String age,
+                                                    String weight, String furColor, String significant,
+                                                    String reporterInfo, String landmark,
+                                                    BigDecimal latitude, BigDecimal longitude) {
+        MissingReport report = MissingReport.builder()
+                .breed(breed)
+                .species(species)
+                .tag(tag)
+                .date(date)
+                .address(address)
+                .user(user)
+                .sex(sex)
+                .rfid(rfid)
+                .age(age)
+                .weight(weight)
+                .furColor(furColor)
+                .significant(significant)
+                .reporterInfo(reporterInfo)
+                .landmark(landmark)
+                .latitude(latitude)
+                .longitude(longitude)
+                .build();
+        user.addReport(report); // 양방향 연관관계 설정
+        return report;
+    }
+
+
 }
 

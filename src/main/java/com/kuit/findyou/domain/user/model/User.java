@@ -58,6 +58,10 @@ public class User extends BaseEntity {
     @Builder.Default
     private List<InterestReport> interestReports = new ArrayList<>();
 
+    public void addReport(Report report) {
+        reports.add(report);
+    }
+
     public void addViewedReport(ViewedReport viewedReport) {
         viewedReports.add(viewedReport);
     }

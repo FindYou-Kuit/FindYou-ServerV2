@@ -83,6 +83,44 @@ public class ProtectingReport extends Report {
         this.authority = authority;
     }
 
+    public static ProtectingReport createProtectingReport(String breed, String species, ReportTag tag,
+                                                          LocalDate date, String address, User user,
+                                                          Sex sex, String age, String weight,
+                                                          String furColor, Neutering neutering,
+                                                          String significant, String foundLocation,
+                                                          String noticeNumber, LocalDate noticeStartDate,
+                                                          LocalDate noticeEndDate, String careName,
+                                                          String careAddr, String careTel,
+                                                          String authority) {
+
+        ProtectingReport report = ProtectingReport.builder()
+                .breed(breed)
+                .species(species)
+                .tag(tag)
+                .date(date)
+                .address(address)
+                .user(user)
+                .sex(sex)
+                .age(age)
+                .weight(weight)
+                .furColor(furColor)
+                .neutering(neutering)
+                .significant(significant)
+                .foundLocation(foundLocation)
+                .noticeNumber(noticeNumber)
+                .noticeStartDate(noticeStartDate)
+                .noticeEndDate(noticeEndDate)
+                .careName(careName)
+                .careAddr(careAddr)
+                .careTel(careTel)
+                .authority(authority)
+                .build();
+
+        // 양방향 연관관계 설정
+        user.addReport(report);
+
+        return report;
+    }
 }
 
 
