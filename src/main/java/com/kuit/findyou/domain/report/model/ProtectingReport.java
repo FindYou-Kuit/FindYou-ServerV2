@@ -49,9 +49,6 @@ public class ProtectingReport extends Report {
     @Column(name = "care_name", length = 50, nullable = false)
     private String careName;
 
-    @Column(name = "care_addr", length = 200, nullable = false)
-    private String careAddr;
-
     @Column(name = "care_tel", length = 14, nullable = false)
     private String careTel;
 
@@ -63,7 +60,7 @@ public class ProtectingReport extends Report {
                              String address, User user, Sex sex, String age, String weight,
                              String furColor, Neutering neutering, String significant,
                              String foundLocation, String noticeNumber, LocalDate noticeStartDate,
-                             LocalDate noticeEndDate, String careName, String careAddr,
+                             LocalDate noticeEndDate, String careName,
                              String careTel, String authority) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>());
@@ -78,7 +75,6 @@ public class ProtectingReport extends Report {
         this.noticeStartDate = noticeStartDate;
         this.noticeEndDate = noticeEndDate;
         this.careName = careName;
-        this.careAddr = careAddr;
         this.careTel = careTel;
         this.authority = authority;
     }
@@ -90,8 +86,7 @@ public class ProtectingReport extends Report {
                                                           String significant, String foundLocation,
                                                           String noticeNumber, LocalDate noticeStartDate,
                                                           LocalDate noticeEndDate, String careName,
-                                                          String careAddr, String careTel,
-                                                          String authority) {
+                                                          String careTel, String authority) {
 
         ProtectingReport report = ProtectingReport.builder()
                 .breed(breed)
@@ -111,7 +106,6 @@ public class ProtectingReport extends Report {
                 .noticeStartDate(noticeStartDate)
                 .noticeEndDate(noticeEndDate)
                 .careName(careName)
-                .careAddr(careAddr)
                 .careTel(careTel)
                 .authority(authority)
                 .build();

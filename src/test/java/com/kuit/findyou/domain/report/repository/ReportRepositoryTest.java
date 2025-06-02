@@ -179,7 +179,7 @@ class ReportRepositoryTest {
                 "고양이",
                 ReportTag.PROTECTING,
                 LocalDate.now().minusDays(1),
-                "서울시 마포구",
+                "서울시 마포구 월드컵북로 212",
                 testUser,
                 Sex.F,
                 "2살",
@@ -192,7 +192,6 @@ class ReportRepositoryTest {
                 LocalDate.now(),
                 LocalDate.now().plusDays(14),
                 "마포구 동물보호센터",
-                "서울시 마포구 월드컵북로 212",
                 "02-123-4567",
                 "마포구청"
         );

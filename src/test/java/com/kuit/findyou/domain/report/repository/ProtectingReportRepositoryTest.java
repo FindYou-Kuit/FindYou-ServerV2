@@ -55,7 +55,7 @@ class ProtectingReportRepositoryTest {
                 "개",
                 ReportTag.PROTECTING,
                 LocalDate.of(2024, 1, 25),
-                "서울시 마포구 홍대입구로 789",
+                "서울시 중랑구 용마산로 560",
                 testUser,
                 Sex.F,
                 "추정 2살",
@@ -68,7 +68,6 @@ class ProtectingReportRepositoryTest {
                 LocalDate.of(2024, 1, 25),
                 LocalDate.of(2024, 2, 25),
                 "서울시 동물보호센터",
-                "서울시 중랑구 용마산로 560",
                 "02-2290-8840",
                 "서울시 마포구청"
         );
@@ -98,7 +97,6 @@ class ProtectingReportRepositoryTest {
         assertThat(foundReport.getNoticeStartDate()).isEqualTo(LocalDate.of(2024, 1, 25));
         assertThat(foundReport.getNoticeEndDate()).isEqualTo(LocalDate.of(2024, 2, 25));
         assertThat(foundReport.getCareName()).isEqualTo("서울시 동물보호센터");
-        assertThat(foundReport.getCareAddr()).isEqualTo("서울시 중랑구 용마산로 560");
         assertThat(foundReport.getCareTel()).isEqualTo("02-2290-8840");
         assertThat(foundReport.getAuthority()).isEqualTo("서울시 마포구청");
     }

@@ -40,6 +40,9 @@ public abstract class Report extends BaseEntity {
     @Column(name = "date", nullable = false, columnDefinition = "DATE")
     protected LocalDate date;
 
+    // 실종 : 실종 장소
+    // 목격 : 목격 장소
+    // 보호 : 보호 장소 => 보호소 주소 (care_addr)
     @Column(name = "address", length = 200, nullable = false)
     protected String address;
 
