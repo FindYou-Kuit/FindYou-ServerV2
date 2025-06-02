@@ -55,8 +55,8 @@ public class ProtectingReport extends Report {
     @Column(name = "authority", length = 50, nullable = false)
     private String authority;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private ProtectingReport(String breed, String species, ReportTag tag, LocalDate date,
+    @Builder
+    public ProtectingReport(String breed, String species, ReportTag tag, LocalDate date,
                              String address, User user, Sex sex, String age, String weight,
                              String furColor, Neutering neutering, String significant,
                              String foundLocation, String noticeNumber, LocalDate noticeStartDate,
