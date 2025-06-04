@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 @Entity
 @DiscriminatorValue("PROTECTING")
-@Table(name = "protecting_report")
+@Table(name = "protecting_reports")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProtectingReport extends Report {
