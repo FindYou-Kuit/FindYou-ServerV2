@@ -7,7 +7,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 
 @Entity
-@Table(name = "recommend_article")
+@Table(name = "recommended_articles")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

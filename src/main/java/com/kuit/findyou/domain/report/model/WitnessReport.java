@@ -13,7 +13,7 @@ import lombok.*;
 
 @Entity
 @DiscriminatorValue("WITNESS")
-@Table(name = "witness_report")
+@Table(name = "witness_reports")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WitnessReport extends Report {

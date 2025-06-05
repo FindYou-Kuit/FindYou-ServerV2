@@ -193,7 +193,9 @@ class ReportRepositoryTest {
                 LocalDate.now().plusDays(14),
                 "마포구 동물보호센터",
                 "02-123-4567",
-                "마포구청"
+                "마포구청",
+                new BigDecimal("37.483569"),
+                new BigDecimal("127.032675")
         );
 
 

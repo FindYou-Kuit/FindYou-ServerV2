@@ -4,12 +4,13 @@ import com.kuit.findyou.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Entity
 @DiscriminatorValue("PROTECTING")
-@Table(name = "protecting_report")
+@Table(name = "protecting_reports")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProtectingReport extends Report {
@@ -55,13 +56,20 @@ public class ProtectingReport extends Report {
     @Column(name = "authority", length = 50, nullable = false)
     private String authority;
 
+    @Column(precision = 9, scale = 6, nullable = false)
+    private BigDecimal latitude;
+
+    @Column(precision = 9, scale = 6, nullable = false)
+    private BigDecimal longitude;
+
     @Builder
     public ProtectingReport(String breed, String species, ReportTag tag, LocalDate date,
                              String address, User user, Sex sex, String age, String weight,
                              String furColor, Neutering neutering, String significant,
                              String foundLocation, String noticeNumber, LocalDate noticeStartDate,
                              LocalDate noticeEndDate, String careName,
-                             String careTel, String authority) {
+                             String careTel, String authority, BigDecimal latitude,
+                            BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
@@ -77,6 +85,8 @@ public class ProtectingReport extends Report {
         this.careName = careName;
         this.careTel = careTel;
         this.authority = authority;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public static ProtectingReport createProtectingReport(String breed, String species, ReportTag tag,
@@ -86,7 +96,8 @@ public class ProtectingReport extends Report {
                                                           String significant, String foundLocation,
                                                           String noticeNumber, LocalDate noticeStartDate,
                                                           LocalDate noticeEndDate, String careName,
-                                                          String careTel, String authority) {
+                                                          String careTel, String authority,
+                                                          BigDecimal latitude, BigDecimal longitude) {
 
         ProtectingReport report = ProtectingReport.builder()
                 .breed(breed)
@@ -108,6 +119,8 @@ public class ProtectingReport extends Report {
                 .careName(careName)
                 .careTel(careTel)
                 .authority(authority)
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
 
         // 양방향 연관관계 설정
