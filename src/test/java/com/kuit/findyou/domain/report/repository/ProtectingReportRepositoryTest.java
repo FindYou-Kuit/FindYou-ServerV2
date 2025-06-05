@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
@@ -69,7 +70,9 @@ class ProtectingReportRepositoryTest {
                 LocalDate.of(2024, 2, 25),
                 "서울시 동물보호센터",
                 "02-2290-8840",
-                "서울시 마포구청"
+                "서울시 마포구청",
+                new BigDecimal("37.483569"),
+                new BigDecimal("127.032675")
         );
 
 
@@ -99,6 +102,8 @@ class ProtectingReportRepositoryTest {
         assertThat(foundReport.getCareName()).isEqualTo("서울시 동물보호센터");
         assertThat(foundReport.getCareTel()).isEqualTo("02-2290-8840");
         assertThat(foundReport.getAuthority()).isEqualTo("서울시 마포구청");
+        assertThat(foundReport.getLatitude()).isEqualTo(new BigDecimal("37.483569"));
+        assertThat(foundReport.getLongitude()).isEqualTo(new BigDecimal("127.032675"));
     }
 
 }
