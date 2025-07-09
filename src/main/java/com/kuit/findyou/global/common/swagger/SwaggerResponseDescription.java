@@ -8,14 +8,18 @@ import java.util.Set;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
-
 @Getter
-public enum SwaggerResponseDescription {;
+public enum SwaggerResponseDescription {
+
+    TEST(new LinkedHashSet<>(Set.of(
+            TEST_EXCEPTION
+    )));
 
     private final Set<BaseExceptionResponseStatus> exceptionResponseStatusSet;
 
     SwaggerResponseDescription(Set<BaseExceptionResponseStatus> exceptionResponseStatusSet) {
         exceptionResponseStatusSet.addAll(new LinkedHashSet<>(Set.of(
+                SUCCESS,
                 BAD_REQUEST,
                 UNAUTHORIZED,
                 FORBIDDEN,

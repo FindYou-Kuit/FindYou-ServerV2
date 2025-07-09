@@ -5,6 +5,10 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum BaseExceptionResponseStatus implements ResponseStatus{
+    // 테스트
+    TEST_EXCEPTION(100, "테스트용 예외입니다."),
+
+    // 성공
     SUCCESS(200, "요청에 성공했습니다."),
 
     // 공통 에러
