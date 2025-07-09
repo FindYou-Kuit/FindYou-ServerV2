@@ -63,7 +63,8 @@ class MissingReportRepositoryTest {
                 "3.5kg",
                 "흰색",
                 "왼쪽 귀에 검은 점이 있음",
-                "김철수 010-1234-5678",
+                "김철수",
+                "010-1234-5678",
                 "강남역 2번 출구 근처",
                 new BigDecimal("37.498095"),
                 new BigDecimal("127.027610")
@@ -89,7 +90,8 @@ class MissingReportRepositoryTest {
         assertThat(foundReport.getWeight()).isEqualTo("3.5kg");
         assertThat(foundReport.getFurColor()).isEqualTo("흰색");
         assertThat(foundReport.getSignificant()).isEqualTo("왼쪽 귀에 검은 점이 있음");
-        assertThat(foundReport.getReporterInfo()).isEqualTo("김철수 010-1234-5678");
+        assertThat(foundReport.getReporterName()).isEqualTo("김철수");
+        assertThat(foundReport.getReporterTel()).isEqualTo("010-1234-5678");
         assertThat(foundReport.getLandmark()).isEqualTo("강남역 2번 출구 근처");
         assertThat(foundReport.getLatitude()).isEqualTo(new BigDecimal("37.498095"));
         assertThat(foundReport.getLongitude()).isEqualTo(new BigDecimal("127.027610"));

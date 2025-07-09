@@ -58,7 +58,7 @@ class WitnessReportRepositoryTest {
                 testUser,
                 "금색",
                 "목줄을 하고 있었음",
-                "이영희 010-9876-5432",
+                "이영희",
                 "서초역 1번 출구",
                 new BigDecimal("37.483569"),
                 new BigDecimal("127.032675")
@@ -79,7 +79,7 @@ class WitnessReportRepositoryTest {
         assertThat(foundReport.getTag()).isEqualTo(ReportTag.WITNESS);
         assertThat(foundReport.getFurColor()).isEqualTo("금색");
         assertThat(foundReport.getSignificant()).isEqualTo("목줄을 하고 있었음");
-        assertThat(foundReport.getReporterInfo()).isEqualTo("이영희 010-9876-5432");
+        assertThat(foundReport.getReporterName()).isEqualTo("이영희");
         assertThat(foundReport.getLandmark()).isEqualTo("서초역 1번 출구");
         assertThat(foundReport.getLatitude()).isEqualTo(new BigDecimal("37.483569"));
         assertThat(foundReport.getLongitude()).isEqualTo(new BigDecimal("127.032675"));
