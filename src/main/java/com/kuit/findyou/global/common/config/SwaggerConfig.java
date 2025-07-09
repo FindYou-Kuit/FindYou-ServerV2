@@ -2,6 +2,7 @@ package com.kuit.findyou.global.common.config;
 
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseErrorResponse;
+import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus;
 import com.kuit.findyou.global.common.swagger.ExampleHolder;
 import com.kuit.findyou.global.common.swagger.SwaggerResponseDescription;
@@ -81,18 +82,24 @@ public class SwaggerConfig {
         }
 
 
-        private Example getSwaggerExample(BaseExceptionResponseStatus baseExceptionResponseStatus) {
-                BaseErrorResponse errorResponse = new BaseErrorResponse(baseExceptionResponseStatus);
+    private Example getSwaggerExample(BaseExceptionResponseStatus status) {
+        Example example = new Example();
 
-                Example example = new Example();
-                example.description(baseExceptionResponseStatus.getMessage());
-                example.setValue(errorResponse);
-
-                return example;
+        if (status == BaseExceptionResponseStatus.SUCCESS) {
+            BaseResponse<String> successResponse = new BaseResponse<>("각 케이스에 대한 성공 응답");
+            example.setValue(successResponse);
+        } else {
+            BaseErrorResponse errorResponse = new BaseErrorResponse(status);
+            example.setValue(errorResponse);
         }
 
+        example.description(status.getMessage());
+        return example;
+    }
 
-        private void addExamplesToResponses(
+
+
+    private void addExamplesToResponses(
                 ApiResponses responses, Map<Integer, List<ExampleHolder>> statusWithExampleHolders) {
                 statusWithExampleHolders.forEach(
                         (status, v) -> {

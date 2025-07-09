@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.test.controller;
 
+import com.kuit.findyou.domain.test.dto.response.TestResponseDTO;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,7 @@ public class TestController {
     )
     @GetMapping
     @CustomExceptionDescription(TEST)
-    public BaseResponse<String> testApi() {
-        return new BaseResponse<>("테스트용 API 입니다");
+    public BaseResponse<TestResponseDTO> testApi() {
+        return BaseResponse.ok(new TestResponseDTO("테스트 응답"));
     }
 }

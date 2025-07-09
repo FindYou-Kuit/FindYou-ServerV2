@@ -19,7 +19,6 @@ public enum SwaggerResponseDescription {
 
     SwaggerResponseDescription(Set<BaseExceptionResponseStatus> exceptionResponseStatusSet) {
         exceptionResponseStatusSet.addAll(new LinkedHashSet<>(Set.of(
-                SUCCESS,
                 BAD_REQUEST,
                 UNAUTHORIZED,
                 FORBIDDEN,
