@@ -37,84 +37,78 @@ import static java.util.stream.Collectors.groupingBy;
 @Configuration
 public class SwaggerConfig {
 
-        @Bean
-        public OpenAPI openAPI() {
-                return new OpenAPI();
-        }
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI();
+    }
 
-        @Bean
-        public OperationCustomizer customize() {
-                return (Operation operation, HandlerMethod handlerMethod) -> {
+    @Bean
+    public OperationCustomizer customize() {
+        return (Operation operation, HandlerMethod handlerMethod) -> {
 
-                        CustomExceptionDescription customExceptionDescription = handlerMethod.getMethodAnnotation(
-                                CustomExceptionDescription.class);
+            CustomExceptionDescription customExceptionDescription = handlerMethod.getMethodAnnotation(
+                    CustomExceptionDescription.class);
 
-                        // CustomExceptionDescription 어노테이션 단 메소드 적용
-                        if (customExceptionDescription != null) {
-                                generateErrorCodeResponseExample(operation, customExceptionDescription.value());
-                        }
+            // CustomExceptionDescription 어노테이션 단 메소드 적용
+            if (customExceptionDescription != null) {
+                generateErrorCodeResponseExample(operation, customExceptionDescription.value());
+            }
 
-                        return operation;
-                };
-        }
+            return operation;
+        };
+    }
 
 
-        private void generateErrorCodeResponseExample(
-                Operation operation, SwaggerResponseDescription type) {
+    private void generateErrorCodeResponseExample(
+            Operation operation, SwaggerResponseDescription type) {
 
-                ApiResponses responses = operation.getResponses();
+        ApiResponses responses = operation.getResponses();
 
-                Set<BaseExceptionResponseStatus> baseExceptionResponseStatusSet = type.getExceptionResponseStatusSet();
+        Set<BaseExceptionResponseStatus> baseExceptionResponseStatusSet = type.getExceptionResponseStatusSet();
 
-                Map<Integer, List<ExampleHolder>> statusWithExampleHolders =
-                        baseExceptionResponseStatusSet.stream()
-                                .map(
-                                        baseExceptionResponseStatus -> {
-                                                return ExampleHolder.builder()
-                                                        .holder(
-                                                                getSwaggerExample(baseExceptionResponseStatus))
-                                                        .code(baseExceptionResponseStatus.getCode())
-                                                        .name(baseExceptionResponseStatus.toString())
-                                                        .build();
-                                        }
-                                ).collect(groupingBy(ExampleHolder::getCode));
-                addExamplesToResponses(responses, statusWithExampleHolders);
-        }
+        Map<Integer, List<ExampleHolder>> statusWithExampleHolders =
+                baseExceptionResponseStatusSet.stream()
+                        .map(
+                                baseExceptionResponseStatus -> {
+                                    return ExampleHolder.builder()
+                                            .holder(
+                                                    getSwaggerExample(baseExceptionResponseStatus))
+                                            .code(baseExceptionResponseStatus.getCode())
+                                            .name(baseExceptionResponseStatus.toString())
+                                            .build();
+                                }
+                        ).collect(groupingBy(ExampleHolder::getCode));
+        addExamplesToResponses(responses, statusWithExampleHolders);
+    }
 
 
     private Example getSwaggerExample(BaseExceptionResponseStatus status) {
         Example example = new Example();
 
-        if (status == BaseExceptionResponseStatus.SUCCESS) {
-            BaseResponse<String> successResponse = new BaseResponse<>("각 케이스에 대한 성공 응답");
-            example.setValue(successResponse);
-        } else {
-            BaseErrorResponse errorResponse = new BaseErrorResponse(status);
-            example.setValue(errorResponse);
-        }
-
+        BaseErrorResponse errorResponse = new BaseErrorResponse(status);
+        example.setValue(errorResponse);
         example.description(status.getMessage());
+
         return example;
     }
 
 
-
     private void addExamplesToResponses(
-                ApiResponses responses, Map<Integer, List<ExampleHolder>> statusWithExampleHolders) {
-                statusWithExampleHolders.forEach(
-                        (status, v) -> {
-                                Content content = new Content();
-                                MediaType mediaType = new MediaType();
-                                ApiResponse apiResponse = new ApiResponse();
-                                v.forEach(
-                                        exampleHolder -> {
-                                                mediaType.addExamples(
-                                                        exampleHolder.getName(), exampleHolder.getHolder());
-                                        });
-                                content.addMediaType("application/json", mediaType);
-                                apiResponse.setDescription("");
-                                apiResponse.setContent(content);
-                                responses.addApiResponse(status.toString(), apiResponse);
-                        });
-        }
+            ApiResponses responses, Map<Integer, List<ExampleHolder>> statusWithExampleHolders) {
+        statusWithExampleHolders.forEach(
+                (status, v) -> {
+                    Content content = new Content();
+                    MediaType mediaType = new MediaType();
+                    ApiResponse apiResponse = new ApiResponse();
+                    v.forEach(
+                            exampleHolder -> {
+                                mediaType.addExamples(
+                                        exampleHolder.getName(), exampleHolder.getHolder());
+                            });
+                    content.addMediaType("application/json", mediaType);
+                    apiResponse.setDescription("");
+                    apiResponse.setContent(content);
+                    responses.addApiResponse(status.toString(), apiResponse);
+                });
+    }
 }
