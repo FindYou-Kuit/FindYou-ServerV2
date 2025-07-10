@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.report.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kuit.findyou.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -128,6 +129,12 @@ public class ProtectingReport extends Report {
 
         return report;
     }
+
+    @JsonIgnore
+    public String getNoticeDuration() {
+        return noticeStartDate + " ~ " + noticeEndDate;
+    }
+
 }
 
 

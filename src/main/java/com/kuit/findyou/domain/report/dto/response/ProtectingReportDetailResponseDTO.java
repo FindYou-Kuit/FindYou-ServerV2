@@ -1,7 +1,10 @@
 package com.kuit.findyou.domain.report.dto.response;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public record ProtectingReportDetailResponseDTO(
         List<String> imageUrl,
         String breed,
