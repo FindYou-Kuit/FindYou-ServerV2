@@ -5,7 +5,6 @@ import lombok.Builder;
 
 import java.util.List;
 
-@Builder
 public record ProtectingReportDetailResponseDTO(
         @Schema(description = "보호 신고 이미지 URL 목록", example = "[\"https://example.com/protecting1.jpg\", \"https://example.com/protecting2.jpg\"]")
         List<String> imageUrls,
