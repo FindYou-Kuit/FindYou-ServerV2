@@ -151,7 +151,8 @@ class ReportRepositoryTest {
                 "25kg",
                 "황금색",
                 "목에 빨간 목걸이",
-                "김철수 010-1234-5678",
+                "김철수",
+                "010-1234-5678",
                 "강남역 근처",
                 new BigDecimal("37.497952"),
                 new BigDecimal("127.027619")
@@ -167,7 +168,7 @@ class ReportRepositoryTest {
                 testUser,
                 "검은색",
                 "오른쪽 다리 절뚝임",
-                "이영희 010-9876-5432",
+                "이영희",
                 "서초역 2번 출구",
                 new BigDecimal("37.483569"),
                 new BigDecimal("127.032455")
