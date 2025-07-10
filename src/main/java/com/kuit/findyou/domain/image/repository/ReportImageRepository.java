@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.image;
+package com.kuit.findyou.domain.image.repository;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
 import org.springframework.data.jpa.repository.JpaRepository;

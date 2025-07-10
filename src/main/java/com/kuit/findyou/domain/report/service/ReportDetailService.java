@@ -44,11 +44,11 @@ public class ReportDetailService {
 
     private Report findReportByTagAndId(ReportTag tag, Long reportId) {
         return switch (tag) {
-            case PROTECTING -> protectingReportRepository.findById(reportId)
+            case PROTECTING -> protectingReportRepository.findWithImagesById(reportId)
                     .orElseThrow(() -> new CustomException(PROTECTING_REPORT_NOT_FOUND));
-            case MISSING -> missingReportRepository.findById(reportId)
+            case MISSING -> missingReportRepository.findWithImagesById(reportId)
                     .orElseThrow(() -> new CustomException(MISSING_REPORT_NOT_FOUND));
-            case WITNESS -> witnessReportRepository.findById(reportId)
+            case WITNESS -> witnessReportRepository.findWithImagesById(reportId)
                     .orElseThrow(() -> new CustomException(WITNESS_REPORT_NOT_FOUND));
             default -> throw new CustomException(ILLEGAL_TAG);
         };

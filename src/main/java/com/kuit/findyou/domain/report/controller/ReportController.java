@@ -3,11 +3,10 @@ package com.kuit.findyou.domain.report.controller;
 import com.kuit.findyou.domain.report.dto.response.MissingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
-import com.kuit.findyou.domain.report.model.ReportTag;
+import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.service.ReportDetailService;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
-import com.kuit.findyou.global.common.swagger.SwaggerResponseDescription;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +29,6 @@ public class ReportController {
     @CustomExceptionDescription(PROTECTING_REPORT_DETAIL)
     public BaseResponse<ProtectingReportDetailResponseDTO> getProtectingReportDetail(
             @PathVariable("reportId") Long reportId) {
-
 
         ProtectingReportDetailResponseDTO detail = reportDetailService.getReportDetail(ReportTag.PROTECTING, reportId, 1L);
         return BaseResponse.ok(detail);
@@ -55,4 +53,5 @@ public class ReportController {
         WitnessReportDetailResponseDTO detail = reportDetailService.getReportDetail(ReportTag.WITNESS, reportId, 1L);
         return BaseResponse.ok(detail);
     }
+
 }
