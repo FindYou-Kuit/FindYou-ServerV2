@@ -17,7 +17,8 @@ public record MissingReportDetailResponseDTO(
         String missingAddress,
         double latitude,
         double longitude,
-        String reporterInfo,
+        String reporterName,
+        String reporterTel,
         boolean interest
 ) {
 }
