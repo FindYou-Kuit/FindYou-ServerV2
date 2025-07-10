@@ -6,7 +6,7 @@ import java.util.List;
 
 @Builder
 public record ProtectingReportDetailResponseDTO(
-        List<String> imageUrl,
+        List<String> imageUrls,
         String breed,
         String tag,
         String age,
