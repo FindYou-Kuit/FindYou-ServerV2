@@ -33,4 +33,15 @@ public class NotificationHistory extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false)
     private Report report;
+
+    public static NotificationHistory createNotificationHistory(User user, Report report, ViewStatus isViewed) {
+        NotificationHistory history = NotificationHistory.builder()
+                .isViewed(isViewed)
+                .user(user)
+                .report(report)
+                .build();
+        user.addNotificationHistory(history);
+        report.addNotificationHistory(history);
+        return history;
+    }
 }
