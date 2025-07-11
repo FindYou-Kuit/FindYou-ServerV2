@@ -2,10 +2,18 @@ package com.kuit.findyou.domain.report.strategy;
 
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.WitnessReport;
+import com.kuit.findyou.domain.report.repository.WitnessReportRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.WITNESS_REPORT_NOT_FOUND;
+
+@RequiredArgsConstructor
 @Component("WITNESS")
 public class WitnessReportDetailStrategy implements ReportDetailStrategy<WitnessReport, WitnessReportDetailResponseDTO> {
+
+    private final WitnessReportRepository witnessReportRepository;
 
     @Override
     public WitnessReportDetailResponseDTO getDetail(WitnessReport report, boolean interest) {
@@ -23,6 +31,12 @@ public class WitnessReportDetailStrategy implements ReportDetailStrategy<Witness
                 report.getDate().toString(),
                 interest
         );
+    }
+
+    @Override
+    public WitnessReport getReport(Long reportId) {
+        return witnessReportRepository.findWithImagesById(reportId)
+                .orElseThrow(() -> new CustomException(WITNESS_REPORT_NOT_FOUND));
     }
 }
 
