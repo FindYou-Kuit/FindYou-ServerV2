@@ -29,4 +29,21 @@ public class Subscribe extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public static Subscribe createSubscribe(User user, Keyword keyword) {
+        Subscribe subscribe = new Subscribe();
+        subscribe.setUser(user);
+        subscribe.setKeyword(keyword);
+        return subscribe;
+    }
+
+    private void setUser(User user) {
+        this.user = user;
+        user.addSubscribe(this);
+    }
+
+    private void setKeyword(Keyword keyword) {
+        this.keyword = keyword;
+        keyword.addSubscribe(this);
+    }
 }
