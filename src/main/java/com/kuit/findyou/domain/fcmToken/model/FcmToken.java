@@ -28,4 +28,18 @@ public class FcmToken extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public static FcmToken createFcmToken(User user, String tokenValue) {
+        FcmToken token = FcmToken.builder()
+                .fcmToken(tokenValue)
+                .user(user)
+                .build();
+        token.setUser(user);
+        return token;
+    }
+
+    private void setUser(User user) {
+        this.user = user;
+        user.setFcmToken(this);
+    }
 }

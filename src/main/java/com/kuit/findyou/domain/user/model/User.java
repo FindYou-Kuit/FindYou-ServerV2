@@ -96,5 +96,5 @@ public class User extends BaseEntity {
     }
     public void addNotificationHistory(NotificationHistory notificationHistory) { notificationHistories.add(notificationHistory); }
     public void addSubscribe(Subscribe subscribe) { subscribes.add(subscribe); }
-
+    public void setFcmToken(FcmToken fcmToken) {this.fcmToken = fcmToken;}
 }
