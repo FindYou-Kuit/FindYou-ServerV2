@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.report.model;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
+import com.kuit.findyou.domain.notification.model.NotificationHistory;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
@@ -65,6 +66,11 @@ public abstract class Report extends BaseEntity {
     @OneToMany(mappedBy = "report", orphanRemoval = true)
     private List<ReportImage> reportImages = new ArrayList<>();
 
+    // 알림 내역 삭제를 위한 양방향 연관관계 설정
+    // orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "report", orphanRemoval = true)
+    private List<NotificationHistory> notificationHistories = new ArrayList<>();
+
     // 연관 관계 편의 메서드
     public void addViewedReport(ViewedReport viewedReport) {
         viewedReports.add(viewedReport);
@@ -74,5 +80,5 @@ public abstract class Report extends BaseEntity {
         interestReports.add(interestReport);
     }
 
-
+    public void addNotificationHistory(NotificationHistory history) { notificationHistories.add(history); }
 }
