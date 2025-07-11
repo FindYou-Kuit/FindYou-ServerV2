@@ -93,3 +93,9 @@ spring:
 logging:
   level:
     root: info
+
+findyou:
+  jwt:
+    access:
+      expire-ms: ${JWT_ACCESS_EXPIRE_MS}
+    secret-key : ${JWT_SECRET_KEY}
