@@ -35,7 +35,4 @@ public class Keyword extends BaseEntity {
     public void addSubscribe(Subscribe subscribe) {
         subscribes.add(subscribe);
     }
-
-
-
 }

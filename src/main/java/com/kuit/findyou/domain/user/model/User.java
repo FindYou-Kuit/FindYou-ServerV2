@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.user.model;
 
+import com.kuit.findyou.domain.fcmToken.model.FcmToken;
 import com.kuit.findyou.domain.notification.model.NotificationHistory;
 import com.kuit.findyou.domain.notification.model.ReceiveNotification;
 import com.kuit.findyou.domain.report.model.InterestReport;
@@ -78,6 +79,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     @Builder.Default
     private List<Subscribe> subscribes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private FcmToken fcmToken;
 
     public void addReport(Report report) {
         reports.add(report);
