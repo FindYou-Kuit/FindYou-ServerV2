@@ -17,20 +17,17 @@ public enum SwaggerResponseDescription {
 
     PROTECTING_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
             USER_NOT_FOUND,
-            PROTECTING_REPORT_NOT_FOUND,
-            ILLEGAL_TAG
+            PROTECTING_REPORT_NOT_FOUND
     ))),
 
     MISSING_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
             USER_NOT_FOUND,
-            MISSING_REPORT_NOT_FOUND,
-            ILLEGAL_TAG
+            MISSING_REPORT_NOT_FOUND
     ))),
 
     WITNESS_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
             USER_NOT_FOUND,
-            WITNESS_REPORT_NOT_FOUND,
-            ILLEGAL_TAG
+            WITNESS_REPORT_NOT_FOUND
     )));
 
     private final Set<BaseExceptionResponseStatus> exceptionResponseStatusSet;

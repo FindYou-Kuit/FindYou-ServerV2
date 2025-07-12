@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.WITNESS_REPORT_NOT_FOUND;
 
 @RequiredArgsConstructor
-@Component("WITNESS")
+@Component
 public class WitnessReportDetailStrategy implements ReportDetailStrategy<WitnessReport, WitnessReportDetailResponseDTO> {
 
     private final WitnessReportRepository witnessReportRepository;

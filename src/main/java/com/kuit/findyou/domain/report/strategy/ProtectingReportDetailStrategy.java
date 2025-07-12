@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.PROTECTING_REPORT_NOT_FOUND;
 
 @RequiredArgsConstructor
-@Component("PROTECTING")
+@Component
 public class ProtectingReportDetailStrategy implements ReportDetailStrategy<ProtectingReport, ProtectingReportDetailResponseDTO> {
 
     private final ProtectingReportRepository protectingReportRepository;

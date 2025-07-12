@@ -11,29 +11,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
-
 @Service
 @RequiredArgsConstructor
 public class ReportDetailServiceImpl implements ReportDetailService {
 
     private final InterestReportRepository interestReportRepository;
+    private final Map<ReportTag, ReportDetailStrategy<? extends Report, ?>> strategies;
 
-    private final Map<String, ReportDetailStrategy<? extends Report, ?>> strategies;
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")  // 전략 매핑은 안전하게 구성되어 있음 (ReportDetailStrategyConfig 참고)
     public <REPORT_TYPE extends Report, DTO_TYPE> DTO_TYPE getReportDetail(ReportTag tag, Long reportId, Long userId) {
-
-        ReportDetailStrategy<REPORT_TYPE, DTO_TYPE> strategy =  (ReportDetailStrategy<REPORT_TYPE, DTO_TYPE>) strategies.get(tag.toString());
-
-        if (strategy == null) {
-            throw new CustomException(ILLEGAL_TAG);
-        }
+        ReportDetailStrategy<REPORT_TYPE, DTO_TYPE> strategy =
+                (ReportDetailStrategy<REPORT_TYPE, DTO_TYPE>) strategies.get(tag);
 
         REPORT_TYPE report = strategy.getReport(reportId);
         boolean interest = interestReportRepository.existsByReport_IdAndUser_Id(report.getId(), userId);
 
         return strategy.getDetail(report, interest);
     }
-
 }
+

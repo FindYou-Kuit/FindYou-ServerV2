@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.MISSING_REPORT_NOT_FOUND;
 
 @RequiredArgsConstructor
-@Component("MISSING")
+@Component
 public class MissingReportDetailStrategy implements ReportDetailStrategy<MissingReport, MissingReportDetailResponseDTO> {
 
     private final MissingReportRepository missingReportRepository;
