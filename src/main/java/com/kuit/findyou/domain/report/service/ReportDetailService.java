@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.strategy.ReportDetailStrategy;
+import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,17 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class ReportDetailService {
 
     private final InterestReportRepository interestReportRepository;
+    private final UserRepository userRepository;
 
     private final Map<String, ReportDetailStrategy<? extends Report, ?>> strategies;
 
     @SuppressWarnings("unchecked")
     public <REPORT_TYPE extends Report, DTO_TYPE> DTO_TYPE getReportDetail(ReportTag tag, Long reportId, Long userId) {
+
+        if(!userRepository.existsById(userId)) {
+            throw new CustomException(USER_NOT_FOUND);
+        }
+
         ReportDetailStrategy<REPORT_TYPE, DTO_TYPE> strategy =  (ReportDetailStrategy<REPORT_TYPE, DTO_TYPE>) strategies.get(tag.toString());
 
         if (strategy == null) {
