@@ -41,6 +41,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //스프링 시큐리티 인증 객체를 생성하고 컨텍스트에 저장
             Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            // token을 argument resolver에 전달
+            request.setAttribute("token", token);
         }
 
         // 다음 필터로 진행
