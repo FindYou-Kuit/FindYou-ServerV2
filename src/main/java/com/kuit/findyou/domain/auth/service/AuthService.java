@@ -30,7 +30,7 @@ public class AuthService {
 
         // 있으면 회원정보와 엑세스 토큰 발급
         User loginUser = optUser.get();
-        String token = jwtUtil.createAccessJwt(loginUser.getId());
+        String token = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
         return KakaoLoginResponse.fromUserAndAccessToken(loginUser, token);
     }
 }

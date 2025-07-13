@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.jwt.util;
 
+import com.kuit.findyou.domain.user.model.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -31,13 +32,19 @@ public class JwtUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
 
+    public Role getRole(String token) {
+        String role = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+        return Role.valueOf(role);
+    }
+
     public String getTokenType(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("tokenType", String.class);
     }
 
-    public String createAccessJwt(Long userId) {
+    public String createAccessJwt(Long userId, Role role) {
         return Jwts.builder()
                 .claim("userId", userId)
+                .claim("role", role.getValue())
                 .claim("tokenType", ACCESS_TOKEN)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpireMs))
