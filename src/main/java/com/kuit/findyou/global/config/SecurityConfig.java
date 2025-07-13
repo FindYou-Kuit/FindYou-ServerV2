@@ -1,6 +1,6 @@
 package com.kuit.findyou.global.config;
 
-import com.kuit.findyou.global.jwt.entrypoint.CustomAuthenticationEntryPoint;
+import com.kuit.findyou.global.jwt.security.CustomAuthenticationEntryPoint;
 import com.kuit.findyou.global.jwt.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +49,10 @@ public class SecurityConfig {
         // 토큰 검증 필터 추가
         http
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // 토큰 검증 예외 처리 추가
+        http
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(customAuthenticationEntryPoint));
 
         http
                 .sessionManagement((session)->session
