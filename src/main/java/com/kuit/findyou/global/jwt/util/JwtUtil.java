@@ -44,7 +44,7 @@ public class JwtUtil {
     public String createAccessJwt(Long userId, Role role) {
         return Jwts.builder()
                 .claim("userId", userId)
-                .claim("role", role.getValue())
+                .claim("role", role.name())
                 .claim("tokenType", ACCESS_TOKEN)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpireMs))
