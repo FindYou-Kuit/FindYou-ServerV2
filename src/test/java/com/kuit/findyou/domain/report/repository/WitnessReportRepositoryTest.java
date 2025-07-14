@@ -1,5 +1,7 @@
 package com.kuit.findyou.domain.report.repository;
 
+import com.kuit.findyou.domain.image.model.ReportImage;
+import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.user.model.Role;
@@ -27,6 +29,9 @@ class WitnessReportRepositoryTest {
 
     @Autowired
     private WitnessReportRepository witnessReportRepository;
+
+    @Autowired
+    private ReportImageRepository reportImageRepository;
 
     @Autowired
     private EntityManager em;
@@ -83,6 +88,40 @@ class WitnessReportRepositoryTest {
         assertThat(foundReport.getLandmark()).isEqualTo("서초역 1번 출구");
         assertThat(foundReport.getLatitude()).isEqualTo(new BigDecimal("37.483569"));
         assertThat(foundReport.getLongitude()).isEqualTo(new BigDecimal("127.032675"));
+    }
+
+    @Test
+    @DisplayName("WitnessReport 조회 - 이미지까지 한 번의 쿼리로 조회하기")
+    void findWitnessReportWithImages() {
+        // Given
+        WitnessReport witnessReport = WitnessReport.createWitnessReport(
+                "골든 리트리버", "개", ReportTag.WITNESS, LocalDate.of(2024, 1, 20),
+                "서울시 서초구 서초대로 456", testUser, "금색", "목줄을 하고 있었음",
+                "이영희", "서초역 1번 출구",
+                new BigDecimal("37.483569"), new BigDecimal("127.032675")
+        );
+        witnessReportRepository.save(witnessReport);
+        em.flush();
+
+        ReportImage image1 = ReportImage.createReportImage("https://witness1.jpg", "uuid-w1");
+        ReportImage image2 = ReportImage.createReportImage("https://witness2.jpg", "uuid-w2");
+
+        image1.setReport(witnessReport);
+        image2.setReport(witnessReport);
+
+        reportImageRepository.save(image1);
+        reportImageRepository.save(image2);
+        em.flush();
+        em.clear();
+
+        // When
+        WitnessReport foundReport = witnessReportRepository.findWithImagesById(witnessReport.getId())
+                .orElseThrow();
+
+        // Then
+        assertThat(foundReport.getReportImages()).hasSize(2);
+        assertThat(foundReport.getReportImagesUrlList())
+                .containsExactlyInAnyOrder("https://witness1.jpg", "https://witness2.jpg");
     }
 
 
