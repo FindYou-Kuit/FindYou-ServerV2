@@ -93,7 +93,7 @@ class WitnessReportRepositoryTest {
     }
 
     @Test
-    @DisplayName("WitnessReport 조회 - 이미지까지 한 번의 쿼리로 조회하기")
+    @DisplayName("findWithImagesById: 목격신고글과 이미지들을 함께 조회한다")
     void findWitnessReportWithImages() {
         // Given
         WitnessReport witnessReport = WitnessReport.createWitnessReport(

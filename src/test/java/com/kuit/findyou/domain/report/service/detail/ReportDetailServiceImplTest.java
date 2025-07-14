@@ -51,7 +51,7 @@ class ReportDetailServiceImplTest {
     }
 
     @Test
-    @DisplayName("보호글 상세 조회 성공")
+    @DisplayName("getReportDetail : ProtectingReport 상세 조회 성공")
     void getProtectingReportDetail_success() {
         // given
         Long reportId = 1L;
@@ -78,7 +78,7 @@ class ReportDetailServiceImplTest {
     }
 
     @Test
-    @DisplayName("실종글 상세 조회 성공")
+    @DisplayName("getReportDetail : MissingReport 상세 조회 성공")
     void getMissingReportDetail_success() {
         // given
         Long reportId = 10L;
@@ -105,7 +105,7 @@ class ReportDetailServiceImplTest {
     }
 
     @Test
-    @DisplayName("목격글 상세 조회 성공")
+    @DisplayName("getReportDetail : WitnessReport 상세 조회 성공")
     void getWitnessReportDetail_success() {
         // given
         Long reportId = 99L;

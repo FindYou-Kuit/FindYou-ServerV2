@@ -56,7 +56,7 @@ class ProtectingReportRepositoryTest {
     }
 
     @Test
-    @DisplayName("ProtectingReport 저장 테스트")
+    @DisplayName("ProtectingReport 생성 및 저장 테스트")
     void save() {
         // Given
         ProtectingReport protectingReport = ProtectingReport.createProtectingReport(
@@ -115,7 +115,7 @@ class ProtectingReportRepositoryTest {
     }
 
     @Test
-    @DisplayName("findWithImagesById: 보호글과 이미지들을 함께 조회한다 (cascade 없이)")
+    @DisplayName("findWithImagesById: 보호글과 이미지들을 함께 조회한다")
     void findWithImagesById() {
         // 1. 보호 게시글 생성 및 저장
         ProtectingReport report = ProtectingReport.createProtectingReport(
