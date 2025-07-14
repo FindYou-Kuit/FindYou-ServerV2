@@ -17,7 +17,16 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     FORBIDDEN(403, "권한이 없습니다."),
     API_NOT_FOUND(404, "존재하지 않는 API입니다."),
     METHOD_NOT_ALLOWED(405, "유효하지 않은 Http 메서드입니다."),
-    INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다."),
+
+    // 유저 - User
+    USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
+
+    // 글 - Report
+    PROTECTING_REPORT_NOT_FOUND(404, "존재하지 않는 보호글입니다."),
+    MISSING_REPORT_NOT_FOUND(404, "존재하지 않는 실종 신고글입니다."),
+    WITNESS_REPORT_NOT_FOUND(404, "존재하지 않는 목격 신고글입니다."),
+    ILLEGAL_TAG(500, "잘못된 태그값입니다.");
 
     private final boolean success = false;
     private final int code;

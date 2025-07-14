@@ -13,6 +13,21 @@ public enum SwaggerResponseDescription {
 
     TEST(new LinkedHashSet<>(Set.of(
             TEST_EXCEPTION
+    ))),
+
+    PROTECTING_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
+            USER_NOT_FOUND,
+            PROTECTING_REPORT_NOT_FOUND
+    ))),
+
+    MISSING_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
+            USER_NOT_FOUND,
+            MISSING_REPORT_NOT_FOUND
+    ))),
+
+    WITNESS_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
+            USER_NOT_FOUND,
+            WITNESS_REPORT_NOT_FOUND
     )));
 
     private final Set<BaseExceptionResponseStatus> exceptionResponseStatusSet;

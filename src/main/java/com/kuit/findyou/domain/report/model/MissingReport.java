@@ -40,7 +40,6 @@ public class MissingReport extends Report {
     @Column(name = "reporter_tel", length = 20)
     private String reporterTel;
 
-
     @Column(name = "landmark", nullable = false)
     private String landmark;
 

@@ -1,8 +1,10 @@
 package com.kuit.findyou.domain.report.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.model.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -74,5 +76,10 @@ public abstract class Report extends BaseEntity {
         interestReports.add(interestReport);
     }
 
-
+    @JsonIgnore
+    public List<String> getReportImagesUrlList() {
+        return reportImages.stream()
+                .map(ReportImage::getImageUrl)
+                .toList();
+    }
 }
