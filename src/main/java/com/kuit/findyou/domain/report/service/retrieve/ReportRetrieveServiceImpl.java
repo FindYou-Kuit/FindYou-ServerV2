@@ -7,10 +7,8 @@ import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
-import com.kuit.findyou.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +51,7 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 tags, startDate, endDate, species, breedList, location, lastReportId, PageRequest.of(0, 20)
         );
 
-        List<Card> reportList = convertReportProjectionSliceToCardVOList(reportSlice.getContent(), userId);
+        List<Card> reportList = convertReportProjectionSliceToCardList(reportSlice.getContent(), userId);
 
         // 마지막 글의 ID == 다음 요청으로 전달할 Cursor 값
         Long nextCursor = findLastReportId(reportList);
@@ -70,7 +68,7 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 .toList();
     }
 
-    private List<Card> convertReportProjectionSliceToCardVOList(List<ReportProjection> reportSlice, Long userId) {
+    private List<Card> convertReportProjectionSliceToCardList(List<ReportProjection> reportSlice, Long userId) {
         List<Long> reportIds = reportSlice.stream()
                 .map(ReportProjection::getReportId)
                 .toList();
