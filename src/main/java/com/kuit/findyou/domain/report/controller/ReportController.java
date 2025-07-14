@@ -1,5 +1,7 @@
 package com.kuit.findyou.domain.report.controller;
 
+import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.MissingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
@@ -11,10 +13,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 
@@ -56,4 +58,21 @@ public class ReportController {
         WitnessReportDetailResponseDTO detail = reportServiceFacade.getReportDetail(ReportTag.WITNESS, reportId, 1L);
         return BaseResponse.ok(detail);
     }
+
+    @Operation(summary = "글 조회 API (전체 / 구조 동물 / 신고 동물)", description = "글 조회를 위한 API - 전체 조회/구조 동물 조회/신고 동물 조회 시 쿼리 파라미터로 케이스를 구분")
+    @CustomExceptionDescription(RETRIEVE_REPORTS)
+    @GetMapping
+    public BaseResponse<CardResponseDTO> retrieveReportsWithFilters(
+            @RequestParam ReportViewType type,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) String species,
+            @RequestParam(required = false) String breeds,
+            @RequestParam(required = false) String address,
+            @RequestParam Long lastReportId
+    ) {
+        CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(type, startDate, endDate, species, breeds, address, lastReportId, 1L);
+        return BaseResponse.ok(result);
+    }
+
 }
