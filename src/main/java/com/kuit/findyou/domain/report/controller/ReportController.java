@@ -28,7 +28,7 @@ public class ReportController {
     private final ReportServiceFacade reportServiceFacade;
 
     @Operation(summary = "보호글 상세 조회 API", description = "보호글의 정보를 상세 조회하기 위한 API")
-    @GetMapping("/protecting/{reportId}")
+    @GetMapping("/protecting-reports/{reportId}")
     @CustomExceptionDescription(PROTECTING_REPORT_DETAIL)
     public BaseResponse<ProtectingReportDetailResponseDTO> getProtectingReportDetail(
             @PathVariable("reportId") Long reportId) {
@@ -38,7 +38,7 @@ public class ReportController {
     }
 
     @Operation(summary = "실종 신고글 상세 조회 API", description = "실종 신고글의 정보를 상세 조회하기 위한 API")
-    @GetMapping("/missing/{reportId}")
+    @GetMapping("/missing-reports/{reportId}")
     @CustomExceptionDescription(MISSING_REPORT_DETAIL)
     public BaseResponse<MissingReportDetailResponseDTO> getMissingReportDetail(
             @PathVariable("reportId") Long reportId) {
@@ -48,7 +48,7 @@ public class ReportController {
     }
 
     @Operation(summary = "목격 신고글 상세 조회 API", description = "목격 신고글의 정보를 상세 조회하기 위한 API")
-    @GetMapping("/witness/{reportId}")
+    @GetMapping("/witness-reports/{reportId}")
     @CustomExceptionDescription(WITNESS_REPORT_DETAIL)
     public BaseResponse<WitnessReportDetailResponseDTO> getWitnessReportDetail(
             @PathVariable("reportId") Long reportId) {
