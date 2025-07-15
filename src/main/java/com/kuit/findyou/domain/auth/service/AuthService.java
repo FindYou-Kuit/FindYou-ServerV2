@@ -20,17 +20,11 @@ public class AuthService {
     public KakaoLoginResponse kakaoLogin(KakaoLoginRequest request) {
         log.info("[kakaoLogin] kakaoId = {}", request.kakaoId());
 
-        // 유저를 찾는다
-        Optional<User> optUser = userRepository.findByKakaoId(request.kakaoId());
-
-        // 없으면 회원가입 유도
-        if(optUser.isEmpty()){
-            return KakaoLoginResponse.notFound();
-        }
-
-        // 있으면 회원정보와 엑세스 토큰 발급
-        User loginUser = optUser.get();
-        String token = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
-        return KakaoLoginResponse.fromUserAndAccessToken(loginUser, token);
+        return userRepository.findByKakaoId(request.kakaoId())
+                .map(loginUser -> {
+                    String token = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
+                    return KakaoLoginResponse.fromUserAndAccessToken(loginUser, token);
+                })
+                .orElseGet(() -> KakaoLoginResponse.notFound());
     }
 }
