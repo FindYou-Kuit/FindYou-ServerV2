@@ -2,12 +2,14 @@
 
 package com.kuit.findyou.domain.report.controller;
 
+import com.kuit.findyou.global.common.util.TestInitializer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,7 +20,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/data/sql/report-controller-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS, config = @SqlConfig(encoding = "UTF-8"))
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 class ReportControllerTest {
@@ -26,9 +27,13 @@ class ReportControllerTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    TestInitializer testInitializer;
+
     @BeforeAll
     void setUp() {
         RestAssured.port = port;
+        testInitializer.initializeReportControllerTestData();
     }
 
     @Test
