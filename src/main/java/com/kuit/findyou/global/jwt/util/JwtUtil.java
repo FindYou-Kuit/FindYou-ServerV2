@@ -22,8 +22,6 @@ public class JwtUtil {
     @Value("${findyou.jwt.access.expire-ms}")
     private long accessTokenExpireMs;
 
-    private static final String ACCESS_TOKEN = "accessToken";
-
     public JwtUtil(@Value("${findyou.jwt.secret-key}") String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
@@ -43,9 +41,9 @@ public class JwtUtil {
 
     public String createAccessJwt(Long userId, Role role) {
         return Jwts.builder()
-                .claim("userId", userId)
-                .claim("role", role.name())
-                .claim("tokenType", ACCESS_TOKEN)
+                .claim(JwtClaimKeys.USER_ID.getKey(), userId)
+                .claim(JwtClaimKeys.ROLE.getKey(), role.name())
+                .claim(JwtClaimKeys.TOKEN_TYPE.getKey(), JwtClaimValues.ACCESS_TOKEN)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpireMs))
                 .signWith(secretKey)
