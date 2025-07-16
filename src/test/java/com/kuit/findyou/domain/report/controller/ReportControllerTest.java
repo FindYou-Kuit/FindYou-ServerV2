@@ -1,5 +1,3 @@
-// src/test/java/com/kuit/findyou/domain/report/controller/ReportControllerTest.java
-
 package com.kuit.findyou.domain.report.controller;
 
 import com.kuit.findyou.global.common.util.TestInitializer;
