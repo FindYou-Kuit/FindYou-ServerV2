@@ -4,6 +4,7 @@ import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,20 +20,20 @@ public class VolunteerWork extends BaseEntity {
     private Long id;
 
     @Column(name = "recruitment_start_at")
-    private LocalDateTime recruitmentStartAt;
+    private LocalDate recruitmentStartAt;
 
     @Column(name = "recruitment_end_at")
-    private LocalDateTime recruitmentEndAt;
+    private LocalDate recruitmentEndAt;
 
     @Column(name = "place", length = 255)
     private String place;
 
     @Column(name = "volunteer_start_at")
-    private LocalDateTime volunteerStartAt;
+    private LocalDate volunteerStartAt;
 
     @Column(name = "volunteer_end_at")
-    private LocalDateTime volunteerEndAt;
+    private LocalDate volunteerEndAt;
 
-    @Column(name = "hours", length = 50)
-    private String hours;
+    @Column(name = "volunteerTime", length = 50)
+    private String volunteerTime;
 }
