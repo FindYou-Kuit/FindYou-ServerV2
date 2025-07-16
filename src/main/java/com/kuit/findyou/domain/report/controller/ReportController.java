@@ -57,3 +57,4 @@ public class ReportController {
         return BaseResponse.ok(detail);
     }
 }
+

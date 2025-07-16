@@ -1,8 +1,12 @@
 package com.kuit.findyou.domain.user.model;
 
+import com.kuit.findyou.domain.fcmToken.model.FcmToken;
+import com.kuit.findyou.domain.notification.model.NotificationHistory;
+import com.kuit.findyou.domain.notification.model.ReceiveNotification;
 import com.kuit.findyou.domain.report.model.InterestReport;
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ViewedReport;
+import com.kuit.findyou.domain.subscribe.model.Subscribe;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,6 +45,12 @@ public class User extends BaseEntity {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(columnDefinition = "CHAR(1)", nullable = false, length = 1)
+    private ReceiveNotification  receiveNotification = ReceiveNotification.N;
+
+
     // 신고글에 대해 orphanRemoval = true 만 설정
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     @Builder.Default
@@ -58,6 +68,21 @@ public class User extends BaseEntity {
     @Builder.Default
     private List<InterestReport> interestReports = new ArrayList<>();
 
+    // 알림 내역 과의 양방향 연관 관계 설정
+    // 알림 내역에 대해 orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @Builder.Default
+    private List<NotificationHistory> notificationHistories = new ArrayList<>();
+
+    // 구독 과의 양방향 연관 관계 설정
+    // 구독에 대해 orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @Builder.Default
+    private List<Subscribe> subscribes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private FcmToken fcmToken;
+
     public void addReport(Report report) {
         reports.add(report);
     }
@@ -69,5 +94,7 @@ public class User extends BaseEntity {
     public void addInterestReport(InterestReport interestReport) {
         interestReports.add(interestReport);
     }
-
+    public void addNotificationHistory(NotificationHistory notificationHistory) { notificationHistories.add(notificationHistory); }
+    public void addSubscribe(Subscribe subscribe) { subscribes.add(subscribe); }
+    public void setFcmToken(FcmToken fcmToken) {this.fcmToken = fcmToken;}
 }

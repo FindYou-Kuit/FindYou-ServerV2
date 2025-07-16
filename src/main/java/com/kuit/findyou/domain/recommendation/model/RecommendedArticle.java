@@ -20,12 +20,12 @@ public class RecommendedArticle extends BaseEntity{
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "title", length = 255, nullable = false)
+    @Column(name = "title", length = 2083, nullable = false)
     private String title;
 
-    @Column(name = "source", length = 255, nullable = false)
+    @Column(name = "source", length = 2083, nullable = false)
     private String source;
 
-    @Column(name = "link", length = 255, nullable = false)
+    @Column(name = "link", length = 2083, nullable = false)
     private String link;
 }
