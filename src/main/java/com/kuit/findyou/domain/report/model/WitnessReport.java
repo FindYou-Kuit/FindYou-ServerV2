@@ -24,8 +24,8 @@ public class WitnessReport extends Report {
     @Column(name = "significant", nullable = false)
     private String significant;
 
-    @Column(name = "reporter_info", length = 50, nullable = false)
-    private String reporterInfo;
+    @Column(name = "reporter_name", length = 50)
+    private String reporterName;
 
     @Column(name = "landmark", length = 100, nullable = false)
     private String landmark;
@@ -39,13 +39,13 @@ public class WitnessReport extends Report {
     @Builder
     public WitnessReport(String breed, String species, ReportTag tag, LocalDate date,
                           String address, User user, String furColor, String significant,
-                          String reporterInfo, String landmark, BigDecimal latitude,
+                          String reporterName, String landmark, BigDecimal latitude,
                           BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>());
         this.furColor = furColor;
         this.significant = significant;
-        this.reporterInfo = reporterInfo;
+        this.reporterName = reporterName;
         this.landmark = landmark;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -53,7 +53,7 @@ public class WitnessReport extends Report {
 
     public static WitnessReport createWitnessReport(String breed, String species, ReportTag tag, LocalDate date,
                                                     String address, User user, String furColor, String significant,
-                                                    String reporterInfo, String landmark,
+                                                    String reporterName, String landmark,
                                                     BigDecimal latitude, BigDecimal longitude) {
         WitnessReport report = WitnessReport.builder()
                 .breed(breed)
@@ -64,7 +64,7 @@ public class WitnessReport extends Report {
                 .user(user)
                 .furColor(furColor)
                 .significant(significant)
-                .reporterInfo(reporterInfo)
+                .reporterName(reporterName)
                 .landmark(landmark)
                 .latitude(latitude)
                 .longitude(longitude)

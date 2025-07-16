@@ -25,17 +25,20 @@ public class MissingReport extends Report {
     @Column(name = "age", length = 10, nullable = false)
     private String age;
 
-    @Column(name = "weight")
+    @Column(name = "weight", length = 20, nullable = false)
     private String weight;
 
-    @Column(name = "fur_color", nullable = false)
+    @Column(name = "fur_color", length = 50, nullable = false)
     private String furColor;
 
     @Column(name = "significant", nullable = false)
     private String significant;
 
-    @Column(name = "reporter_info", nullable = false)
-    private String reporterInfo;
+    @Column(name = "reporter_name", length = 20)
+    private String reporterName;
+
+    @Column(name = "reporter_tel", length = 20)
+    private String reporterTel;
 
     @Column(name = "landmark", nullable = false)
     private String landmark;
@@ -50,7 +53,7 @@ public class MissingReport extends Report {
     public MissingReport(String breed, String species, ReportTag tag, LocalDate date,
                           String address, User user, Sex sex, String rfid, String age,
                           String weight, String furColor, String significant,
-                          String reporterInfo, String landmark, BigDecimal latitude,
+                          String reporterName, String reporterTel, String landmark, BigDecimal latitude,
                           BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>());
@@ -60,7 +63,8 @@ public class MissingReport extends Report {
         this.weight = weight;
         this.furColor = furColor;
         this.significant = significant;
-        this.reporterInfo = reporterInfo;
+        this.reporterName = reporterName;
+        this.reporterTel = reporterTel;
         this.landmark = landmark;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -69,7 +73,7 @@ public class MissingReport extends Report {
     public static MissingReport createMissingReport(String breed, String species, ReportTag tag, LocalDate date,
                                                     String address, User user, Sex sex, String rfid, String age,
                                                     String weight, String furColor, String significant,
-                                                    String reporterInfo, String landmark,
+                                                    String reporterName, String reporterTel, String landmark,
                                                     BigDecimal latitude, BigDecimal longitude) {
         MissingReport report = MissingReport.builder()
                 .breed(breed)
@@ -84,7 +88,8 @@ public class MissingReport extends Report {
                 .weight(weight)
                 .furColor(furColor)
                 .significant(significant)
-                .reporterInfo(reporterInfo)
+                .reporterName(reporterName)
+                .reporterTel(reporterTel)
                 .landmark(landmark)
                 .latitude(latitude)
                 .longitude(longitude)
