@@ -1,11 +1,16 @@
 package com.kuit.findyou.domain.report.service.facade;
 
+import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.service.detail.ReportDetailService;
+import com.kuit.findyou.domain.report.service.retrieve.ReportRetrieveService;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -14,6 +19,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class ReportServiceFacade {
 
     private final ReportDetailService reportDetailService;
+    private final ReportRetrieveService reportRetrieveService;
     private final UserRepository userRepository;
 
     public <DTO_TYPE> DTO_TYPE getReportDetail(ReportTag tag, Long reportId, Long userId) {
@@ -22,6 +28,23 @@ public class ReportServiceFacade {
         }
 
         return reportDetailService.getReportDetail(tag, reportId, userId);
+    }
+
+    public CardResponseDTO retrieveReportsWithFilters(
+            ReportViewType reportViewType,
+            LocalDate startDate,
+            LocalDate endDate,
+            String species,
+            String breeds,
+            String location,
+            Long lastReportId,
+            Long userId
+    ) {
+        if (!userRepository.existsById(userId)) {
+            throw new CustomException(USER_NOT_FOUND);
+        }
+
+        return reportRetrieveService.retrieveReportsWithFilters(reportViewType, startDate, endDate, species, breeds, location, lastReportId, userId);
     }
 }
 

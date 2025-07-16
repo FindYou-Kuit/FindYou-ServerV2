@@ -28,6 +28,10 @@ public enum SwaggerResponseDescription {
     WITNESS_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
             USER_NOT_FOUND,
             WITNESS_REPORT_NOT_FOUND
+    ))),
+
+    RETRIEVE_REPORTS(new LinkedHashSet<>(Set.of(
+            USER_NOT_FOUND
     )));
 
     private final Set<BaseExceptionResponseStatus> exceptionResponseStatusSet;

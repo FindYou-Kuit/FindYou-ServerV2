@@ -8,11 +8,13 @@ import com.kuit.findyou.domain.report.strategy.ReportDetailStrategy;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-@Service
 @RequiredArgsConstructor
+@Service
+@Transactional(readOnly = true)
 public class ReportDetailServiceImpl implements ReportDetailService {
 
     private final InterestReportRepository interestReportRepository;
