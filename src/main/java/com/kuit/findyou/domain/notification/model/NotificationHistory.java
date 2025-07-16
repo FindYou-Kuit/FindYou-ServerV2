@@ -14,8 +14,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE notification_histories SET status = 'N' WHERE notification_history_id  = ?")
-@SQLRestriction("status = 'Y'")
 public class NotificationHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

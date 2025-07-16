@@ -4,8 +4,6 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -13,8 +11,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE fcm_tokens SET status = 'N' WHERE token_id = ?")
-@SQLRestriction("status = 'Y'")
 public class FcmToken extends BaseEntity {
 
     @Id

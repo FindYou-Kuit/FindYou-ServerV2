@@ -5,8 +5,6 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "subscribes")
@@ -14,8 +12,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE subscribes SET status = 'N' WHERE subscribe_id = ?")
-@SQLRestriction(value = "status = 'Y'")
 public class Subscribe extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

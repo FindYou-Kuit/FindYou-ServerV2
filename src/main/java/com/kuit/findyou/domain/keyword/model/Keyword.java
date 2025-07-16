@@ -4,8 +4,6 @@ import com.kuit.findyou.domain.subscribe.model.Subscribe;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +14,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE keywords SET status = 'N' WHERE keywoed_id = ?")
-@SQLRestriction("status = 'Y'")
 public class Keyword extends BaseEntity {
 
     @Id
