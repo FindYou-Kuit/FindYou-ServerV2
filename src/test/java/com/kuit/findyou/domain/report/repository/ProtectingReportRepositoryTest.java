@@ -1,5 +1,7 @@
 package com.kuit.findyou.domain.report.repository;
 
+import com.kuit.findyou.domain.image.model.ReportImage;
+import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.model.Neutering;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
@@ -13,15 +15,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @Transactional
+@ActiveProfiles("test")
 class ProtectingReportRepositoryTest {
 
     @Autowired
@@ -29,6 +34,9 @@ class ProtectingReportRepositoryTest {
 
     @Autowired
     private ProtectingReportRepository protectingReportRepository;
+
+    @Autowired
+    private ReportImageRepository reportImageRepository;
 
     @Autowired
     private EntityManager em;
@@ -48,7 +56,7 @@ class ProtectingReportRepositoryTest {
     }
 
     @Test
-    @DisplayName("ProtectingReport 저장 테스트")
+    @DisplayName("ProtectingReport 생성 및 저장 테스트")
     void save() {
         // Given
         ProtectingReport protectingReport = ProtectingReport.createProtectingReport(
@@ -105,5 +113,47 @@ class ProtectingReportRepositoryTest {
         assertThat(foundReport.getLatitude()).isEqualTo(new BigDecimal("37.483569"));
         assertThat(foundReport.getLongitude()).isEqualTo(new BigDecimal("127.032675"));
     }
+
+    @Test
+    @DisplayName("findWithImagesById: 보호글과 이미지들을 함께 조회한다")
+    void findWithImagesById() {
+        // 1. 보호 게시글 생성 및 저장
+        ProtectingReport report = ProtectingReport.createProtectingReport(
+                "믹스견", "개", ReportTag.PROTECTING, LocalDate.of(2024, 1, 25),
+                "서울시 중랑구 용마산로 560", testUser, Sex.F, "2살", "5kg", "갈색",
+                Neutering.Y, "절뚝거림", "홍대입구역", "NOTICE2024001",
+                LocalDate.of(2024, 1, 25), LocalDate.of(2024, 2, 25),
+                "서울보호소", "02-2290-8840", "서울시청",
+                new BigDecimal("37.123456"), new BigDecimal("127.123456")
+        );
+
+        protectingReportRepository.save(report);
+
+        em.flush(); // ID 확정
+
+        // 2. 이미지 생성 및 연관관계 설정
+        ReportImage image1 = ReportImage.createReportImage("https://image1.jpg", "uuid-1");
+        ReportImage image2 = ReportImage.createReportImage("https://image2.jpg", "uuid-2");
+
+        image1.setReport(report);
+        image2.setReport(report);
+
+        // 3. 이미지 저장
+        reportImageRepository.save(image1);
+        reportImageRepository.save(image2);
+
+        em.flush();
+        em.clear();
+
+        // 4. when: 페치조인으로 게시글 + 이미지 조회
+        ProtectingReport foundReport = protectingReportRepository.findWithImagesById(report.getId())
+                .orElseThrow(() -> new AssertionError("게시글이 조회되지 않음"));
+
+        // 5. then: 이미지가 잘 딸려왔는지 확인
+        assertThat(foundReport.getReportImages()).hasSize(2);
+        assertThat(foundReport.getReportImagesUrlList())
+                .containsExactlyInAnyOrder("https://image1.jpg", "https://image2.jpg");
+    }
+
 
 }
