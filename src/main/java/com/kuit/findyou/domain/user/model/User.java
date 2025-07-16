@@ -80,7 +80,7 @@ public class User extends BaseEntity {
     @Builder.Default
     private List<Subscribe> subscribes = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
     private FcmToken fcmToken;
 
     public void addReport(Report report) {
