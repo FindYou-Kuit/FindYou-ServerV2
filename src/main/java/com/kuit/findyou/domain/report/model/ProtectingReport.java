@@ -72,7 +72,7 @@ public class ProtectingReport extends Report {
                              String careTel, String authority, BigDecimal latitude,
                             BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
         this.age = age;
         this.weight = weight;

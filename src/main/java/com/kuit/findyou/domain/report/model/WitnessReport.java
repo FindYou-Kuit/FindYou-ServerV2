@@ -42,7 +42,7 @@ public class WitnessReport extends Report {
                           String reporterName, String landmark, BigDecimal latitude,
                           BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.furColor = furColor;
         this.significant = significant;
         this.reporterName = reporterName;

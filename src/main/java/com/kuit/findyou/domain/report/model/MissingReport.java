@@ -56,7 +56,7 @@ public class MissingReport extends Report {
                           String reporterName, String reporterTel, String landmark, BigDecimal latitude,
                           BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
         this.rfid = rfid;
         this.age = age;

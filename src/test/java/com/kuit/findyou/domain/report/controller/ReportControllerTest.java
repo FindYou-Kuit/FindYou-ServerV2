@@ -35,13 +35,13 @@ class ReportControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v2/reports/protecting/{id}: ProtectingReport 상세 조회 성공")
+    @DisplayName("GET /api/v2/reports/protecting-reports/{id}: ProtectingReport 상세 조회 성공")
     void getProtectingReportDetail() {
         given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get("/api/v2/reports/protecting/1")
+                .get("/api/v2/reports/protecting-reports/1")
                 .then()
                 .statusCode(200)
                 .body("data.imageUrls[0]", equalTo("https://img.com/1.png"))
@@ -67,13 +67,13 @@ class ReportControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v2/reports/missing/{id}: MissingReport 상세 조회 성공")
+    @DisplayName("GET /api/v2/reports/missing-reports/{id}: MissingReport 상세 조회 성공")
     void getMissingReportDetail() {
         given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get("/api/v2/reports/missing/2")
+                .get("/api/v2/reports/missing-reports/2")
                 .then()
                 .statusCode(200)
                 .body("data.imageUrls[0]", equalTo("https://img.com/missing.png"))
@@ -94,13 +94,13 @@ class ReportControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v2/reports/witness/{id}: WitnessReport 상세 조회 성공")
+    @DisplayName("GET /api/v2/reports/witness-reports/{id}: WitnessReport 상세 조회 성공")
     void getWitnessReportDetail() {
         given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get("/api/v2/reports/witness/3")
+                .get("/api/v2/reports/witness-reports/3")
                 .then()
                 .statusCode(200)
                 .body("data.imageUrls[0]", equalTo("https://img.com/witness.png"))
