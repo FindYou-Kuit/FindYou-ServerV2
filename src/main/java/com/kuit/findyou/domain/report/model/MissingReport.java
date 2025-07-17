@@ -56,7 +56,7 @@ public class MissingReport extends Report {
                           String reporterName, String reporterTel, String landmark, BigDecimal latitude,
                           BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
         this.rfid = rfid;
         this.age = age;
@@ -94,7 +94,11 @@ public class MissingReport extends Report {
                 .latitude(latitude)
                 .longitude(longitude)
                 .build();
-        user.addReport(report); // 양방향 연관관계 설정
+
+        if (user != null) {
+            user.addReport(report); // 양방향 연관관계 설정
+        }
+
         return report;
     }
 

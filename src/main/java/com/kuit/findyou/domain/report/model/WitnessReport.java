@@ -42,7 +42,7 @@ public class WitnessReport extends Report {
                           String reporterName, String landmark, BigDecimal latitude,
                           BigDecimal longitude) {
         super(null, breed, species, tag, date, address, user, new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.furColor = furColor;
         this.significant = significant;
         this.reporterName = reporterName;
@@ -69,7 +69,11 @@ public class WitnessReport extends Report {
                 .latitude(latitude)
                 .longitude(longitude)
                 .build();
-        user.addReport(report); // 양방향 연관관계 설정
+
+        if (user != null) {
+            user.addReport(report); // 양방향 연관관계 설정
+        }
+
         return report;
     }
 

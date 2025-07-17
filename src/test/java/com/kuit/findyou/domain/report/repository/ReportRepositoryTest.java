@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.report.repository;
 
+import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,10 +46,6 @@ class ReportRepositoryTest {
     private EntityManager em;
 
     private User testUser;
-    private MissingReport missingReport;
-    private WitnessReport witnessReport;
-    private ProtectingReport protectingReport;
-
 
     @BeforeEach
     void init() {
@@ -138,9 +137,129 @@ class ReportRepositoryTest {
         assertThat(userRepository.findById(testUser.getId())).isPresent();
     }
 
+    @Test
+    @DisplayName("필터 조건에 따른 ReportProjection 조회 테스트")
+    void findReportsWithFiltersTest() {
+        // given
+        List<ReportTag> tags = List.of(ReportTag.MISSING, ReportTag.WITNESS, ReportTag.PROTECTING);
+        LocalDate startDate = LocalDate.now().minusDays(10);
+        LocalDate endDate = LocalDate.now().plusDays(1);
+        String species = "개";
+        List<String> breedList = List.of("골든 리트리버", "믹스견");
+        String address = "서울";
+        Long lastReportId = Long.MAX_VALUE; // 가장 큰 값부터 조회 시작
+
+        // when
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                tags, startDate, endDate, species, breedList, address, lastReportId,
+                PageRequest.of(0, 20)
+        );
+
+        // then
+        assertThat(result.getContent()).hasSize(2); // 골든 리트리버 + 믹스견
+        List<String> titles = result.getContent().stream()
+                .map(ReportProjection::getTitle)
+                .toList();
+
+        assertThat(titles).containsExactlyInAnyOrder("골든 리트리버", "믹스견");
+        assertThat(result.hasNext()).isFalse();
+    }
+
+    @Test
+    @DisplayName("태그 필터 없이 전체 조회")
+    void findAllReportsWithoutTagFilter() {
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                null, null, null, null, null, null, Long.MAX_VALUE, PageRequest.of(0, 20)
+        );
+
+        assertThat(result.getContent()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("신고 동물 조회 - MISSING, WITNESS 만 조회")
+    void retrieveReportingAnimals() {
+        // given
+        List<ReportTag> tags = List.of(ReportTag.MISSING, ReportTag.WITNESS);
+
+        // when
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                tags, null, null, null, null, null, Long.MAX_VALUE, PageRequest.of(0, 20)
+        );
+
+        // then
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent()).allSatisfy(projection ->
+                assertThat(projection.getTag()).isIn(ReportTag.MISSING.toString(), ReportTag.WITNESS.toString())
+        );
+    }
+
+    @Test
+    @DisplayName("구조 동물 조회 - PROTECTING 만 조회")
+    void retrieveProtectingAnimals() {
+        // given
+        List<ReportTag> tags = List.of(ReportTag.PROTECTING);
+
+        // when
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                tags, null, null, null, null, null, Long.MAX_VALUE, PageRequest.of(0, 20)
+        );
+
+        // then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent()).allSatisfy(projection ->
+                assertThat(projection.getTag()).isEqualTo(ReportTag.PROTECTING.toString())
+        );
+    }
+
+    @Test
+    @DisplayName("startDate 이후만 조회")
+    void filterByStartDate() {
+        LocalDate start = LocalDate.now().minusDays(2);
+
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                null, start, null, null, null, null, Long.MAX_VALUE, PageRequest.of(0, 10)
+        );
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("페르시안");
+    }
+
+    @Test
+    @DisplayName("species = '고양이' 필터")
+    void filterBySpecies() {
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                null, null, null, "고양이", null, null, Long.MAX_VALUE, PageRequest.of(0, 10)
+        );
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("페르시안");
+    }
+
+    @Test
+    @DisplayName("breedList = [믹스견] 필터")
+    void filterByBreed() {
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                null, null, null, null, List.of("믹스견"), null, Long.MAX_VALUE, PageRequest.of(0, 10)
+        );
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("믹스견");
+    }
+
+    @Test
+    @DisplayName("address = '서초구' 필터")
+    void filterByAddress() {
+        Slice<ReportProjection> result = reportRepository.findReportsWithFilters(
+                null, null, null, null, null, "서초구", Long.MAX_VALUE, PageRequest.of(0, 10)
+        );
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getAddress()).contains("서초구");
+    }
+
 
     private void createTestReports() {
-        missingReport = MissingReport.createMissingReport(
+        MissingReport missingReport = MissingReport.createMissingReport(
                 "골든 리트리버",
                 "개",
                 ReportTag.MISSING,
@@ -161,7 +280,7 @@ class ReportRepositoryTest {
         );
 
 
-        witnessReport = WitnessReport.createWitnessReport(
+        WitnessReport witnessReport = WitnessReport.createWitnessReport(
                 "믹스견",
                 "개",
                 ReportTag.WITNESS,
@@ -177,7 +296,7 @@ class ReportRepositoryTest {
         );
 
 
-        protectingReport = ProtectingReport.createProtectingReport(
+        ProtectingReport protectingReport = ProtectingReport.createProtectingReport(
                 "페르시안",
                 "고양이",
                 ReportTag.PROTECTING,

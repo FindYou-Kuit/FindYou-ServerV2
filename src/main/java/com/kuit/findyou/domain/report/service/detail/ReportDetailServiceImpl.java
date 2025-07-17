@@ -26,7 +26,7 @@ public class ReportDetailServiceImpl implements ReportDetailService {
                 (ReportDetailStrategy<REPORT_TYPE, DTO_TYPE>) strategies.get(tag);
 
         REPORT_TYPE report = strategy.getReport(reportId);
-        boolean interest = interestReportRepository.existsByReport_IdAndUser_Id(report.getId(), userId);
+        boolean interest = interestReportRepository.existsByReportIdAndUserId(report.getId(), userId);
 
         return strategy.getDetail(report, interest);
     }

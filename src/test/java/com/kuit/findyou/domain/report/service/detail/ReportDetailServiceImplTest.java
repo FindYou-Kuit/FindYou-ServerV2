@@ -62,7 +62,7 @@ class ReportDetailServiceImplTest {
 
         when(dummyReport.getId()).thenReturn(reportId);
         when(protectingStrategy.getReport(reportId)).thenReturn(dummyReport);
-        when(interestReportRepository.existsByReport_IdAndUser_Id(reportId, userId)).thenReturn(true);
+        when(interestReportRepository.existsByReportIdAndUserId(reportId, userId)).thenReturn(true);
         when(protectingStrategy.getDetail(dummyReport, true)).thenReturn(dummyDto);
 
         // when
@@ -73,7 +73,7 @@ class ReportDetailServiceImplTest {
         assertThat(result).isEqualTo(dummyDto);
 
         verify(protectingStrategy).getReport(reportId);
-        verify(interestReportRepository).existsByReport_IdAndUser_Id(reportId, userId);
+        verify(interestReportRepository).existsByReportIdAndUserId(reportId, userId);
         verify(protectingStrategy).getDetail(dummyReport, true);
     }
 
@@ -89,7 +89,7 @@ class ReportDetailServiceImplTest {
 
         when(dummyReport.getId()).thenReturn(reportId);
         when(missingStrategy.getReport(reportId)).thenReturn(dummyReport);
-        when(interestReportRepository.existsByReport_IdAndUser_Id(reportId, userId)).thenReturn(false);
+        when(interestReportRepository.existsByReportIdAndUserId(reportId, userId)).thenReturn(false);
         when(missingStrategy.getDetail(dummyReport, false)).thenReturn(dummyDto);
 
         // when
@@ -100,7 +100,7 @@ class ReportDetailServiceImplTest {
         assertThat(result).isEqualTo(dummyDto);
 
         verify(missingStrategy).getReport(reportId);
-        verify(interestReportRepository).existsByReport_IdAndUser_Id(reportId, userId);
+        verify(interestReportRepository).existsByReportIdAndUserId(reportId, userId);
         verify(missingStrategy).getDetail(dummyReport, false);
     }
 
@@ -116,7 +116,7 @@ class ReportDetailServiceImplTest {
 
         when(dummyReport.getId()).thenReturn(reportId);
         when(witnessStrategy.getReport(reportId)).thenReturn(dummyReport);
-        when(interestReportRepository.existsByReport_IdAndUser_Id(reportId, userId)).thenReturn(true);
+        when(interestReportRepository.existsByReportIdAndUserId(reportId, userId)).thenReturn(true);
         when(witnessStrategy.getDetail(dummyReport, true)).thenReturn(dummyDto);
 
         // when
@@ -127,7 +127,7 @@ class ReportDetailServiceImplTest {
         assertThat(result).isEqualTo(dummyDto);
 
         verify(witnessStrategy).getReport(reportId);
-        verify(interestReportRepository).existsByReport_IdAndUser_Id(reportId, userId);
+        verify(interestReportRepository).existsByReportIdAndUserId(reportId, userId);
         verify(witnessStrategy).getDetail(dummyReport, true);
     }
 
