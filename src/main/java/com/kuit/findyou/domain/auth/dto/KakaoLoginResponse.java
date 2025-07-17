@@ -12,7 +12,7 @@ public record KakaoLoginResponse(
 ) {
     public static KakaoLoginResponse fromUserAndAccessToken(User user, String accessToken) {
         UserInfoDto userInfo = new UserInfoDto(user.getId(), user.getName(), accessToken);
-        return new KakaoLoginResponse(userInfo, true);
+        return new KakaoLoginResponse(userInfo, false);
     }
 
     public static KakaoLoginResponse notFound() {
