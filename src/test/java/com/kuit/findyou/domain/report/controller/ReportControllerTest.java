@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.report.controller;
 
+import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.global.common.util.TestInitializer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
+
+import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -116,4 +119,43 @@ class ReportControllerTest {
                 .body("data.witnessDate", equalTo("2024-08-10"))
                 .body("data.interest", equalTo(true));
     }
+
+    @DisplayName("GET /api/v2/reports: 글 조회 성공")
+    @Test
+    void retrieveReportsWithFilters() {
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("type", ReportViewType.ALL)
+                .param("lastReportId", Long.MAX_VALUE)
+        .when()
+                .get("/api/v2/reports")
+        .then()
+                .statusCode(200)
+                .body("data.cards[0].reportId", equalTo(3))
+                .body("data.cards[0].thumbnailImageUrl", equalTo("https://img.com/witness.png"))
+                .body("data.cards[0].title", equalTo("진돗개"))
+                .body("data.cards[0].tag", equalTo("목격신고"))
+                .body("data.cards[0].date", equalTo("2024-08-10"))
+                .body("data.cards[0].location", equalTo("부산시 해운대구"))
+                .body("data.cards[0].interest", equalTo(true))
+                .body("data.cards[1].reportId", equalTo(2))
+                .body("data.cards[1].thumbnailImageUrl", equalTo("https://img.com/missing.png"))
+                .body("data.cards[1].title", equalTo("포메라니안"))
+                .body("data.cards[1].tag", equalTo("실종신고"))
+                .body("data.cards[1].date", equalTo("2024-10-05"))
+                .body("data.cards[1].location", equalTo("서울시 강남구"))
+                .body("data.cards[1].interest", equalTo(true))
+                .body("data.cards[2].reportId", equalTo(1))
+                .body("data.cards[2].thumbnailImageUrl", equalTo("https://img.com/1.png"))
+                .body("data.cards[2].title", equalTo("믹스견"))
+                .body("data.cards[2].tag", equalTo("보호중"))
+                .body("data.cards[2].date", equalTo(LocalDate.now().toString()))
+                .body("data.cards[2].location", equalTo("서울"))
+                .body("data.cards[2].interest", equalTo(true))
+                .body("data.lastReportId", equalTo(1))
+                .body("data.isLast", equalTo(true));
+    }
+
+
 }
