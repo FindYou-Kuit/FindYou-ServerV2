@@ -82,8 +82,8 @@ class InterestReportRepositoryTest {
         Long userId = testUser.getId();
 
         // when
-        boolean exists = interestReportRepository.existsByReport_IdAndUser_Id(reportId, userId);
-        boolean notExists = interestReportRepository.existsByReport_IdAndUser_Id(999L, userId);
+        boolean exists = interestReportRepository.existsByReportIdAndUserId(reportId, userId);
+        boolean notExists = interestReportRepository.existsByReportIdAndUserId(999L, userId);
 
         // then
         assertThat(exists).isTrue();

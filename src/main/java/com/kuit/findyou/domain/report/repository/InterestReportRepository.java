@@ -10,7 +10,16 @@ import java.util.List;
 
 public interface InterestReportRepository extends JpaRepository<InterestReport, Long> {
 
-    boolean existsByReport_IdAndUser_Id(Long reportId, Long userId);
+
+    @Query(value = "SELECT EXISTS (" +
+            "SELECT 1 FROM interest_reports " +
+            "WHERE report_id = :reportId " +
+            "AND user_id = :userId " +
+            "AND status = 'Y'" +
+            ")", nativeQuery = true)
+    boolean existsByReportIdAndUserId(@Param("reportId") Long reportId,
+                                      @Param("userId") Long userId);
+
 
     @Query("""
                 SELECT ir.report.id
