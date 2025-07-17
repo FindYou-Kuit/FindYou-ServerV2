@@ -69,7 +69,11 @@ public class WitnessReport extends Report {
                 .latitude(latitude)
                 .longitude(longitude)
                 .build();
-        user.addReport(report); // 양방향 연관관계 설정
+
+        if (user != null) {
+            user.addReport(report); // 양방향 연관관계 설정
+        }
+
         return report;
     }
 

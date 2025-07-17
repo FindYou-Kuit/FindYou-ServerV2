@@ -124,8 +124,9 @@ public class ProtectingReport extends Report {
                 .longitude(longitude)
                 .build();
 
-        // 양방향 연관관계 설정
-        user.addReport(report);
+        if (user != null) {
+            user.addReport(report); // 양방향 연관관계 설정
+        }
 
         return report;
     }
