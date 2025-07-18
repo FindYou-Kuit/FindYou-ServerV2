@@ -90,6 +90,12 @@ spring:
   config:
     activate:
       on-profile: common
+
+openapi:
+  protecting-animal:
+    api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2
+    api-key: ${PROTECTING_ANIMAL_API_KEY}
+
 logging:
   level:
     root: info
