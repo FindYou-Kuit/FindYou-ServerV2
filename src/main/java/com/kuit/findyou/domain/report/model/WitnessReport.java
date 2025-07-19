@@ -30,44 +30,34 @@ public class WitnessReport extends Report {
     @Column(name = "landmark", length = 100, nullable = false)
     private String landmark;
 
-    @Column(precision = 9, scale = 6, nullable = false)
-    private BigDecimal latitude;
-
-    @Column(precision = 9, scale = 6, nullable = false)
-    private BigDecimal longitude;
-
     @Builder
     public WitnessReport(String breed, String species, ReportTag tag, LocalDate date,
-                          String address, User user, String furColor, String significant,
-                          String reporterName, String landmark, BigDecimal latitude,
-                          BigDecimal longitude) {
-        super(null, breed, species, tag, date, address, user, new ArrayList<>(),
+                          String address, BigDecimal latitude, BigDecimal longitude, User user, String furColor, String significant,
+                          String reporterName, String landmark) {
+        super(null, breed, species, tag, date, address, latitude, longitude, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.furColor = furColor;
         this.significant = significant;
         this.reporterName = reporterName;
         this.landmark = landmark;
-        this.latitude = latitude;
-        this.longitude = longitude;
     }
 
     public static WitnessReport createWitnessReport(String breed, String species, ReportTag tag, LocalDate date,
                                                     String address, User user, String furColor, String significant,
-                                                    String reporterName, String landmark,
-                                                    BigDecimal latitude, BigDecimal longitude) {
+                                                    String reporterName, String landmark, BigDecimal latitude, BigDecimal longitude) {
         WitnessReport report = WitnessReport.builder()
                 .breed(breed)
                 .species(species)
                 .tag(tag)
                 .date(date)
                 .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
                 .user(user)
                 .furColor(furColor)
                 .significant(significant)
                 .reporterName(reporterName)
                 .landmark(landmark)
-                .latitude(latitude)
-                .longitude(longitude)
                 .build();
 
         if (user != null) {

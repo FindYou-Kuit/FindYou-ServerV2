@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,14 @@ public abstract class Report extends BaseEntity {
     // 보호 : 보호 장소 => 보호소 주소 (care_addr)
     @Column(name = "address", length = 200, nullable = false)
     protected String address;
+
+    @Column(precision = 9, scale = 6)
+    @Setter
+    private BigDecimal latitude;
+
+    @Column(precision = 9, scale = 6)
+    @Setter
+    private BigDecimal longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

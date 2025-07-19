@@ -57,21 +57,14 @@ public class ProtectingReport extends Report {
     @Column(name = "authority", length = 50, nullable = false)
     private String authority;
 
-    @Column(precision = 9, scale = 6, nullable = false)
-    private BigDecimal latitude;
-
-    @Column(precision = 9, scale = 6, nullable = false)
-    private BigDecimal longitude;
-
     @Builder
     public ProtectingReport(String breed, String species, ReportTag tag, LocalDate date,
-                             String address, User user, Sex sex, String age, String weight,
+                             String address, BigDecimal latitude, BigDecimal longitude, User user, Sex sex, String age, String weight,
                              String furColor, Neutering neutering, String significant,
                              String foundLocation, String noticeNumber, LocalDate noticeStartDate,
                              LocalDate noticeEndDate, String careName,
-                             String careTel, String authority, BigDecimal latitude,
-                            BigDecimal longitude) {
-        super(null, breed, species, tag, date, address, user, new ArrayList<>(),
+                             String careTel, String authority) {
+        super(null, breed, species, tag, date, address,latitude, longitude, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
         this.age = age;
@@ -86,8 +79,6 @@ public class ProtectingReport extends Report {
         this.careName = careName;
         this.careTel = careTel;
         this.authority = authority;
-        this.latitude = latitude;
-        this.longitude = longitude;
     }
 
     public static ProtectingReport createProtectingReport(String breed, String species, ReportTag tag,
@@ -97,8 +88,7 @@ public class ProtectingReport extends Report {
                                                           String significant, String foundLocation,
                                                           String noticeNumber, LocalDate noticeStartDate,
                                                           LocalDate noticeEndDate, String careName,
-                                                          String careTel, String authority,
-                                                          BigDecimal latitude, BigDecimal longitude) {
+                                                          String careTel, String authority, BigDecimal latitude, BigDecimal longitude) {
 
         ProtectingReport report = ProtectingReport.builder()
                 .breed(breed)
@@ -106,6 +96,8 @@ public class ProtectingReport extends Report {
                 .tag(tag)
                 .date(date)
                 .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
                 .user(user)
                 .sex(sex)
                 .age(age)
@@ -120,8 +112,6 @@ public class ProtectingReport extends Report {
                 .careName(careName)
                 .careTel(careTel)
                 .authority(authority)
-                .latitude(latitude)
-                .longitude(longitude)
                 .build();
 
         if (user != null) {

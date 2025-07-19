@@ -43,19 +43,12 @@ public class MissingReport extends Report {
     @Column(name = "landmark", nullable = false)
     private String landmark;
 
-    @Column(precision = 9, scale = 6, nullable = false)
-    private BigDecimal latitude;
-
-    @Column(precision = 9, scale = 6, nullable = false)
-    private BigDecimal longitude;
-
     @Builder
     public MissingReport(String breed, String species, ReportTag tag, LocalDate date,
-                          String address, User user, Sex sex, String rfid, String age,
+                          String address, BigDecimal latitude, BigDecimal longitude, User user, Sex sex, String rfid, String age,
                           String weight, String furColor, String significant,
-                          String reporterName, String reporterTel, String landmark, BigDecimal latitude,
-                          BigDecimal longitude) {
-        super(null, breed, species, tag, date, address, user, new ArrayList<>(),
+                          String reporterName, String reporterTel, String landmark) {
+        super(null, breed, species, tag, date, address, latitude, longitude, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
         this.rfid = rfid;
@@ -66,21 +59,20 @@ public class MissingReport extends Report {
         this.reporterName = reporterName;
         this.reporterTel = reporterTel;
         this.landmark = landmark;
-        this.latitude = latitude;
-        this.longitude = longitude;
     }
 
     public static MissingReport createMissingReport(String breed, String species, ReportTag tag, LocalDate date,
                                                     String address, User user, Sex sex, String rfid, String age,
                                                     String weight, String furColor, String significant,
-                                                    String reporterName, String reporterTel, String landmark,
-                                                    BigDecimal latitude, BigDecimal longitude) {
+                                                    String reporterName, String reporterTel, String landmark, BigDecimal latitude, BigDecimal longitude) {
         MissingReport report = MissingReport.builder()
                 .breed(breed)
                 .species(species)
                 .tag(tag)
                 .date(date)
                 .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
                 .user(user)
                 .sex(sex)
                 .rfid(rfid)
@@ -91,8 +83,6 @@ public class MissingReport extends Report {
                 .reporterName(reporterName)
                 .reporterTel(reporterTel)
                 .landmark(landmark)
-                .latitude(latitude)
-                .longitude(longitude)
                 .build();
 
         if (user != null) {
