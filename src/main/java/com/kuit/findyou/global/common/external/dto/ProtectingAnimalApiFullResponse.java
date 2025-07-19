@@ -5,9 +5,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ProtectingAnimalApiResponse(
-        ProtectingAnimalBody body
+public record ProtectingAnimalApiFullResponse(
+        ProtectingAnimalApiResponse response
 ) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record ProtectingAnimalApiResponse(
+            ProtectingAnimalHeader header,
+            ProtectingAnimalBody body
+    ) {}
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record ProtectingAnimalHeader(
+            String reqNo,
+            String resultCode,
+            String resultMsg
+    ) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ProtectingAnimalBody(
@@ -22,3 +34,4 @@ public record ProtectingAnimalApiResponse(
             List<ProtectingAnimalItemDTO> item
     ) {}
 }
+
