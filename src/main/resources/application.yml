@@ -23,12 +23,12 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
-        format_sql: true
-        show_sql: true
-        highlight_sql: true
+#        format_sql: true
+#        show_sql: true
+#        highlight_sql: true
         dialect: org.hibernate.dialect.H2Dialect
 ---
 # 개발용 DB
@@ -95,6 +95,9 @@ openapi:
   protecting-animal:
     api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2
     api-key: ${PROTECTING_ANIMAL_API_KEY}
+  kakao:
+    api-url: "https://dapi.kakao.com/v2/local/search/address.json"
+    api-key: ${KAKAO_REST_API_KEY}
 
 logging:
   level:
