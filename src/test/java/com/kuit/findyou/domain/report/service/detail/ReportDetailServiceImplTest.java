@@ -6,6 +6,7 @@ import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDT
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.strategy.ReportDetailStrategy;
+import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,12 @@ class ReportDetailServiceImplTest {
     @Mock
     private ReportDetailStrategy<WitnessReport, WitnessReportDetailResponseDTO> witnessStrategy;
 
+    @Mock
+    private KakaoCoordinateClient kakaoCoordinateClient;
+
+    @Mock
+    private CoordinateUpdateService coordinateUpdateService;
+
     private ReportDetailServiceImpl reportDetailService;
 
     @BeforeEach
@@ -47,7 +54,7 @@ class ReportDetailServiceImplTest {
                 ReportTag.WITNESS, witnessStrategy
         );
 
-        reportDetailService = new ReportDetailServiceImpl(interestReportRepository, strategies);
+        reportDetailService = new ReportDetailServiceImpl(interestReportRepository, strategies, kakaoCoordinateClient, coordinateUpdateService);
     }
 
     @Test
