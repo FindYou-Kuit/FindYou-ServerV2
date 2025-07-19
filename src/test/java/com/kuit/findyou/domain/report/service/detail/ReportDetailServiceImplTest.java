@@ -54,7 +54,7 @@ class ReportDetailServiceImplTest {
                 ReportTag.WITNESS, witnessStrategy
         );
 
-        reportDetailService = new ReportDetailServiceImpl(interestReportRepository, strategies, kakaoCoordinateClient, coordinateUpdateService);
+        reportDetailService = new ReportDetailServiceImpl(strategies, interestReportRepository, kakaoCoordinateClient, coordinateUpdateService);
     }
 
     @Test
