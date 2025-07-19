@@ -40,10 +40,10 @@ public record ProtectingReportDetailResponseDTO(
         String careAddr,
 
         @Schema(description = "위도", example = "37.566512")
-        double latitude,
+        Double latitude,
 
         @Schema(description = "경도", example = "126.978006")
-        double longitude,
+        Double longitude,
 
         @Schema(description = "보호소 연락처", example = "02-1234-5678")
         String careTel,

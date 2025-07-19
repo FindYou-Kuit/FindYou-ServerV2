@@ -36,10 +36,10 @@ public record MissingReportDetailResponseDTO(
         String missingAddress,
 
         @Schema(description = "위도", example = "37.491916")
-        double latitude,
+        Double latitude,
 
         @Schema(description = "경도", example = "127.007912")
-        double longitude,
+        Double longitude,
 
         @Schema(description = "신고자 이름", example = "김철수")
         String reporterName,

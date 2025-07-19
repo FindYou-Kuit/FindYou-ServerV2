@@ -26,10 +26,10 @@ public record WitnessReportDetailResponseDTO(
         String witnessAddress,
 
         @Schema(description = "위도", example = "37.557112")
-        double latitude,
+        Double latitude,
 
         @Schema(description = "경도", example = "126.925643")
-        double longitude,
+        Double longitude,
 
         @Schema(description = "신고자 정보", example = "이영희")
         String reporterInfo,
