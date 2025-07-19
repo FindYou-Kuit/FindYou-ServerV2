@@ -37,7 +37,7 @@ public class ProtectingAnimalParser {
      * 예: "2020(년생)" → "2020"
      *
      * @param age 공공데이터 age 필드
-     * @return 추출된 연도 문자열, 실패 시 "알수없음"
+     * @return 추출된 연도 문자열, 실패 시 "미상"
      */
     public static String parseAge(String age) {
         if (age == null || age.isBlank()) return UNKNOWN;
@@ -49,7 +49,7 @@ public class ProtectingAnimalParser {
      * 예: "15(Kg)" → "15", "3,5(Kg)" → "3.5"
      *
      * @param weight 공공데이터 weight 필드
-     * @return 파싱된 몸무게 문자열, 실패 시 "알수없음"
+     * @return 파싱된 몸무게 문자열, 실패 시 "미상"
      */
     public static String parseWeight(String weight) {
         if (weight == null || weight.isBlank()) return UNKNOWN;
