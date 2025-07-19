@@ -220,6 +220,6 @@ public class ProtectingAnimalApiClient {
     // 동기화 결과를 담는 레코드
     private record SyncResult(int deletedCount, int addedCount) {}
 
-    public record ReportWithImages(ProtectingReport report, List<ReportImage> images) {}
+    private record ReportWithImages(ProtectingReport report, List<ReportImage> images) {}
 
 }
