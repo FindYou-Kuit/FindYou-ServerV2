@@ -46,9 +46,12 @@ public class ReportDetailServiceImpl implements ReportDetailService {
             try {
                 coordinateUpdateService.updateCoordinates(tag, reportId, coordinate.latitude(), coordinate.longitude());
             } catch (OptimisticLockingFailureException | OptimisticLockException e1) {
-                log.warn("[좌표 갱신 실패 1차] reportId={} - 재시도 시도", reportId);
+                log.warn("[좌표 갱신 실패 1차] reportId={} - 재시도", reportId);
+
                 try {
                     coordinateUpdateService.updateCoordinates(tag, reportId, coordinate.latitude(), coordinate.longitude());
+
+                    log.info("[좌표 갱신 성공] reportId={}, 위도={}, 경도={}", reportId, coordinate.latitude(), coordinate.longitude());
                 } catch (OptimisticLockingFailureException | OptimisticLockException e2) {
                     log.warn("[좌표 갱신 실패 2차] reportId={} - 좌표 없이 응답", reportId);
                 }
