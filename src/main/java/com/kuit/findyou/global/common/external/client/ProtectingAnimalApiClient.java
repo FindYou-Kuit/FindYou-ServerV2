@@ -167,6 +167,8 @@ public class ProtectingAnimalApiClient {
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.changeToLocalDate(item.happenDt()))
                 .address(item.careAddr())
+                .latitude(null)
+                .longitude(null)
                 .user(null)
                 .sex(Sex.valueOf(item.sexCd()))
                 .age(ProtectingAnimalParser.parseAge(item.age()))
