@@ -1,5 +1,7 @@
 package com.kuit.findyou.global.common.external.client;
 
+import com.kuit.findyou.domain.image.model.ReportImage;
+import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.model.Neutering;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,15 +32,18 @@ public class ProtectingAnimalApiClient {
     private static final String DEFAULT_SIGNIFICANT = "미등록";
 
     private final ProtectingReportRepository protectingReportRepository;
+    private final ReportImageRepository reportImageRepository;
     private final ProtectingAnimalApiProperties properties;
     private final RestClient protectingAnimalRestClient;
 
     public ProtectingAnimalApiClient(
             ProtectingReportRepository protectingReportRepository,
+            ReportImageRepository reportImageRepository,
             ProtectingAnimalApiProperties properties,
             @Qualifier("protectingAnimalRestClient") RestClient protectingAnimalRestClient
     ) {
         this.protectingReportRepository = protectingReportRepository;
+        this.reportImageRepository = reportImageRepository;
         this.properties = properties;
         this.protectingAnimalRestClient = protectingAnimalRestClient;
     }
@@ -47,20 +53,50 @@ public class ProtectingAnimalApiClient {
         long startTime = System.currentTimeMillis();
 
         try {
-            // 1. 외부 API에서 모든 데이터 조회
             List<ProtectingAnimalItemDTO> apiItems = fetchAllProtectingAnimals();
-
-            // 2. 데이터 동기화 수행
             SyncResult syncResult = synchronizeData(apiItems);
-
-            // 3. 결과 로깅
             logSyncResult(syncResult, startTime);
-
         } catch (Exception e) {
             log.error("[구조동물 데이터 동기화 실패]", e);
-            throw new RuntimeException("구조동물 데이터 동기화 중 오류가 발생했습니다.", e);
         }
     }
+
+    private SyncResult synchronizeData(List<ProtectingAnimalItemDTO> apiItems) {
+        Set<String> apiNoticeNumbers = apiItems.stream()
+                .map(ProtectingAnimalItemDTO::noticeNo)
+                .collect(Collectors.toSet());
+
+        List<ProtectingReport> existingReports = protectingReportRepository.findByNoticeNumberIn(apiNoticeNumbers);
+        Set<String> existingNoticeNumbers = existingReports.stream()
+                .map(ProtectingReport::getNoticeNumber)
+                .collect(Collectors.toSet());
+
+        List<ProtectingReport> reportsToDelete = findReportsToDelete(existingReports, apiNoticeNumbers);
+        protectingReportRepository.deleteAll(reportsToDelete);
+
+        List<ReportWithImages> newReportBundles = createNewReports(apiItems, existingNoticeNumbers);
+
+        // 1. report 먼저 저장
+        List<ProtectingReport> newReports = newReportBundles.stream()
+                .map(ReportWithImages::report)
+                .toList();
+        protectingReportRepository.saveAll(newReports);
+
+        // 2. 연관관계 설정 후 이미지 저장
+        List<ReportImage> allImages = new ArrayList<>();
+
+        for (ReportWithImages bundle : newReportBundles) {
+            ProtectingReport report = bundle.report();
+            for (ReportImage image : bundle.images()) {
+                image.setReport(report);
+                allImages.add(image);
+            }
+        }
+        reportImageRepository.saveAll(allImages);
+
+        return new SyncResult(reportsToDelete.size(), newReports.size());
+    }
+
 
     private List<ProtectingAnimalItemDTO> fetchAllProtectingAnimals() {
         List<ProtectingAnimalItemDTO> allItems = new ArrayList<>();
@@ -123,47 +159,16 @@ public class ProtectingAnimalApiClient {
         return currentPage >= totalPages;
     }
 
-    private SyncResult synchronizeData(List<ProtectingAnimalItemDTO> apiItems) {
-        // 1. API 데이터의 공지번호 추출
-        Set<String> apiNoticeNumbers = apiItems.stream()
-                .map(ProtectingAnimalItemDTO::noticeNo)
-                .collect(Collectors.toSet());
-
-        // 2. 기존 데이터 조회
-        List<ProtectingReport> existingReports = protectingReportRepository.findByNoticeNumberIn(apiNoticeNumbers);
-        Set<String> existingNoticeNumbers = existingReports.stream()
-                .map(ProtectingReport::getNoticeNumber)
-                .collect(Collectors.toSet());
-
-        // 3. 삭제할 데이터 처리 (DB 에는 있지만 API 에는 없는 데이터)
-        List<ProtectingReport> reportsToDelete = findReportsToDelete(existingReports, apiNoticeNumbers);
-        protectingReportRepository.deleteAll(reportsToDelete);
-
-        // 4. 새로 추가할 데이터 처리 (API 에는 있지만 DB 에는 없는 데이터)
-        List<ProtectingReport> newReports = createNewReports(apiItems, existingNoticeNumbers);
-        protectingReportRepository.saveAll(newReports);
-
-        return new SyncResult(reportsToDelete.size(), newReports.size());
-    }
-
     private List<ProtectingReport> findReportsToDelete(List<ProtectingReport> existingReports, Set<String> apiNoticeNumbers) {
         return existingReports.stream()
                 .filter(report -> !apiNoticeNumbers.contains(report.getNoticeNumber()))
                 .toList();
     }
 
-    private List<ProtectingReport> createNewReports(List<ProtectingAnimalItemDTO> apiItems, Set<String> existingNoticeNumbers) {
-        return apiItems.stream()
-                .filter(item -> !existingNoticeNumbers.contains(item.noticeNo()))
-                .map(this::convertToProtectingReport)
-                .toList();
-    }
-
     private ProtectingReport convertToProtectingReport(ProtectingAnimalItemDTO item) {
-
         return ProtectingReport.builder()
-                .breed(item.upKindNm())
-                .species(item.kindNm())
+                .breed(item.kindNm())
+                .species(item.upKindNm())
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.changeToLocalDate(item.happenDt()))
                 .address(item.careAddr())
@@ -186,6 +191,26 @@ public class ProtectingAnimalApiClient {
                 .build();
     }
 
+    private List<ReportWithImages> createNewReports(List<ProtectingAnimalItemDTO> apiItems, Set<String> existingNoticeNumbers) {
+        return apiItems.stream()
+                .filter(item -> !existingNoticeNumbers.contains(item.noticeNo()))
+                .map(item -> {
+                    ProtectingReport report = convertToProtectingReport(item);
+                    List<ReportImage> images = new ArrayList<>();
+
+                    if (item.popfile1() != null && !item.popfile1().isBlank()) {
+                        images.add(ReportImage.createReportImage(item.popfile1(), UUID.randomUUID().toString()));
+                    }
+                    if (item.popfile2() != null && !item.popfile2().isBlank()) {
+                        images.add(ReportImage.createReportImage(item.popfile2(), UUID.randomUUID().toString()));
+                    }
+
+                    return new ReportWithImages(report, images);
+                })
+                .toList();
+    }
+
+
     private void logSyncResult(SyncResult result, long startTime) {
         long duration = System.currentTimeMillis() - startTime;
         log.info("DB 동기화 완료: 삭제된 데이터 = {}, 추가된 데이터 = {}, 소요 시간 = {}ms",
@@ -194,4 +219,7 @@ public class ProtectingAnimalApiClient {
 
     // 동기화 결과를 담는 레코드
     private record SyncResult(int deletedCount, int addedCount) {}
+
+    public record ReportWithImages(ProtectingReport report, List<ReportImage> images) {}
+
 }
