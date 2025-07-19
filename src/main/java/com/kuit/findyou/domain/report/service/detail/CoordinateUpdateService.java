@@ -20,8 +20,7 @@ public class CoordinateUpdateService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @SuppressWarnings("unchecked")
     public void updateCoordinates(ReportTag tag, Long reportId, BigDecimal latitude, BigDecimal longitude) {
-        ReportDetailStrategy<Report, ?> strategy =
-                (ReportDetailStrategy<Report, ?>) strategies.get(tag);
+        ReportDetailStrategy<Report, ?> strategy = (ReportDetailStrategy<Report, ?>) strategies.get(tag);
 
         Report report = strategy.getReport(reportId);
 

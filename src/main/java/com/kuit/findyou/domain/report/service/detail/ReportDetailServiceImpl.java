@@ -35,8 +35,7 @@ public class ReportDetailServiceImpl implements ReportDetailService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public <REPORT_TYPE extends Report, DTO_TYPE> DTO_TYPE getReportDetail(ReportTag tag, Long reportId, Long userId) {
-        ReportDetailStrategy<REPORT_TYPE, DTO_TYPE> strategy =
-                (ReportDetailStrategy<REPORT_TYPE, DTO_TYPE>) strategies.get(tag);
+        ReportDetailStrategy<REPORT_TYPE, DTO_TYPE> strategy = (ReportDetailStrategy<REPORT_TYPE, DTO_TYPE>) strategies.get(tag);
 
         REPORT_TYPE report = strategy.getReport(reportId);
         boolean interest = interestReportRepository.existsByReportIdAndUserId(report.getId(), userId);
