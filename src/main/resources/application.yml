@@ -23,12 +23,12 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
-#        format_sql: true
-#        show_sql: true
-#        highlight_sql: true
+        format_sql: true
+        show_sql: true
+        highlight_sql: true
         dialect: org.hibernate.dialect.H2Dialect
 ---
 # 개발용 DB
@@ -90,6 +90,13 @@ spring:
   config:
     activate:
       on-profile: common
+  datasource:
+    hikari:
+      maximum-pool-size: 30  # 기본은 10, 상황에 맞게 조절
+      minimum-idle: 10
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
 
 openapi:
   protecting-animal:
@@ -98,6 +105,7 @@ openapi:
   kakao:
     api-url: "https://dapi.kakao.com/v2/local/search/address.json"
     api-key: ${KAKAO_REST_API_KEY}
+
 
 logging:
   level:
