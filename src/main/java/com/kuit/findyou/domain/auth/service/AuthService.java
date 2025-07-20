@@ -22,9 +22,13 @@ public class AuthService {
 
         return userRepository.findByKakaoId(request.kakaoId())
                 .map(loginUser -> {
+                    log.info("[kakaoLogin] user found");
                     String token = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
                     return KakaoLoginResponse.fromUserAndAccessToken(loginUser, token);
                 })
-                .orElseGet(() -> KakaoLoginResponse.notFound());
+                .orElseGet(() -> {
+                    log.info("[kakaoLogin] user not found");
+                    return KakaoLoginResponse.notFound();
+                });
     }
 }
