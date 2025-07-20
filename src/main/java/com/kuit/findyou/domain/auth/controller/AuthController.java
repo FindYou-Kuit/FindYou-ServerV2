@@ -29,7 +29,7 @@ public class AuthController {
             summary = "카카오 로그인 API",
             description = "카카오 사용자 식별자를 이용해서 유저 정보와 엑세스 토큰을 얻을 수 있습니다. 가입된 회원인지 여부를 반환합니다."
     )
-    @PostMapping("login/kakao")
+    @PostMapping("/login/kakao")
     @CustomExceptionDescription(KAKAO_LOGIN)
     public BaseResponse<KakaoLoginResponse> kakaoLogin(@RequestBody KakaoLoginRequest request){
         log.info("[kakaoLogin]");
