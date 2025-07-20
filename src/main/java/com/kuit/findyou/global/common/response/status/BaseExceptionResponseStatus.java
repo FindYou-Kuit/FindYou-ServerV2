@@ -19,6 +19,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     METHOD_NOT_ALLOWED(405, "유효하지 않은 Http 메서드입니다."),
     INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다."),
 
+    // JWT 토큰
+    INVALID_JWT(401, "올바르지 않은 토큰입니다."),
+    EXPIRED_JWT(401, "만료된 토큰입니다"),
+    JWT_NOT_FOUND(400, "토큰을 찾을 수 없습니다"),
+
     // 유저 - User
     USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
 
