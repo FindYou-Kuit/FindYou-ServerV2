@@ -32,23 +32,25 @@ public class JwtUtil {
     }
 
     public Long getUserId(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKeys.USER_ID.getKey(), Long.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKey.USER_ID.getKey(), Long.class);
     }
 
     public Role getRole(String token) {
-        String role = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKeys.ROLE.getKey(), String.class);
+        String role = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKey.ROLE.getKey(), String.class);
         return Role.valueOf(role);
     }
 
-    public String getTokenType(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKeys.TOKEN_TYPE.getKey(), String.class);
+    public JwtTokenType getTokenType(String token) {
+        String tokenType = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKey.TOKEN_TYPE.getKey(), String.class);
+        return JwtTokenType.valueOf(tokenType);
+
     }
 
     public String createAccessJwt(Long userId, Role role) {
         return Jwts.builder()
-                .claim(JwtClaimKeys.USER_ID.getKey(), userId)
-                .claim(JwtClaimKeys.ROLE.getKey(), role.name())
-                .claim(JwtClaimKeys.TOKEN_TYPE.getKey(), JwtClaimValues.ACCESS_TOKEN)
+                .claim(JwtClaimKey.USER_ID.getKey(), userId)
+                .claim(JwtClaimKey.ROLE.getKey(), role.name())
+                .claim(JwtClaimKey.TOKEN_TYPE.getKey(), JwtTokenType.ACCESS_TOKEN)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpireMs))
                 .signWith(secretKey)
