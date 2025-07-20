@@ -1,6 +1,9 @@
 package com.kuit.findyou.global.jwt.util;
 
 import com.kuit.findyou.domain.user.model.Role;
+import com.kuit.findyou.global.jwt.exception.InvalidJwtException;
+import com.kuit.findyou.global.jwt.exception.JwtExpiredException;
+import com.kuit.findyou.global.jwt.exception.JwtNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -13,6 +16,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Component
@@ -50,20 +55,18 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateJwt(String token){
+    public void validateJwt(String token){
         log.info("validateJwt");
         try{
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            return true;
         } catch (MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+            throw new InvalidJwtException(INVALID_JWT);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            throw new JwtExpiredException(EXPIRED_JWT);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            throw new InvalidJwtException(INVALID_JWT);
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+            throw new JwtNotFoundException(JWT_NOT_FOUND);
         }
-        return false;
     }
 }
