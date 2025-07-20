@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
     @InjectMocks
-    private AuthService authService;
+    private AuthServiceImpl authService;
     @Mock
     private UserRepository userRepository;
     @Mock
