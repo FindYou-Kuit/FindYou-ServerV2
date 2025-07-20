@@ -5,15 +5,12 @@ import com.kuit.findyou.domain.auth.dto.KakaoLoginResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
+import com.kuit.findyou.global.common.response.BaseResponse;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -30,9 +27,6 @@ class AuthControllerTest {
     int port;
 
     @Autowired
-    private AuthController authController;
-
-    @Autowired
     private UserRepository userRepository;
 
     @BeforeEach
@@ -41,7 +35,6 @@ class AuthControllerTest {
     }
 
     @Test
-    @Transactional
     void should_ReturnUserInfo_When_ExistingUserLogsIn(){
         // given
         final String NAME = "유저";
@@ -50,7 +43,7 @@ class AuthControllerTest {
         User user = createUser(NAME, ROLE, KAKAO_ID);
 
         // when
-        KakaoLoginResponse response = given()
+        BaseResponse<KakaoLoginResponse> response = given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(new KakaoLoginRequest(KAKAO_ID))
@@ -59,13 +52,13 @@ class AuthControllerTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(KakaoLoginResponse.class);
+                .as(new TypeRef<BaseResponse<KakaoLoginResponse>>() {});
 
         // then
-        assertThat(response.isFirstLogin()).isFalse();
-        assertThat(response.userInfo()).isNotNull();
-        assertThat(response.userInfo().userId()).isEqualTo(user.getId());
-        assertThat(response.userInfo().nickname()).isEqualTo(user.getName());
+        assertThat(response.getData().isFirstLogin()).isFalse();
+        assertThat(response.getData().userInfo()).isNotNull();
+        assertThat(response.getData().userInfo().userId()).isEqualTo(user.getId());
+        assertThat(response.getData().userInfo().nickname()).isEqualTo(user.getName());
     }
 
     private User createUser(String name, Role role, Long kakaoId){
@@ -74,6 +67,7 @@ class AuthControllerTest {
                 .role(role)
                 .kakaoId(kakaoId)
                 .build();
+
         return userRepository.save(build);
     }
 }
