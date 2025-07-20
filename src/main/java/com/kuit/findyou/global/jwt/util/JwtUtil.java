@@ -32,16 +32,16 @@ public class JwtUtil {
     }
 
     public Long getUserId(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKeys.USER_ID.getKey(), Long.class);
     }
 
     public Role getRole(String token) {
-        String role = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+        String role = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKeys.ROLE.getKey(), String.class);
         return Role.valueOf(role);
     }
 
     public String getTokenType(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("tokenType", String.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(JwtClaimKeys.TOKEN_TYPE.getKey(), String.class);
     }
 
     public String createAccessJwt(Long userId, Role role) {
