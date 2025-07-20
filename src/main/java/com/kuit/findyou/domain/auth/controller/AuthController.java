@@ -5,7 +5,6 @@ import com.kuit.findyou.domain.auth.dto.KakaoLoginResponse;
 import com.kuit.findyou.domain.auth.service.AuthService;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
-import com.kuit.findyou.global.common.swagger.SwaggerResponseDescription;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
