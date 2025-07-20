@@ -1,9 +1,10 @@
 package com.kuit.findyou.global.jwt.filter;
 
-import com.kuit.findyou.domain.user.model.Role;
-import com.kuit.findyou.domain.user.model.User;
-import com.kuit.findyou.global.jwt.security.CustomUserDetails;
+import com.kuit.findyou.global.jwt.exception.InvalidJwtException;
+import com.kuit.findyou.global.jwt.exception.JwtExpiredException;
+import com.kuit.findyou.global.jwt.exception.JwtNotFoundException;
 import com.kuit.findyou.global.jwt.security.CustomUserDetailsService;
+import com.kuit.findyou.global.jwt.constant.JwtErrorCode;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +21,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.kuit.findyou.global.jwt.constant.JwtAutenticationFilterConstants.*;
+
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -29,28 +33,53 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-        if(token != null && jwtUtil.validateJwt(token)){
+        if(validateIfTokenExists(request, token)){
             // UserDetails 생성
             Long userId = jwtUtil.getUserId(token);
 
             // userDetails 조회
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(String.valueOf(userId));
 
-            //스프링 시큐리티 인증 객체를 생성하고 컨텍스트에 저장
+            // 인증토큰을 생성하고 시큐리티 컨텍스트홀더에 저장
             Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
             // token을 argument resolver에 전달
-            request.setAttribute("token", token);
+            request.setAttribute(TOKEN_FOR_ARGUMENT_RESOLVER.getValue(), token);
         }
 
         // 다음 필터로 진행
         filterChain.doFilter(request, response);
     }
 
+    private boolean validateIfTokenExists(HttpServletRequest request, String token) {
+        return token != null && validateToken(request, token);
+    }
+
+    private boolean validateToken(HttpServletRequest request, String token) {
+        try{
+            jwtUtil.validateJwt(token);
+            return true;
+        }
+        // entryPoint에 전달할 에러 코드들
+        catch(InvalidJwtException e){
+            log.info("Invalid JWT Token", e);
+            request.setAttribute(JWT_ERROR_CODE.getValue(), JwtErrorCode.INVALID_JWT_ERROR);
+        }
+        catch(JwtExpiredException e){
+            log.info("Expired JWT Token", e);
+            request.setAttribute(JWT_ERROR_CODE.getValue(), JwtErrorCode.EXPIRED_JWT_ERROR);
+        }
+        catch(JwtNotFoundException e){
+            log.info("JWT claims string is empty.", e);
+            request.setAttribute(JWT_ERROR_CODE.getValue(), JwtErrorCode.JWT_NOT_FOUND_ERROR);
+        }
+        return false;
+    }
+
     private String resolveToken(HttpServletRequest request){
-        String authorization = request.getHeader("Authorization");
-        if(authorization != null && authorization.startsWith("Bearer ")){
+        String authorization = request.getHeader(AUTH0RIZATION.getValue());
+        if(authorization != null && authorization.startsWith(TOKEN_PREFIX.getValue())){
             String token = authorization.split(" ")[1];
             return token;
         }
