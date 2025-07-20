@@ -27,10 +27,12 @@ public class TestInitializer {
     private final WitnessReportRepository witnessReportRepository;
     private final ReportImageRepository reportImageRepository;
     private final InterestReportRepository interestReportRepository;
+    private User reportWriter;
 
     @Transactional
     public void initializeReportControllerTestData() {
         User testUser = createTestUser();
+        reportWriter = testUser;
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -108,5 +110,9 @@ public class TestInitializer {
     private void createTestInterestReport(User user, Report report) {
         InterestReport interest = InterestReport.createInterestReport(user, report);
         interestReportRepository.save(interest);
+    }
+
+    public User getReportWriter(){
+        return this.reportWriter;
     }
 }
