@@ -1,12 +1,12 @@
 package com.kuit.findyou.global.jwt.util;
 
-public enum JwtClaimKeys {
+public enum JwtClaimKey {
     USER_ID("userId"),
     ROLE("role"),
     TOKEN_TYPE("tokenType");
     private String key;
 
-    private JwtClaimKeys(String key){
+    private JwtClaimKey(String key){
         this.key = key;
     }
 
