@@ -6,6 +6,8 @@ import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.response.BaseResponse;
+import com.kuit.findyou.global.jwt.util.JwtTokenType;
+import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -18,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -28,6 +29,9 @@ class AuthControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @BeforeEach
     void setUp() {
@@ -59,6 +63,11 @@ class AuthControllerTest {
         assertThat(response.getData().userInfo()).isNotNull();
         assertThat(response.getData().userInfo().userId()).isEqualTo(user.getId());
         assertThat(response.getData().userInfo().nickname()).isEqualTo(user.getName());
+        assertThat(response.getData().userInfo().accessToken()).isNotNull();
+        String accessToken = response.getData().userInfo().accessToken();
+        assertThat(jwtUtil.getUserId(accessToken)).isEqualTo(user.getId());
+        assertThat(jwtUtil.getRole(accessToken)).isEqualTo(user.getRole());
+        assertThat(jwtUtil.getTokenType(accessToken)).isEqualTo(JwtTokenType.ACCESS_TOKEN);
     }
 
     private User createUser(String name, Role role, Long kakaoId){
