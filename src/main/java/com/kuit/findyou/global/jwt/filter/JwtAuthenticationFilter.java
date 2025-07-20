@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-        if(token != null || jwtUtil.validateJwt(token)){
+        if(token != null && jwtUtil.validateJwt(token)){
             // UserDetails 생성
             Long userId = jwtUtil.getUserId(token);
 
