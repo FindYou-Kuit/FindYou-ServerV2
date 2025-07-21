@@ -14,7 +14,7 @@ public class KakaoCoordinateClient {
 
     private final RestClient kakaoAddressRestClient;
 
-    private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
+    private static final Coordinate DEFAULT_COORDINATE = new Coordinate(BigDecimal.valueOf(0.0), BigDecimal.valueOf(0.0));
 
     public KakaoCoordinateClient(@Qualifier("kakaoAddressRestClient") RestClient kakaoAddressRestClient) {
         this.kakaoAddressRestClient = kakaoAddressRestClient;
@@ -31,7 +31,7 @@ public class KakaoCoordinateClient {
 
             if (response == null || response.documents().isEmpty()) {
                 log.warn("[Kakao 주소 변환 실패] address={}", address);
-                return new Coordinate(DEFAULT_COORDINATE, DEFAULT_COORDINATE);
+                return DEFAULT_COORDINATE;
             }
 
             KakaoAddressResponse.Document first = response.documents().get(0);
@@ -42,7 +42,7 @@ public class KakaoCoordinateClient {
 
         } catch (Exception e) {
             log.error("[Kakao 주소 API 요청 실패] address={}", address, e);
-            return new Coordinate(DEFAULT_COORDINATE, DEFAULT_COORDINATE);
+            return DEFAULT_COORDINATE;
         }
     }
 
