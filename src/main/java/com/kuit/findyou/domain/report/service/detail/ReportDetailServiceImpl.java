@@ -45,16 +45,14 @@ public class ReportDetailServiceImpl implements ReportDetailService {
 
             try {
                 coordinateUpdateService.updateCoordinates(tag, reportId, coordinate.latitude(), coordinate.longitude());
-                log.info("[좌표 갱신 성공] reportId={}, 위도={}, 경도={}", reportId, coordinate.latitude(), coordinate.longitude());
+                log.info("[좌표 갱신 성공]");
             } catch (OptimisticLockingFailureException | OptimisticLockException e) {
-                log.warn("[좌표 갱신 실패] reportId={} - 다른 트랜잭션에서 처리되었을 가능성, refresh로 최신 데이터 조회", reportId);
-
-                // DB에서 최신 좌표값 다시 조회
-                em.refresh(report);
-
-                log.info("[em.refresh 이후] reportId={}, 위도={}, 경도={}", reportId, report.getLatitude(), report.getLongitude());
+                log.warn("[좌표 갱신 실패]");
             }
         }
+
+        // DB에서 최신 좌표값 다시 조회
+        em.refresh(report);
 
         return strategy.getDetail(report, interest);
     }
