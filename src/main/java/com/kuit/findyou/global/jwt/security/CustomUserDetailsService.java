@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 })
                 .orElseThrow(() -> {
                     log.info("[loadUserByUsername] User was not found!! userId={}", userId);
-                    throw new UsernameNotFoundException("User not found with" + userId);
+                    throw new UsernameNotFoundException("User not found with " + userId);
                 });
     }
 }
