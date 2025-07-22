@@ -11,6 +11,8 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Getter
 public enum SwaggerResponseDescription {
 
+    KAKAO_LOGIN(new LinkedHashSet<>(Set.of())),
+
     TEST(new LinkedHashSet<>(Set.of(
             TEST_EXCEPTION
     ))),
@@ -33,6 +35,8 @@ public enum SwaggerResponseDescription {
     RETRIEVE_REPORTS(new LinkedHashSet<>(Set.of(
             USER_NOT_FOUND
     )));
+
+
 
     private final Set<BaseExceptionResponseStatus> exceptionResponseStatusSet;
 

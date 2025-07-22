@@ -1,7 +1,9 @@
 package com.kuit.findyou.domain.report.controller;
 
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,16 +33,26 @@ class ReportControllerTest {
     @Autowired
     TestInitializer testInitializer;
 
+    @Autowired
+    JwtUtil jwtUtil;
+
+    User reportWriter;
+
     @BeforeAll
     void setUp() {
         RestAssured.port = port;
         testInitializer.initializeReportControllerTestData();
+        this.reportWriter = testInitializer.getReportWriter();
     }
 
     @Test
     @DisplayName("GET /api/v2/reports/protecting-reports/{id}: ProtectingReport 상세 조회 성공")
     void getProtectingReportDetail() {
+        // 작성자의 엑세스 토큰 생성
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+
         given()
+                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -72,7 +84,11 @@ class ReportControllerTest {
     @Test
     @DisplayName("GET /api/v2/reports/missing-reports/{id}: MissingReport 상세 조회 성공")
     void getMissingReportDetail() {
+        // 작성자의 엑세스 토큰 생성
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+
         given()
+                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -99,7 +115,11 @@ class ReportControllerTest {
     @Test
     @DisplayName("GET /api/v2/reports/witness-reports/{id}: WitnessReport 상세 조회 성공")
     void getWitnessReportDetail() {
+        // 작성자의 엑세스 토큰 생성
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+
         given()
+                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
@@ -123,7 +143,11 @@ class ReportControllerTest {
     @DisplayName("GET /api/v2/reports: 글 조회 성공")
     @Test
     void retrieveReportsWithFilters() {
+        // 작성자의 엑세스 토큰 생성
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+
         given()
+                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("type", ReportViewType.ALL)

@@ -13,3 +13,9 @@ spring:
         show_sql: true
         highlight_sql: true
         dialect: org.hibernate.dialect.H2Dialect
+
+findyou:
+  jwt:
+    access:
+      expire-ms: 6000000
+    secret-key : secretkey1224secretkey1224secretkey1224secretkey1224
