@@ -19,3 +19,11 @@ findyou:
     access:
       expire-ms: 6000000
     secret-key : secretkey1224secretkey1224secretkey1224secretkey1224
+
+openapi:
+  protecting-animal:
+    api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2
+    api-key: test-key
+  kakao:
+    api-url: "https://dapi.kakao.com/v2/local/search/address.json"
+    api-key: test-key
