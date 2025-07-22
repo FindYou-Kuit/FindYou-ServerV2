@@ -12,13 +12,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
+import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
+import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("api/v2/users")
 @Tag(name = "User", description = "유저 관련 API")
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserServiceFacade userServiceFacade;
 
     @Operation(summary = "최근 본 동물 조회 API", description = "최근 본 동물을 조회하기 위한 API")
@@ -30,5 +33,13 @@ public class UserController {
     ) {
         CardResponseDTO result = userServiceFacade.retrieveViewedAnimals(lastId, userId);
         return BaseResponse.ok(result);
+    }
+
+    private final UserService userService;
+
+    @PostMapping
+    public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
+        log.info("[registerUser] nickname = {} kakaoId = {}", request.nickname(), request.kakaoId());
+        return new BaseResponse<>(userService.registerUser(request));
     }
 }
