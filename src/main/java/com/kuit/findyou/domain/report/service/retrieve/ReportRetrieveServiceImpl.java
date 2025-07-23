@@ -1,12 +1,10 @@
 package com.kuit.findyou.domain.report.service.retrieve;
 
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
-import com.kuit.findyou.domain.report.dto.response.Card;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.factory.CardFactory;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -52,9 +48,12 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 tags, startDate, endDate, species, breedList, location, lastReportId, PageRequest.of(0, 20)
         );
 
+        Long lastId = findLastId(reportSlice);
+
         return cardFactory.createCardResponse(
                 reportSlice.getContent(),
                 userId,
+                lastId,
                 !reportSlice.hasNext()
         );
     }
@@ -66,6 +65,10 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList();
+    }
+
+    private Long findLastId(Slice<ReportProjection> reportSlice) {
+        return reportSlice.hasNext() ? reportSlice.getContent().get(reportSlice.getNumberOfElements()-1).getReportId() : -1L;
     }
 }
 
