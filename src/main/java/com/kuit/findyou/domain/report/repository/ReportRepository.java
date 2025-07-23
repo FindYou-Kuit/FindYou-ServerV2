@@ -33,7 +33,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
                     r.date AS date,
                     r.address AS address
                 FROM Report r
-                WHERE r.id < :lastReportId
+                WHERE r.id < :lastId
                   AND (:tags IS NULL OR r.tag IN :tags)
                   AND (:startDate IS NULL OR r.date >= :startDate)
                   AND (:endDate IS NULL OR r.date <= :endDate)
@@ -49,7 +49,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             @Param("species") String species,
             @Param("breeds") List<String> breeds,
             @Param("address") String address,
-            @Param("lastReportId") Long lastReportId,
+            @Param("lastId") Long lastId,
             Pageable pageable
     );
 

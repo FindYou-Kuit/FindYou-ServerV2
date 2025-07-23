@@ -4,7 +4,6 @@ import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.report.dto.response.Card;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
-import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
@@ -90,7 +89,7 @@ class ReportRetrieveServiceImplTest {
         assertThat(card.location()).isEqualTo("서울시 강남구");
         assertThat(card.interest()).isTrue();
 
-        assertThat(result.lastReportId()).isEqualTo(reportId);
+        assertThat(result.lastId()).isEqualTo(reportId);
         assertThat(result.isLast()).isTrue();
 
         // verify

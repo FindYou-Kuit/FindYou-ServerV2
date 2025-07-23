@@ -151,7 +151,7 @@ class ReportControllerTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("type", ReportViewType.ALL)
-                .param("lastReportId", Long.MAX_VALUE)
+                .param("lastId", Long.MAX_VALUE)
         .when()
                 .get("/api/v2/reports")
         .then()
@@ -177,7 +177,7 @@ class ReportControllerTest {
                 .body("data.cards[2].date", equalTo(LocalDate.now().toString()))
                 .body("data.cards[2].location", equalTo("서울"))
                 .body("data.cards[2].interest", equalTo(true))
-                .body("data.lastReportId", equalTo(1))
+                .body("data.lastId", equalTo(1))
                 .body("data.isLast", equalTo(true));
     }
 

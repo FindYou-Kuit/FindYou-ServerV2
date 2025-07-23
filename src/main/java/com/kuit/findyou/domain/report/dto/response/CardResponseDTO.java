@@ -36,7 +36,7 @@ public record CardResponseDTO(
         List<Card> cards,
 
         @Schema(description = "마지막으로 조회된 글의 ID", example = "25")
-        Long lastReportId,
+        Long lastId,
 
         @Schema(description = "마지막 페이지 여부", example = "false")
         boolean isLast
