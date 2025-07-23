@@ -18,23 +18,18 @@ public enum SwaggerResponseDescription {
     ))),
 
     PROTECTING_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
-            USER_NOT_FOUND,
             PROTECTING_REPORT_NOT_FOUND
     ))),
 
     MISSING_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
-            USER_NOT_FOUND,
             MISSING_REPORT_NOT_FOUND
     ))),
 
     WITNESS_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
-            USER_NOT_FOUND,
             WITNESS_REPORT_NOT_FOUND
     ))),
 
-    RETRIEVE_REPORTS(new LinkedHashSet<>(Set.of(
-            USER_NOT_FOUND
-    )));
+    DEFAULT(new LinkedHashSet<>());
 
 
 

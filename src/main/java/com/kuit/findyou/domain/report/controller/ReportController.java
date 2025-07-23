@@ -65,7 +65,7 @@ public class ReportController {
 
     @Operation(summary = "글 조회 API (전체 / 구조 동물 / 신고 동물)", description = "글 조회를 위한 API - 전체 조회/구조 동물 조회/신고 동물 조회 시 쿼리 파라미터로 케이스를 구분")
     @GetMapping
-    @CustomExceptionDescription(RETRIEVE_REPORTS)
+    @CustomExceptionDescription(DEFAULT)
     public BaseResponse<CardResponseDTO> retrieveReportsWithFilters(
             @RequestParam ReportViewType type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,

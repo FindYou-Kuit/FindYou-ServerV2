@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,30 +29,43 @@ public abstract class Report extends BaseEntity {
     private Long id;
 
     @Column(name = "breed", length = 20, nullable = false)
-    protected String breed;
+    private String breed;
 
     @Column(name = "species", length = 100, nullable = false)
-    protected String species;
+    private String species;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tag", length = 20, nullable = false)
-    protected ReportTag tag;
+    private ReportTag tag;
 
     // 실종 : 실종 날짜
     // 목격 : 목격 날짜
     // 보호 : 발견 날짜
     @Column(name = "date", nullable = false, columnDefinition = "DATE")
-    protected LocalDate date;
+    private LocalDate date;
 
     // 실종 : 실종 장소
     // 목격 : 목격 장소
     // 보호 : 보호 장소 => 보호소 주소 (care_addr)
     @Column(name = "address", length = 200, nullable = false)
-    protected String address;
+    private String address;
+
+    @Column(precision = 9, scale = 6)
+    @Setter
+    private BigDecimal latitude;
+
+    @Column(precision = 9, scale = 6)
+    @Setter
+    private BigDecimal longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    protected User user;
+    private User user;
+
+    @Version // 글 상세 조회 시 위도,경도 값을 획득해 올 때, 동시성 처리를 위한 낙관적 락 도입
+    @JsonIgnore
+    @Column(name = "version", nullable = false)
+    private Long version;
 
     // 최근 본 글 삭제를 위한 양방향 연관관계 설정
     // orphanRemoval = true 만 설정
@@ -89,5 +103,10 @@ public abstract class Report extends BaseEntity {
         return reportImages.stream()
                 .map(ReportImage::getImageUrl)
                 .toList();
+    }
+
+    @JsonIgnore
+    public boolean isCoordinatesAbsent() {
+        return latitude == null || longitude == null;
     }
 }

@@ -7,6 +7,8 @@ import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.WITNESS_REPORT_NOT_FOUND;
 
 @RequiredArgsConstructor
@@ -15,8 +17,13 @@ public class WitnessReportDetailStrategy implements ReportDetailStrategy<Witness
 
     private final WitnessReportRepository witnessReportRepository;
 
+    private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
+
     @Override
     public WitnessReportDetailResponseDTO getDetail(WitnessReport report, boolean interest) {
+        BigDecimal latitude = report.getLatitude();
+        BigDecimal longitude = report.getLongitude();
+
         return new WitnessReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
                 report.getBreed(),
@@ -25,8 +32,8 @@ public class WitnessReportDetailStrategy implements ReportDetailStrategy<Witness
                 report.getSignificant(),
                 report.getLandmark(),       // witnessLocation
                 report.getAddress(),        // witnessAddress
-                report.getLatitude().doubleValue(),
-                report.getLongitude().doubleValue(),
+                (latitude == null || latitude.equals(DEFAULT_COORDINATE)) ? null : latitude.doubleValue(),
+                (longitude == null || longitude.equals(DEFAULT_COORDINATE)) ? null : longitude.doubleValue(),
                 report.getReporterName(),
                 report.getDate().toString(),
                 interest

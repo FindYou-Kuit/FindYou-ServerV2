@@ -90,6 +90,23 @@ spring:
   config:
     activate:
       on-profile: common
+  datasource:
+    hikari:
+      maximum-pool-size: 30  # 기본은 10, 상황에 맞게 조절
+      minimum-idle: 10
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+openapi:
+  protecting-animal:
+    api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2
+    api-key: ${PROTECTING_ANIMAL_API_KEY}
+  kakao:
+    api-url: "https://dapi.kakao.com/v2/local/search/address.json"
+    api-key: ${KAKAO_REST_API_KEY}
+
+
 logging:
   level:
     root: info

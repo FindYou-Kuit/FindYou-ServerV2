@@ -20,13 +20,12 @@ public class ReportServiceFacade {
 
     private final ReportDetailService reportDetailService;
     private final ReportRetrieveService reportRetrieveService;
-    private final UserRepository userRepository;
 
-    public <DTO_TYPE> DTO_TYPE getReportDetail(ReportTag tag, Long reportId, Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new CustomException(USER_NOT_FOUND);
-        }
-
+    public <DTO_TYPE> DTO_TYPE getReportDetail(
+            ReportTag tag,
+            Long reportId,
+            Long userId
+    ) {
         return reportDetailService.getReportDetail(tag, reportId, userId);
     }
 
@@ -40,10 +39,6 @@ public class ReportServiceFacade {
             Long lastReportId,
             Long userId
     ) {
-        if (!userRepository.existsById(userId)) {
-            throw new CustomException(USER_NOT_FOUND);
-        }
-
         return reportRetrieveService.retrieveReportsWithFilters(reportViewType, startDate, endDate, species, breeds, location, lastReportId, userId);
     }
 }

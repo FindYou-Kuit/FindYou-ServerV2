@@ -7,6 +7,8 @@ import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.PROTECTING_REPORT_NOT_FOUND;
 
 @RequiredArgsConstructor
@@ -15,8 +17,13 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
 
     private final ProtectingReportRepository protectingReportRepository;
 
+    private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
+
     @Override
     public ProtectingReportDetailResponseDTO getDetail(ProtectingReport report, boolean interest) {
+        BigDecimal latitude = report.getLatitude();
+        BigDecimal longitude = report.getLongitude();
+
         return new ProtectingReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
                 report.getBreed(),
@@ -29,8 +36,8 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
                 report.getSignificant(),
                 report.getCareName(),
                 report.getAddress(),
-                report.getLatitude().doubleValue(),
-                report.getLongitude().doubleValue(),
+                (latitude == null || latitude.equals(DEFAULT_COORDINATE)) ? null : latitude.doubleValue(),
+                (longitude == null || longitude.equals(DEFAULT_COORDINATE)) ? null : longitude.doubleValue(),
                 report.getCareTel(),
                 report.getDate().toString(),
                 report.getFoundLocation(),
@@ -40,6 +47,7 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
                 interest
         );
     }
+
 
     @Override
     public ProtectingReport getReport(Long reportId) {
