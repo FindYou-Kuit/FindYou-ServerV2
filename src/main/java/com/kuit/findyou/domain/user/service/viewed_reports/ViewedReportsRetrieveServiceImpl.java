@@ -33,29 +33,41 @@ public class ViewedReportsRetrieveServiceImpl implements ViewedReportsRetrieveSe
 
         List<ViewedReport> content = viewedReportSlice.getContent();
 
-        List<Long> reportIds = content.stream()
-                .map(vr -> vr.getReport().getId())
-                .toList();
+        List<Long> reportIds = getReportIds(content);
 
         // 2. Projection 으로 Report 정보 조회
         List<ReportProjection> reportProjections = reportRepository.findReportProjectionsByIdIn(reportIds);
 
         // 3. Projection 을 ViewedReport 순서에 맞게 정렬
-        Map<Long, ReportProjection> projectionMap = reportProjections.stream()
-                .collect(Collectors.toMap(ReportProjection::getReportId, p -> p));
-
-        List<ReportProjection> sortedProjections = content.stream()
-                .map(vr -> projectionMap.get(vr.getReport().getId()))
-                .toList();
+        List<ReportProjection> sortedProjections = getSortedProjection(content, reportProjections);
 
         // 4. 마지막 최근 본 글 의 ID 계산
-        Long lastViewedReportId = content.isEmpty() ? -1L : content.get(content.size() - 1).getId();
+        Long lastViewedReportId = findLastId(content);
 
         return cardFactory.createCardResponse(
                 sortedProjections,
                 userId,
                 lastViewedReportId,
                 !viewedReportSlice.hasNext());
+    }
+
+    private List<Long> getReportIds(List<ViewedReport> content) {
+        return content.stream()
+                .map(vr -> vr.getReport().getId())
+                .toList();
+    }
+
+    private List<ReportProjection> getSortedProjection(List<ViewedReport> content, List<ReportProjection> reportProjections) {
+        Map<Long, ReportProjection> projectionMap = reportProjections.stream()
+                .collect(Collectors.toMap(ReportProjection::getReportId, p -> p));
+
+        return content.stream()
+                .map(vr -> projectionMap.get(vr.getReport().getId()))
+                .toList();
+    }
+
+    private Long findLastId(List<ViewedReport> content) {
+        return content.isEmpty() ? -1L : content.get(content.size() - 1).getId();
     }
 
 }
