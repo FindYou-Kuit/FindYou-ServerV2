@@ -58,7 +58,6 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
         );
     }
 
-
     private List<String> parseBreeds(String breeds) {
         if (breeds == null || breeds.isBlank()) return null;
         return Arrays.stream(breeds.split(","))
@@ -68,7 +67,7 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
     }
 
     private Long findLastId(Slice<ReportProjection> reportSlice) {
-        return reportSlice.hasNext() ? reportSlice.getContent().get(reportSlice.getNumberOfElements()-1).getReportId() : -1L;
+        return reportSlice.isEmpty() ? -1L : reportSlice.getContent().get(reportSlice.getNumberOfElements()-1).getReportId();
     }
 }
 
