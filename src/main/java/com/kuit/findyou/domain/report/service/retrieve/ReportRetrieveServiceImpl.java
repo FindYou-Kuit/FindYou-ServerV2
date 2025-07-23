@@ -38,11 +38,7 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
         List<String> breedList = parseBreeds(breeds);
 
         // ReportViewType에 따라 필터링할 tag 목록 생성
-        List<ReportTag> tags = switch (reportViewType) {
-            case ALL -> null;
-            case PROTECTING -> List.of(ReportTag.PROTECTING);
-            case REPORTING -> List.of(ReportTag.MISSING, ReportTag.WITNESS);
-        };
+        List<ReportTag> tags = createTagList(reportViewType);
 
         Slice<ReportProjection> reportSlice = reportRepository.findReportsWithFilters(
                 tags, startDate, endDate, species, breedList, location, lastReportId, PageRequest.of(0, 20)
@@ -56,6 +52,14 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 lastId,
                 !reportSlice.hasNext()
         );
+    }
+
+    private List<ReportTag> createTagList(ReportViewType reportViewType) {
+        return switch (reportViewType) {
+            case ALL -> null;
+            case PROTECTING -> List.of(ReportTag.PROTECTING);
+            case REPORTING -> List.of(ReportTag.MISSING, ReportTag.WITNESS);
+        };
     }
 
     private List<String> parseBreeds(String breeds) {
