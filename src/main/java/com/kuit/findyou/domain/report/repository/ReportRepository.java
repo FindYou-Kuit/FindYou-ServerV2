@@ -53,6 +53,25 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             Pageable pageable
     );
 
+    @Query("""
+                SELECT
+                    r.id AS reportId,
+                    (
+                        SELECT ri.imageUrl
+                        FROM ReportImage ri
+                        WHERE ri.report.id = r.id
+                        ORDER BY ri.id ASC
+                        LIMIT 1
+                    ) AS thumbnailImageUrl,
+                    r.breed AS title,
+                    r.tag AS tag,
+                    r.date AS date,
+                    r.address AS address
+                FROM Report r
+                WHERE r.id IN :ids
+            """)
+    List<ReportProjection> findReportProjectionsByIdIn(@Param("ids") List<Long> ids);
+
 
 }
 
