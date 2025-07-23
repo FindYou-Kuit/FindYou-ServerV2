@@ -50,8 +50,7 @@ public class ReportDetailServiceImpl implements ReportDetailService {
         REPORT_TYPE report = strategy.getReport(reportId);
 
         // 1. 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = userRepository.getReferenceById(userId); // 실제 DB hit 없음
 
         // 2. 기존 조회 기록 삭제 (있다면)
         viewedReportRepository.deleteByUserIdAndReportId(userId, report.getId());
