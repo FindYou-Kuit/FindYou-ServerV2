@@ -1,8 +1,7 @@
-package com.kuit.findyou.global.common.config;
+package com.kuit.findyou.global.config;
 
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseErrorResponse;
-import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus;
 import com.kuit.findyou.global.common.swagger.ExampleHolder;
 import com.kuit.findyou.global.common.swagger.SwaggerResponseDescription;
@@ -20,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.HandlerMethod;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
