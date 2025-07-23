@@ -21,6 +21,7 @@ public class CardFactory {
     public CardResponseDTO createCardResponse(
             List<ReportProjection> projections,
             Long userId,
+            Long lastId,
             boolean isLast
     ) {
         List<Long> reportIds = projections.stream()
@@ -40,8 +41,6 @@ public class CardFactory {
                         interestIds.contains(p.getReportId())
                 ))
                 .toList();
-
-        Long lastId = cards.isEmpty() ? -1L : cards.get(cards.size() - 1).reportId();
 
         return new CardResponseDTO(cards, lastId, isLast);
     }
