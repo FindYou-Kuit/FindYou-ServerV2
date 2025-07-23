@@ -6,6 +6,7 @@ import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
+import com.kuit.findyou.domain.report.service.detail.strategy.ProtectingReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import jakarta.persistence.EntityManager;

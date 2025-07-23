@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.report.strategy;
+package com.kuit.findyou.domain.report.service.detail.strategy;
 
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.WitnessReport;

@@ -5,7 +5,7 @@ import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailRespons
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
-import com.kuit.findyou.domain.report.strategy.ReportDetailStrategy;
+import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
 import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

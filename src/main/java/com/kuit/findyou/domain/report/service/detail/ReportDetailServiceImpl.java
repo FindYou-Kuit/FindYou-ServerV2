@@ -4,7 +4,7 @@ package com.kuit.findyou.domain.report.service.detail;
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
-import com.kuit.findyou.domain.report.strategy.ReportDetailStrategy;
+import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
 import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.OptimisticLockException;

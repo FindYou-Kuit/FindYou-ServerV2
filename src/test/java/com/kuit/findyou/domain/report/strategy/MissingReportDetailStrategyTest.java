@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.MissingReportRepository;
+import com.kuit.findyou.domain.report.service.detail.strategy.MissingReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import jakarta.persistence.EntityManager;

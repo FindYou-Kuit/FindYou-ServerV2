@@ -2,7 +2,7 @@ package com.kuit.findyou.domain.report.service.detail;
 
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.strategy.ReportDetailStrategy;
+import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

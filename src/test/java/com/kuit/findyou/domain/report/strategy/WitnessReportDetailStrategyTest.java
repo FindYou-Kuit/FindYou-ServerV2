@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDT
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.WitnessReportRepository;
+import com.kuit.findyou.domain.report.service.detail.strategy.WitnessReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import jakarta.persistence.EntityManager;

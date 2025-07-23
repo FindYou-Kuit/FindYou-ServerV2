@@ -1,11 +1,11 @@
-package com.kuit.findyou.domain.report.strategy.config;
+package com.kuit.findyou.domain.report.service.detail.strategy.config;
 
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.strategy.MissingReportDetailStrategy;
-import com.kuit.findyou.domain.report.strategy.ProtectingReportDetailStrategy;
-import com.kuit.findyou.domain.report.strategy.ReportDetailStrategy;
-import com.kuit.findyou.domain.report.strategy.WitnessReportDetailStrategy;
+import com.kuit.findyou.domain.report.service.detail.strategy.MissingReportDetailStrategy;
+import com.kuit.findyou.domain.report.service.detail.strategy.ProtectingReportDetailStrategy;
+import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
+import com.kuit.findyou.domain.report.service.detail.strategy.WitnessReportDetailStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
