@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.report.dto.response.Card;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
+import com.kuit.findyou.domain.report.factory.CardFactory;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
@@ -24,8 +25,8 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class ReportRetrieveServiceImpl implements ReportRetrieveService {
 
-    private final InterestReportRepository interestReportRepository;
     private final ReportRepository reportRepository;
+    private final CardFactory cardFactory;
 
     @Override
     public CardResponseDTO retrieveReportsWithFilters(
@@ -51,12 +52,11 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 tags, startDate, endDate, species, breedList, location, lastReportId, PageRequest.of(0, 20)
         );
 
-        List<Card> reportList = convertReportProjectionSliceToCardList(reportSlice.getContent(), userId);
-
-        // 마지막 글의 ID == 다음 요청으로 전달할 Cursor 값
-        Long nextCursor = findLastReportId(reportList);
-
-        return new CardResponseDTO(reportList, nextCursor, !reportSlice.hasNext());
+        return cardFactory.createCardResponse(
+                reportSlice.getContent(),
+                userId,
+                !reportSlice.hasNext()
+        );
     }
 
 
@@ -66,36 +66,6 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList();
-    }
-
-    private List<Card> convertReportProjectionSliceToCardList(List<ReportProjection> reportSlice, Long userId) {
-        List<Long> reportIds = reportSlice.stream()
-                .map(ReportProjection::getReportId)
-                .toList();
-
-        // 관심 있는 reportId만 조회
-        Set<Long> interestIds = new HashSet<>(
-                interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(userId, reportIds)
-        );
-
-        return reportSlice.stream()
-                .map(p -> new Card(
-                        p.getReportId(),
-                        p.getThumbnailImageUrl(),
-                        p.getTitle(),
-                        ReportTag.valueOf(p.getTag()).getValue(),
-                        p.getDate().toString(),
-                        p.getAddress(),
-                        interestIds.contains(p.getReportId())
-                ))
-                .toList();
-    }
-
-
-    private Long findLastReportId(List<Card> reportList) {
-        if (reportList.isEmpty()) return -1L;
-
-        return reportList.get(reportList.size() - 1).reportId();
     }
 }
 
