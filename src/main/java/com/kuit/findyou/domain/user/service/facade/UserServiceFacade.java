@@ -11,7 +11,7 @@ public class UserServiceFacade {
 
     private final ViewedReportsRetrieveService viewedReportsRetrieveService;
 
-    public CardResponseDTO retrieveViewedReports(Long lastId, Long userId) {
-        return viewedReportsRetrieveService.retrieveViewedReports(lastId, userId);
+    public CardResponseDTO retrieveViewedAnimals(Long lastId, Long userId) {
+        return viewedReportsRetrieveService.retrieveViewedAnimals(lastId, userId);
     }
 }

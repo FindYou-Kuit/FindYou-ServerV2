@@ -27,7 +27,7 @@ public class ViewedReportsRetrieveServiceImpl implements ViewedReportsRetrieveSe
     private final CardFactory cardFactory;
 
     @Override
-    public CardResponseDTO retrieveViewedReports(Long lastId, Long userId) {
+    public CardResponseDTO retrieveViewedAnimals(Long lastId, Long userId) {
         // 1. 최근 본 ViewedReport 조회 (Slice 방식)
         Slice<ViewedReport> viewedReportSlice = viewedReportRepository.findByUserIdAndIdLessThanOrderByIdDesc(userId, lastId, PageRequest.of(0, 20));
 

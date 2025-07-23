@@ -4,7 +4,7 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 
 public interface ViewedReportsRetrieveService {
 
-    CardResponseDTO retrieveViewedReports(
+    CardResponseDTO retrieveViewedAnimals(
             Long lastId,
             Long userId
     );
