@@ -2,20 +2,20 @@ package com.kuit.findyou.domain.report.controller;
 
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.user.model.User;
+import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -34,6 +34,9 @@ class ReportControllerTest {
     TestInitializer testInitializer;
 
     @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @Autowired
     JwtUtil jwtUtil;
 
     User reportWriter;
@@ -43,6 +46,11 @@ class ReportControllerTest {
         RestAssured.port = port;
         testInitializer.initializeReportControllerTestData();
         this.reportWriter = testInitializer.getReportWriter();
+    }
+
+    @AfterAll
+    void tearDown() {
+        databaseCleaner.execute();
     }
 
     @Test
