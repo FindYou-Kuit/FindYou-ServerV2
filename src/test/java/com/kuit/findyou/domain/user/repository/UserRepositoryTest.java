@@ -17,6 +17,23 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @DisplayName("중복된 닉네임 존재 여부가 조회되는지 테스트")
+    @Test
+    void should_ReturnTrue_When_DuplicateNameExists(){
+        // given
+        final String NAME = "유저";
+        final Role ROLE = Role.USER;
+        final Long KAKAO_ID = 1234L;
+        final String DEVICE_ID = "1234";
+        User user = createUser(NAME, ROLE, KAKAO_ID, DEVICE_ID);
+
+        // when
+        boolean exists = userRepository.existsByName(NAME);
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
     @DisplayName("디바이스 ID로 유저가 조회되는지 테스트")
     @Test
     void should_ReturnUser_When_UserWithDeviceIdExists(){
