@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService{
                 .name(request.nickname())
                 .profileImageUrl(profileImageUrl)
                 .role(Role.USER)
+                .deviceId(request.deviceId())
                 .build();
     }
 
