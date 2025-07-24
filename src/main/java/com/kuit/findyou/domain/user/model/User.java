@@ -31,14 +31,14 @@ public class User extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", length = 50, nullable = false)
+    @Column(name = "name", length = 50)
     private String name;
 
     @Lob
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
-    @Column(name = "kakao_id", nullable = false)
+    @Column(name = "kakao_id")
     private Long kakaoId;
 
     @Enumerated(EnumType.STRING)
@@ -50,6 +50,8 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "CHAR(1)", nullable = false, length = 1)
     private ReceiveNotification  receiveNotification = ReceiveNotification.N;
 
+    @Column(length = 100)
+    private String deviceId;
 
     // 신고글에 대해 orphanRemoval = true 만 설정
     @OneToMany(mappedBy = "user", orphanRemoval = true)
@@ -97,4 +99,15 @@ public class User extends BaseEntity {
     public void addNotificationHistory(NotificationHistory notificationHistory) { notificationHistories.add(notificationHistory); }
     public void addSubscribe(Subscribe subscribe) { subscribes.add(subscribe); }
     public void setFcmToken(FcmToken fcmToken) {this.fcmToken = fcmToken;}
+
+    public void upgradeToUser(Long kakaoId, String nickname, String profileImageUrl){
+        if(this.role == Role.USER){
+            throw new IllegalArgumentException("비회원이어야 회원으로 등록할 수 있습니다.");
+        }
+
+        this.kakaoId = kakaoId;
+        this.name = nickname;
+        this.profileImageUrl = profileImageUrl;
+        this.role = Role.USER;
+    }
 }
