@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.user.util;
 
 import jakarta.annotation.PostConstruct;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,7 @@ import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "findyou.default-images")
+@Setter
 public class DefaultImageUrlProvider {
     private Map<String, String> defaultImageUrlMap;
 
