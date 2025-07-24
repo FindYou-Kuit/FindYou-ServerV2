@@ -6,6 +6,7 @@ public record RegisterUserRequest(
         MultipartFile profileImage,
         String defaultProfileImageName,
         String nickname,
-        Long kakaoId
+        Long kakaoId,
+        String deviceId
 ){
 }
