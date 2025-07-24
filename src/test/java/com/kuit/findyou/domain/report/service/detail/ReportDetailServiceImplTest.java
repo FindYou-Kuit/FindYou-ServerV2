@@ -5,8 +5,13 @@ import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailRespons
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
+import com.kuit.findyou.domain.report.repository.ViewedReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
+import com.kuit.findyou.domain.user.model.User;
+import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
+import com.kuit.findyou.global.common.util.TestReflectionUtil;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +47,16 @@ class ReportDetailServiceImplTest {
     private KakaoCoordinateClient kakaoCoordinateClient;
 
     @Mock
+    private ViewedReportRepository viewedReportRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private CoordinateUpdateService coordinateUpdateService;
+
+    @Mock
+    private EntityManager em;
 
     private ReportDetailServiceImpl reportDetailService;
 
@@ -54,7 +68,9 @@ class ReportDetailServiceImplTest {
                 ReportTag.WITNESS, witnessStrategy
         );
 
-        reportDetailService = new ReportDetailServiceImpl(strategies, interestReportRepository, kakaoCoordinateClient, coordinateUpdateService);
+        reportDetailService = new ReportDetailServiceImpl(strategies, viewedReportRepository, interestReportRepository, kakaoCoordinateClient, coordinateUpdateService, userRepository);
+
+        TestReflectionUtil.setField(reportDetailService, "em", em);
     }
 
     @Test
@@ -66,7 +82,9 @@ class ReportDetailServiceImplTest {
 
         ProtectingReport dummyReport = mock(ProtectingReport.class);
         ProtectingReportDetailResponseDTO dummyDto = mock(ProtectingReportDetailResponseDTO.class);
+        User dummyUser = mock(User.class);
 
+        when(userRepository.getReferenceById(userId)).thenReturn(dummyUser);
         when(dummyReport.getId()).thenReturn(reportId);
         when(protectingStrategy.getReport(reportId)).thenReturn(dummyReport);
         when(interestReportRepository.existsByReportIdAndUserId(reportId, userId)).thenReturn(true);
@@ -93,7 +111,9 @@ class ReportDetailServiceImplTest {
 
         MissingReport dummyReport = mock(MissingReport.class);
         MissingReportDetailResponseDTO dummyDto = mock(MissingReportDetailResponseDTO.class);
+        User dummyUser = mock(User.class);
 
+        when(userRepository.getReferenceById(userId)).thenReturn(dummyUser);
         when(dummyReport.getId()).thenReturn(reportId);
         when(missingStrategy.getReport(reportId)).thenReturn(dummyReport);
         when(interestReportRepository.existsByReportIdAndUserId(reportId, userId)).thenReturn(false);
@@ -120,7 +140,9 @@ class ReportDetailServiceImplTest {
 
         WitnessReport dummyReport = mock(WitnessReport.class);
         WitnessReportDetailResponseDTO dummyDto = mock(WitnessReportDetailResponseDTO.class);
+        User dummyUser = mock(User.class);
 
+        when(userRepository.getReferenceById(userId)).thenReturn(dummyUser);
         when(dummyReport.getId()).thenReturn(reportId);
         when(witnessStrategy.getReport(reportId)).thenReturn(dummyReport);
         when(interestReportRepository.existsByReportIdAndUserId(reportId, userId)).thenReturn(true);
