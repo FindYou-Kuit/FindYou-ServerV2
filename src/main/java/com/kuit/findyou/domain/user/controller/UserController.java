@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
+import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -41,5 +43,11 @@ public class UserController {
     public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
         log.info("[registerUser] kakaoId = {}", request.kakaoId());
         return new BaseResponse<>(userService.registerUser(request));
+    }
+
+    @PostMapping("/check/duplicate-nickname")
+    public BaseResponse<CheckDuplicateNicknameResponse> checkDuplicateNickname(CheckDuplicateNicknameRequest request){
+        log.info("[checkDuplicateNickname] nickname = {}", request.nickname());
+        return new BaseResponse<>(userService.checkDuplicateNickname(request));
     }
 }
