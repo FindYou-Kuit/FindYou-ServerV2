@@ -20,7 +20,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final ImageUploader imageUploader;
-    private final DefaultImageUrlProvider defaultImageNameResolver;
+    private final DefaultImageUrlProvider defaultImageUrlProvider;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService{
 
         // 기본 이미지 URL 찾기
         if(isValidDefaultProfileImageName(request)){
-            return defaultImageNameResolver.getImageUrl(request.defaultProfileImageName());
+            return defaultImageUrlProvider.getImageUrl(request.defaultProfileImageName());
         }
 
         // 요청이 잘못되었음
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService{
     }
 
     private boolean isValidDefaultProfileImageName(RegisterUserRequest request) {
-        return request.defaultProfileImageName() != null && defaultImageNameResolver.containsKey(request.defaultProfileImageName());
+        return request.defaultProfileImageName() != null && defaultImageUrlProvider.containsKey(request.defaultProfileImageName());
     }
 
     private boolean isNotEmtpyProfileImage(RegisterUserRequest request) {
