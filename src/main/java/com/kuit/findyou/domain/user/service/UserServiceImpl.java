@@ -1,5 +1,7 @@
 package com.kuit.findyou.domain.user.service;
 
+import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
@@ -11,10 +13,12 @@ import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService{
@@ -27,6 +31,7 @@ public class UserServiceImpl implements UserService{
     public RegisterUserResponse registerUser(RegisterUserRequest request) {
         // 카카오 Id가 중복되는 사용자가 있는지 확인
         if(userRepository.findByKakaoId(request.kakaoId()).isPresent()){
+            log.info("[registerUser] user with kakaoId {} alreay exists", request.kakaoId());
             throw new CustomException(ALREADY_SIGNED_UP_USER);
         }
 
@@ -35,10 +40,12 @@ public class UserServiceImpl implements UserService{
 
         User user = userRepository.findByDeviceId(request.deviceId())
                 .map(existing -> {
+                    log.info("[registerUser] user with deviceId {} alreay exists", request.deviceId());
                     existing.upgradeToUser(request.kakaoId(), request.nickname(), profileImageUrl);
                     return existing;
                 })
                 .orElseGet(()->{
+                    log.info("[registerUser] user not found");
                     return createUser(request, profileImageUrl);
                 });
 
@@ -47,6 +54,13 @@ public class UserServiceImpl implements UserService{
         // 회원가입 완료 응답하기
         String accessToken = jwtUtil.createAccessJwt(save.getId(), save.getRole());
         return new RegisterUserResponse(save.getId(), save.getName(), accessToken);
+    }
+
+    @Override
+    public CheckDuplicateNicknameResponse checkDuplicateNickname(CheckDuplicateNicknameRequest request) {
+        boolean exists = userRepository.existsByName(request.nickname());
+        log.info("[checkDuplicateNickname] result = {}", exists);
+        return new CheckDuplicateNicknameResponse(exists);
     }
 
     private User createUser(RegisterUserRequest request, String profileImageUrl) {
