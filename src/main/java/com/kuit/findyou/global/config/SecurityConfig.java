@@ -5,6 +5,7 @@ import com.kuit.findyou.global.jwt.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,7 +21,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final String[] PERMIT_URL = {
             "/api/v2/auth/**", "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
-            "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html"
+            "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html",
     };
 
     @Bean
@@ -44,6 +45,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)-> auth
                         .requestMatchers(PERMIT_URL).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
                         .anyRequest().authenticated());
 
         // 토큰 검증 필터 추가
