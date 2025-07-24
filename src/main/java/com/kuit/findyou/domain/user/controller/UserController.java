@@ -39,7 +39,7 @@ public class UserController {
 
     @PostMapping
     public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
-        log.info("[registerUser] nickname = {} kakaoId = {}", request.nickname(), request.kakaoId());
+        log.info("[registerUser] kakaoId = {}", request.kakaoId());
         return new BaseResponse<>(userService.registerUser(request));
     }
 }
