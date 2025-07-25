@@ -1,0 +1,32 @@
+name: CI with Gradle   
+on:         
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'feat/#25-cicd'
+  pull_request:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'feat/#25-cicd'
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest     # OS 지정
+    steps:
+      - uses: actions/checkout@v4
+      - name: ☕️ set up JDK 17        
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 👏🏻 grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🐘 build with Gradle (with test)
+        run: ./gradlew clean build --stacktrace
+     

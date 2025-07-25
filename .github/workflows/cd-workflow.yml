@@ -1,0 +1,48 @@
+name: CD with Gradle and Docker
+
+on:
+  push:
+    branches:
+      - 'dev'
+      - 'main'
+      - 'feat/#25-cicd'
+  pull_request:
+    branches:
+      - 'dev'
+      - 'main'
+      - 'feat/#25-cicd'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: ☕️ set up JDK 17        # 프로젝트의 java 버전에 맞추어 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 👏🏻 grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🐘 build with Gradle (with test)
+        run: ./gradlew clean build --stacktrace
+
+
+      - name: 🚀 Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            cd /home/ubuntu/FindYou-ServerV2
+            git pull origin dev
+            docker-compose down
+            docker-compose up -d --build
