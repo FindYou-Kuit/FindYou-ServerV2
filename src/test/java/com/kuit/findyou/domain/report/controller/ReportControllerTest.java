@@ -56,9 +56,9 @@ class ReportControllerTest {
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .when()
+        .when()
                 .get("/api/v2/reports/protecting-reports/1")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("data.imageUrls[0]", equalTo("https://img.com/1.png"))
                 .body("data.breed", equalTo("믹스견"))
@@ -92,9 +92,9 @@ class ReportControllerTest {
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .when()
+        .when()
                 .get("/api/v2/reports/missing-reports/2")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("data.imageUrls[0]", equalTo("https://img.com/missing.png"))
                 .body("data.breed", equalTo("포메라니안"))
@@ -123,9 +123,9 @@ class ReportControllerTest {
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .when()
+        .when()
                 .get("/api/v2/reports/witness-reports/3")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("data.imageUrls[0]", equalTo("https://img.com/witness.png"))
                 .body("data.breed", equalTo("진돗개"))
@@ -141,9 +141,9 @@ class ReportControllerTest {
                 .body("data.interest", equalTo(true));
     }
 
-    @DisplayName("GET /api/v2/reports: 글 조회 성공")
+    @DisplayName("GET /api/v2/reports: 글 전체 조회 성공")
     @Test
-    void retrieveReportsWithFilters() {
+    void retrieveAllReports() {
         // 작성자의 엑세스 토큰 생성
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
@@ -179,6 +179,67 @@ class ReportControllerTest {
                 .body("data.cards[2].location", equalTo("서울"))
                 .body("data.cards[2].interest", equalTo(true))
                 .body("data.lastId", equalTo(1))
+                .body("data.isLast", equalTo(true));
+    }
+
+    @DisplayName("GET /api/v2/reports: 구조 동물 조회 성공")
+    @Test
+    void retrieveProtectingReports() {
+        // 작성자의 엑세스 토큰 생성
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("type", ReportViewType.PROTECTING)
+                .param("lastId", Long.MAX_VALUE)
+            .when()
+                .get("/api/v2/reports")
+            .then()
+                .statusCode(200)
+                .body("data.cards[0].reportId", equalTo(1))
+                .body("data.cards[0].thumbnailImageUrl", equalTo("https://img.com/1.png"))
+                .body("data.cards[0].title", equalTo("믹스견"))
+                .body("data.cards[0].tag", equalTo("보호중"))
+                .body("data.cards[0].date", equalTo(LocalDate.now().toString()))
+                .body("data.cards[0].location", equalTo("서울"))
+                .body("data.cards[0].interest", equalTo(true))
+                .body("data.lastId", equalTo(1))
+                .body("data.isLast", equalTo(true));
+    }
+
+    @DisplayName("GET /api/v2/reports: 신고 동물 조회 성공")
+    @Test
+    void retrieveReportingReports() {
+        // 작성자의 엑세스 토큰 생성
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("type", ReportViewType.REPORTING)
+                .param("lastId", Long.MAX_VALUE)
+        .when()
+                .get("/api/v2/reports")
+        .then()
+                .statusCode(200)
+                .body("data.cards[0].reportId", equalTo(3))
+                .body("data.cards[0].thumbnailImageUrl", equalTo("https://img.com/witness.png"))
+                .body("data.cards[0].title", equalTo("진돗개"))
+                .body("data.cards[0].tag", equalTo("목격신고"))
+                .body("data.cards[0].date", equalTo("2024-08-10"))
+                .body("data.cards[0].location", equalTo("부산시 해운대구"))
+                .body("data.cards[0].interest", equalTo(true))
+                .body("data.cards[1].reportId", equalTo(2))
+                .body("data.cards[1].thumbnailImageUrl", equalTo("https://img.com/missing.png"))
+                .body("data.cards[1].title", equalTo("포메라니안"))
+                .body("data.cards[1].tag", equalTo("실종신고"))
+                .body("data.cards[1].date", equalTo("2024-10-05"))
+                .body("data.cards[1].location", equalTo("서울시 강남구"))
+                .body("data.cards[1].interest", equalTo(true))
+                .body("data.lastId", equalTo(2))
                 .body("data.isLast", equalTo(true));
     }
 
