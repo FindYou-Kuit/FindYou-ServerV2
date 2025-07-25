@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService{
         // 카카오 Id가 중복되는 사용자가 있는지 확인
         if(userRepository.findByKakaoId(request.kakaoId()).isPresent()){
             log.info("[registerUser] user with kakaoId {} alreay exists", request.kakaoId());
-            throw new CustomException(ALREADY_SIGNED_UP_USER);
+            throw new CustomException(ALREADY_REGISTERED_USER);
         }
 
         // 비회원이었는지 확인한 후에 회원 정보 저장
