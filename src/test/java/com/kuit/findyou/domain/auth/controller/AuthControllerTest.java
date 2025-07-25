@@ -13,10 +13,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -42,7 +39,7 @@ class AuthControllerTest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
         databaseCleaner.execute();
 
