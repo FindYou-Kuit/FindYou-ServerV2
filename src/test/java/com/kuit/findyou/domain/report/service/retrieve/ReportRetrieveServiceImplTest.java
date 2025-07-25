@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
@@ -38,10 +39,7 @@ class ReportRetrieveServiceImplTest {
     @Mock
     private ReportRepository reportRepository;
 
-    @Mock
-    private InterestReportRepository interestReportRepository;
-
-
+    @InjectMocks
     private ReportRetrieveServiceImpl reportRetrieveService;
 
     @BeforeEach

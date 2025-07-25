@@ -10,6 +10,7 @@ import com.kuit.findyou.domain.user.model.User;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +30,7 @@ class WitnessReportDetailStrategyTest {
     private WitnessReportRepository witnessReportRepository;
     @Autowired private EntityManager em;
 
+    @InjectMocks
     private WitnessReportDetailStrategy strategy;
 
     @BeforeEach
