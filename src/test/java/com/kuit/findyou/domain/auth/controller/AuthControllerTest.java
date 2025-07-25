@@ -44,12 +44,9 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-    }
+        databaseCleaner.execute();
 
-    @AfterAll
-    void tearDown() {
-        databaseCleaner.execute();;
+        RestAssured.port = port;
     }
 
     @Test

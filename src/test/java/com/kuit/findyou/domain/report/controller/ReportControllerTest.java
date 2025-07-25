@@ -11,11 +11,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -43,14 +39,11 @@ class ReportControllerTest {
 
     @BeforeAll
     void setUp() {
-        RestAssured.port = port;
-        testInitializer.initializeReportControllerTestData();
-        this.reportWriter = testInitializer.getReportWriter();
-    }
-
-    @AfterAll
-    void tearDown() {
         databaseCleaner.execute();
+
+        RestAssured.port = port;
+        testInitializer.initializeControllerTestData();
+        this.reportWriter = testInitializer.getReportWriter();
     }
 
     @Test
