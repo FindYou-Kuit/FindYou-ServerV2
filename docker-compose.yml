@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  findyou-server:
+    image: jjjjyy0704/findyou_repository:latest
+    container_name: findyou-server
+    ports:
+      - "9001:9001"
+    restart: always
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      TZ: Asia/Seoul
