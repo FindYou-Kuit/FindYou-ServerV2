@@ -5,12 +5,12 @@ on:
     branches:
       - 'dev'
       - 'main'
-      - 'feat/#25-cicd'
+      - 'feat/#24-cicd-setting'
   pull_request:
     branches:
       - 'dev'
       - 'main'
-      - 'feat/#25-cicd'
+      - 'feat/#24-cicd-setting'
 
 permissions:
   contents: read
