@@ -43,6 +43,6 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd /home/ubuntu/FindYou-ServerV2
-            git pull origin dev
+            git pull origin develop
             docker-compose down
             docker-compose up -d --build
