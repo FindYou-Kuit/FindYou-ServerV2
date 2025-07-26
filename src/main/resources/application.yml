@@ -49,6 +49,7 @@ spring:
         format_sql: true
         show_sql: true
         highlight_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
 ---
 # 배포용 DB
 spring:
@@ -76,6 +77,7 @@ spring:
       on-profile: dev-port
 server:
   port: 9001
+  address: 0.0.0.0
 ---
 # 배포용 포트
 spring:
