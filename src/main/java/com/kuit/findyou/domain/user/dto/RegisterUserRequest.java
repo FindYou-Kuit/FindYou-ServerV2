@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Builder
 public record RegisterUserRequest(
-        MultipartFile profileImage,
+        MultipartFile profileImageFile,
         String defaultProfileImageName,
         String nickname,
         Long kakaoId,
