@@ -19,6 +19,8 @@ import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
 import com.kuit.findyou.domain.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.CHECK_DUPLICATE_NICKNAME;
+import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.REGISTER_USER;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
@@ -50,6 +52,7 @@ public class UserController {
                     - 둘 다 null이면 에러가 발생합니다.
                     """
     )
+    @CustomExceptionDescription(REGISTER_USER)
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
         log.info("[registerUser] kakaoId = {}", request.kakaoId());
@@ -60,6 +63,7 @@ public class UserController {
             summary = "닉네임 중복 확인 API",
             description = "닉네임 중복 여부를 확인합니다."
     )
+    @CustomExceptionDescription(CHECK_DUPLICATE_NICKNAME)
     @PostMapping("/check/duplicate-nickname")
     public BaseResponse<CheckDuplicateNicknameResponse> checkDuplicateNickname(CheckDuplicateNicknameRequest request){
         log.info("[checkDuplicateNickname] nickname = {}", request.nickname());
