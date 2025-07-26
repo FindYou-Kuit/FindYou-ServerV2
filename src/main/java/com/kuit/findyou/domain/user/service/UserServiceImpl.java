@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.user.service;
 
+import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
 import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
@@ -7,7 +8,6 @@ import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.domain.user.util.DefaultImageUrlProvider;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
@@ -15,6 +15,7 @@ import com.kuit.findyou.global.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -24,7 +25,6 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final ImageUploader imageUploader;
-    private final DefaultImageUrlProvider defaultImageUrlProvider;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService{
                 })
                 .orElseGet(()->{
                     log.info("[registerUser] user not found");
-                    return createUser(request, profileImageUrl);
+                    return mapToUser(request, profileImageUrl);
                 });
 
         User save = userRepository.save(user);
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService{
         return new CheckDuplicateNicknameResponse(exists);
     }
 
-    private User createUser(RegisterUserRequest request, String profileImageUrl) {
+    private User mapToUser(RegisterUserRequest request, String profileImageUrl) {
         return User.builder()
                 .kakaoId(request.kakaoId())
                 .name(request.nickname())
@@ -74,30 +74,41 @@ public class UserServiceImpl implements UserService{
     }
 
     private String getProfileImageUrl(RegisterUserRequest request) {
+        // 프로필 이미지 설정 관련 검증
+        MultipartFile profileImage = request.profileImageFile();
+        String defaultProfileImageName = request.defaultProfileImageName();
+
+        if(validateProfileImage(profileImage, defaultProfileImageName)){
+            // 요청이 잘못되었음
+            throw new CustomException(BAD_REQUEST);
+        }
+
         // 인프라에 이미지 업로드
-        if(isNotEmtpyProfileImage(request)){
+        if(!isEmptyProfileImageFile(profileImage)){
             try{
-                return imageUploader.upload(request.profileImage());
+                return imageUploader.upload(profileImage);
             }
             catch (FileUploadingFailedException e){
                 throw new CustomException(IMAGE_UPLOAD_FAILED);
             }
         }
 
-        // 기본 이미지 URL 찾기
-        if(isValidDefaultProfileImageName(request)){
-            return defaultImageUrlProvider.getImageUrl(request.defaultProfileImageName());
-        }
-
-        // 요청이 잘못되었음
-        throw new CustomException(BAD_REQUEST);
+        // 기본 이미지 이름 반환
+        return defaultProfileImageName;
     }
 
-    private boolean isValidDefaultProfileImageName(RegisterUserRequest request) {
-        return request.defaultProfileImageName() != null && defaultImageUrlProvider.containsKey(request.defaultProfileImageName());
+    private boolean validateProfileImage(MultipartFile profileFile, String defaultName) {
+        // 둘 다 잘못된 값이거나, 둘 다 올바른 값이면 잘못된 요청으로 간주
+        boolean invalidName = isInvalidDefaultProfileImageName(defaultName);
+        boolean emptyFile = isEmptyProfileImageFile(profileFile);
+        return invalidName && emptyFile || !invalidName && !emptyFile;
     }
 
-    private boolean isNotEmtpyProfileImage(RegisterUserRequest request) {
-        return request.profileImage() != null && !request.profileImage().isEmpty();
+    private boolean isInvalidDefaultProfileImageName(String name) {
+        return name == null || !DefaultProfileImage.validate(name);
+    }
+
+    private boolean isEmptyProfileImageFile(MultipartFile file) {
+        return file == null || file.isEmpty();
     }
 }
