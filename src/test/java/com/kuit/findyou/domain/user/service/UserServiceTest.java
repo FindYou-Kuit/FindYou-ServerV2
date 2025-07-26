@@ -120,7 +120,7 @@ class UserServiceTest {
         // then
         assertThatThrownBy(() -> userService.registerUser(request))
                 .isInstanceOf(CustomException.class)
-                .hasMessageContaining(ALREADY_SIGNED_UP_USER.getMessage());
+                .hasMessageContaining(ALREADY_REGISTERED_USER.getMessage());
     }
 
     @DisplayName("올바르지 않은 기본 프로필로 요청하면 예외가 발생한다")
@@ -150,7 +150,7 @@ class UserServiceTest {
         return request;
     }
 
-    @DisplayName("이미지 관련 내용 없이 요청하면 예외가 발생한다")
+    @DisplayName("프로필 관련 내용 없이 요청하면 예외가 발생한다")
     @Test
     void should_ThrowException_When_RequestDoesNotContainProfile(){
         // given
@@ -175,7 +175,7 @@ class UserServiceTest {
                 .build();
     }
 
-    @DisplayName("이미지 업로드에 실패하면 요청하면 예외가 발생한다")
+    @DisplayName("이미지 업로드에 실패하면 예외가 발생한다")
     @Test
     void should_ThrowException_When_ImageUploadingFailed(){
         // given
