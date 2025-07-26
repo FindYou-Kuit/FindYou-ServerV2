@@ -4,7 +4,6 @@ import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.domain.user.util.DefaultImageUrlProvider;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
@@ -23,7 +22,8 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -34,13 +34,11 @@ class UserServiceTest {
     @Mock
     private ImageUploader imageUploader;
     @Mock
-    private DefaultImageUrlProvider defaultImageUrlProvider;
-    @Mock
     private JwtUtil jwtUtil;
 
     @DisplayName("처음 로그인한 사용자가 회원등록을 하면 성공한다")
     @Test
-    void should_succeed_When_AnyoneWhoFirstLogedInRegister(){
+    void should_Succeed_When_AnyoneWhoFirstLoggedInRegister(){
         // given
         final Long USER_ID = 1L;
         final String ACCESS_TOKEN = "accessToken";
@@ -54,9 +52,6 @@ class UserServiceTest {
                 .name(request.nickname())
                 .build());
 
-        when(defaultImageUrlProvider.getImageUrl(any())).thenReturn("image-url");
-        when(defaultImageUrlProvider.containsKey(any())).thenReturn(true);
-
         when(jwtUtil.createAccessJwt(any(), any())).thenReturn(ACCESS_TOKEN);
 
         // when
@@ -68,19 +63,27 @@ class UserServiceTest {
         assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
     }
 
+    private static RegisterUserRequest getRegisterUserRequestWithoutImage() {
+        RegisterUserRequest request = RegisterUserRequest.builder()
+                .profileImageFile(null)
+                .defaultProfileImageName("default")
+                .nickname("유저1")
+                .kakaoId(1234L)
+                .deviceId("1234")
+                .build();
+        return request;
+    }
+
     @DisplayName("비회원이 회원등록을 하면 성공한다")
     @Test
-    void should_succeed_When_GuestRegister(){
+    void should_Succeed_When_GuestRegister(){
         // given
         final Long USER_ID = 1L;
         final String ACCESS_TOKEN = "accessToken";
 
         RegisterUserRequest request = getRegisterUserRequestWithImage();
 
-        User user = User.builder()
-                .id(USER_ID)
-                .deviceId(request.deviceId())
-                .build();
+        User user = mock(User.class);
 
         when(userRepository.findByKakaoId(request.kakaoId())).thenReturn(Optional.empty());
         when(userRepository.findByDeviceId(request.deviceId())).thenReturn(Optional.of(user));
@@ -100,6 +103,8 @@ class UserServiceTest {
         assertThat(response.userId()).isEqualTo(USER_ID);
         assertThat(response.nickname()).isEqualTo(request.nickname());
         assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
+
+        verify(user).upgradeToMember(eq(request.kakaoId()), eq(request.nickname()), eq("image-url"));
     }
 
     @DisplayName("이미 가입한 회원이 회원등록을 하면 예외를 발생시킨다")
@@ -127,10 +132,9 @@ class UserServiceTest {
     @Test
     void should_ThrowException_When_RequestContainsInvalidDefaultProfile(){
         // given
-        RegisterUserRequest request = getRegisterUserRequestWithoutImage();
+        RegisterUserRequest request = getRegisterUserRequestWithWrongDefaultImageName();
 
         when(userRepository.findByKakaoId(request.kakaoId())).thenReturn(Optional.empty());
-        when(defaultImageUrlProvider.containsKey(any())).thenReturn(false);
 
         // when
         // then
@@ -139,10 +143,10 @@ class UserServiceTest {
                 .hasMessageContaining(BAD_REQUEST.getMessage());
     }
 
-    private static RegisterUserRequest getRegisterUserRequestWithoutImage() {
+    private static RegisterUserRequest getRegisterUserRequestWithWrongDefaultImageName() {
         RegisterUserRequest request = RegisterUserRequest.builder()
-                .profileImage(null)
-                .defaultProfileImageName("default-name")
+                .profileImageFile(null)
+                .defaultProfileImageName("default-image")
                 .nickname("유저1")
                 .kakaoId(1234L)
                 .deviceId("1234")
@@ -167,7 +171,7 @@ class UserServiceTest {
 
     private static RegisterUserRequest getRegisterUserRequestWithoutProfile() {
         return RegisterUserRequest.builder()
-                .profileImage(null)
+                .profileImageFile(null)
                 .defaultProfileImageName(null)
                 .nickname("유저1")
                 .kakaoId(1234L)
@@ -193,14 +197,14 @@ class UserServiceTest {
 
     private static RegisterUserRequest getRegisterUserRequestWithImage() {
         MockMultipartFile profileImage = new MockMultipartFile(
-                "profileImage",
+                "profileImageFile",
                 "test.jpg",
                 "image/jpeg",
                 "fake-image-content".getBytes()
         );
 
         RegisterUserRequest request = RegisterUserRequest.builder()
-                .profileImage(profileImage)
+                .profileImageFile(profileImage)
                 .defaultProfileImageName(null)
                 .nickname("유저1")
                 .kakaoId(1234L)
