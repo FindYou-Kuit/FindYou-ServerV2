@@ -36,17 +36,18 @@ public class SecurityConfig {
         http
                 .httpBasic((auth)->auth.disable());
 
+        // todo 인증 비활성화
         // 토큰 기반 인증 비활성화
-//        http
-//                .authorizeHttpRequests((auth)-> auth
-//                        .anyRequest().permitAll());
-
-        // 토큰 기반 인증 활성화
         http
                 .authorizeHttpRequests((auth)-> auth
-                        .requestMatchers(PERMIT_URL).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
+
+        // 토큰 기반 인증 활성화
+//        http
+//                .authorizeHttpRequests((auth)-> auth
+//                        .requestMatchers(PERMIT_URL).permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
+//                        .anyRequest().authenticated());
 
         // 토큰 검증 필터 추가
         http
