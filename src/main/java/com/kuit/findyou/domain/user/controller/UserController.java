@@ -16,7 +16,10 @@ import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
+import com.kuit.findyou.domain.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
@@ -38,13 +41,25 @@ public class UserController {
     }
 
     private final UserService userService;
-
-    @PostMapping
+    @Operation(
+            summary = "회원정보 등록 API",
+            description = """
+                    회원 정보를 등록합니다. 회원 등록에 성공하면 유저 정보(식별자와 닉네임)와 엑세스 토큰을 얻을 수 있습니다. \n
+                    **[중요] profileImageFile과 defaultProfileImageName 중 하나만 선택해야 합니다.** \n                 
+                    - profileImageFile을 업로드하면 defaultProfileImageName은 무시됩니다. \n           
+                    - 둘 다 null이면 에러가 발생합니다.
+                    """
+    )
+    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
         log.info("[registerUser] kakaoId = {}", request.kakaoId());
         return new BaseResponse<>(userService.registerUser(request));
     }
 
+    @Operation(
+            summary = "닉네임 중복 확인 API",
+            description = "닉네임 중복 여부를 확인합니다."
+    )
     @PostMapping("/check/duplicate-nickname")
     public BaseResponse<CheckDuplicateNicknameResponse> checkDuplicateNickname(CheckDuplicateNicknameRequest request){
         log.info("[checkDuplicateNickname] nickname = {}", request.nickname());
