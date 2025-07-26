@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByDeviceId(request.deviceId())
                 .map(existing -> {
                     log.info("[registerUser] user with deviceId {} alreay exists", request.deviceId());
-                    existing.upgradeToUser(request.kakaoId(), request.nickname(), profileImageUrl);
+                    existing.upgradeToMember(request.kakaoId(), request.nickname(), profileImageUrl);
                     return existing;
                 })
                 .orElseGet(()->{

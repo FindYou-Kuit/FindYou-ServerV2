@@ -7,6 +7,7 @@ import com.kuit.findyou.domain.report.model.InterestReport;
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ViewedReport;
 import com.kuit.findyou.domain.subscribe.model.Subscribe;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,6 +16,8 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.ALREADY_REGISTERED_USER;
 
 @Entity
 @Table(name = "users")
@@ -100,9 +103,10 @@ public class User extends BaseEntity {
     public void addSubscribe(Subscribe subscribe) { subscribes.add(subscribe); }
     public void setFcmToken(FcmToken fcmToken) {this.fcmToken = fcmToken;}
 
-    public void upgradeToUser(Long kakaoId, String nickname, String profileImageUrl){
-        if(this.role == Role.USER){
-            throw new IllegalArgumentException("비회원이어야 회원으로 등록할 수 있습니다.");
+    public void upgradeToMember(Long kakaoId, String nickname, String profileImageUrl){
+        // 비회원이어야 회원이 될 수 있음
+        if(this.role != Role.GUEST){
+            throw new CustomException(ALREADY_REGISTERED_USER);
         }
 
         this.kakaoId = kakaoId;
