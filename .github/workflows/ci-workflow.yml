@@ -4,12 +4,12 @@ on:
     branches:
       - 'main'
       - 'develop'
-      - 'feat/#24-cicd-setting'
+      - 'feat/#24-cicd-pipeline'
   pull_request:
     branches:
       - 'main'
       - 'develop'
-      - 'feat/#24-cicd-setting'
+      - 'feat/#24-cicd-pipeline'
 permissions:
   contents: read
 
