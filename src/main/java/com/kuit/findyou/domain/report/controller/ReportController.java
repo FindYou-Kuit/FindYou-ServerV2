@@ -11,6 +11,7 @@ import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class ReportController {
     @CustomExceptionDescription(PROTECTING_REPORT_DETAIL)
     public BaseResponse<ProtectingReportDetailResponseDTO> getProtectingReportDetail(
             @PathVariable("reportId") Long reportId,
-            @LoginUserId Long userId
+            @Parameter(hidden = true) @LoginUserId Long userId
     ) {
         ProtectingReportDetailResponseDTO detail = reportServiceFacade.getReportDetail(ReportTag.PROTECTING, reportId, userId);
         return BaseResponse.ok(detail);
@@ -46,7 +47,7 @@ public class ReportController {
     @CustomExceptionDescription(MISSING_REPORT_DETAIL)
     public BaseResponse<MissingReportDetailResponseDTO> getMissingReportDetail(
             @PathVariable("reportId") Long reportId,
-            @LoginUserId Long userId
+            @Parameter(hidden = true) @LoginUserId Long userId
     ) {
         MissingReportDetailResponseDTO detail = reportServiceFacade.getReportDetail(ReportTag.MISSING, reportId, userId);
         return BaseResponse.ok(detail);
@@ -57,7 +58,7 @@ public class ReportController {
     @CustomExceptionDescription(WITNESS_REPORT_DETAIL)
     public BaseResponse<WitnessReportDetailResponseDTO> getWitnessReportDetail(
             @PathVariable("reportId") Long reportId,
-            @LoginUserId Long userId
+            @Parameter(hidden = true) @LoginUserId Long userId
     ) {
         WitnessReportDetailResponseDTO detail = reportServiceFacade.getReportDetail(ReportTag.WITNESS, reportId, userId);
         return BaseResponse.ok(detail);
@@ -73,10 +74,10 @@ public class ReportController {
             @RequestParam(required = false) String species,
             @RequestParam(required = false) String breeds,
             @RequestParam(required = false) String address,
-            @RequestParam Long lastReportId,
-            @LoginUserId Long userId
+            @RequestParam Long lastId,
+            @Parameter(hidden = true) @LoginUserId Long userId
     ) {
-        CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(type, startDate, endDate, species, breeds, address, lastReportId, userId);
+        CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(type, startDate, endDate, species, breeds, address, lastId, userId);
         return BaseResponse.ok(result);
     }
 

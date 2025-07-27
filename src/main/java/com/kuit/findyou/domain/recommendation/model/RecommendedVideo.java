@@ -12,7 +12,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLRestriction("status = 'Y'")
 public class RecommendedVideo extends BaseEntity{
 
     @Id

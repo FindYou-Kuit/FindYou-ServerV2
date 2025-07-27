@@ -1,11 +1,10 @@
 package com.kuit.findyou.domain.report.service.retrieve;
 
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
-import com.kuit.findyou.domain.report.dto.response.Card;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
+import com.kuit.findyou.domain.report.factory.CardFactory;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -15,17 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class ReportRetrieveServiceImpl implements ReportRetrieveService {
 
-    private final InterestReportRepository interestReportRepository;
     private final ReportRepository reportRepository;
+    private final CardFactory cardFactory;
 
     @Override
     public CardResponseDTO retrieveReportsWithFilters(
@@ -41,24 +38,29 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
         List<String> breedList = parseBreeds(breeds);
 
         // ReportViewType에 따라 필터링할 tag 목록 생성
-        List<ReportTag> tags = switch (reportViewType) {
-            case ALL -> null;
-            case PROTECTING -> List.of(ReportTag.PROTECTING);
-            case REPORTING -> List.of(ReportTag.MISSING, ReportTag.WITNESS);
-        };
+        List<ReportTag> tags = createTagList(reportViewType);
 
         Slice<ReportProjection> reportSlice = reportRepository.findReportsWithFilters(
                 tags, startDate, endDate, species, breedList, location, lastReportId, PageRequest.of(0, 20)
         );
 
-        List<Card> reportList = convertReportProjectionSliceToCardList(reportSlice.getContent(), userId);
+        Long lastId = findLastId(reportSlice);
 
-        // 마지막 글의 ID == 다음 요청으로 전달할 Cursor 값
-        Long nextCursor = findLastReportId(reportList);
-
-        return new CardResponseDTO(reportList, nextCursor, !reportSlice.hasNext());
+        return cardFactory.createCardResponse(
+                reportSlice.getContent(),
+                userId,
+                lastId,
+                !reportSlice.hasNext()
+        );
     }
 
+    private List<ReportTag> createTagList(ReportViewType reportViewType) {
+        return switch (reportViewType) {
+            case ALL -> null;
+            case PROTECTING -> List.of(ReportTag.PROTECTING);
+            case REPORTING -> List.of(ReportTag.MISSING, ReportTag.WITNESS);
+        };
+    }
 
     private List<String> parseBreeds(String breeds) {
         if (breeds == null || breeds.isBlank()) return null;
@@ -68,34 +70,8 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
                 .toList();
     }
 
-    private List<Card> convertReportProjectionSliceToCardList(List<ReportProjection> reportSlice, Long userId) {
-        List<Long> reportIds = reportSlice.stream()
-                .map(ReportProjection::getReportId)
-                .toList();
-
-        // 관심 있는 reportId만 조회
-        Set<Long> interestIds = new HashSet<>(
-                interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(userId, reportIds)
-        );
-
-        return reportSlice.stream()
-                .map(p -> new Card(
-                        p.getReportId(),
-                        p.getThumbnailImageUrl(),
-                        p.getTitle(),
-                        ReportTag.valueOf(p.getTag()).getValue(),
-                        p.getDate().toString(),
-                        p.getAddress(),
-                        interestIds.contains(p.getReportId())
-                ))
-                .toList();
-    }
-
-
-    private Long findLastReportId(List<Card> reportList) {
-        if (reportList.isEmpty()) return -1L;
-
-        return reportList.get(reportList.size() - 1).reportId();
+    private Long findLastId(Slice<ReportProjection> reportSlice) {
+        return reportSlice.isEmpty() ? -1L : reportSlice.getContent().get(reportSlice.getNumberOfElements()-1).getReportId();
     }
 }
 

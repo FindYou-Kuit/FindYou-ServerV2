@@ -1,4 +1,4 @@
-package com.kuit.findyou.global.common.config;
+package com.kuit.findyou.global.config;
 
 import com.kuit.findyou.global.common.external.properties.KakaoAddressApiProperties;
 import com.kuit.findyou.global.common.external.properties.ProtectingAnimalApiProperties;

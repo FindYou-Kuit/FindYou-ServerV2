@@ -3,10 +3,7 @@ package com.kuit.findyou.global.common.util;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.model.*;
-import com.kuit.findyou.domain.report.repository.InterestReportRepository;
-import com.kuit.findyou.domain.report.repository.MissingReportRepository;
-import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
-import com.kuit.findyou.domain.report.repository.WitnessReportRepository;
+import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
@@ -27,10 +24,12 @@ public class TestInitializer {
     private final WitnessReportRepository witnessReportRepository;
     private final ReportImageRepository reportImageRepository;
     private final InterestReportRepository interestReportRepository;
+    private final ViewedReportRepository viewedReportRepository;
+
     private User reportWriter;
 
     @Transactional
-    public void initializeReportControllerTestData() {
+    public void initializeControllerTestData() {
         User testUser = createTestUser();
         reportWriter = testUser;
 
@@ -41,6 +40,9 @@ public class TestInitializer {
         createTestInterestReport(testUser, testProtectingReport);
         createTestInterestReport(testUser, testMissingReport);
         createTestInterestReport(testUser, testWitnessReport);
+
+        createTestViewedReport(testUser, testProtectingReport);
+        createTestViewedReport(testUser, testMissingReport);
     }
 
     private User createTestUser() {
@@ -110,6 +112,11 @@ public class TestInitializer {
     private void createTestInterestReport(User user, Report report) {
         InterestReport interest = InterestReport.createInterestReport(user, report);
         interestReportRepository.save(interest);
+    }
+
+    private void createTestViewedReport(User user, Report report) {
+        ViewedReport viewedReport = ViewedReport.createViewedReport(user, report);
+        viewedReportRepository.save(viewedReport);
     }
 
     public User getReportWriter(){

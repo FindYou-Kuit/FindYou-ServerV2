@@ -6,22 +6,25 @@ import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.response.BaseResponse;
+import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.jwt.util.JwtTokenType;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 class AuthControllerTest {
     @LocalServerPort
@@ -33,8 +36,13 @@ class AuthControllerTest {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @BeforeEach
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @BeforeAll
     void setUp() {
+        databaseCleaner.execute();
+
         RestAssured.port = port;
     }
 
