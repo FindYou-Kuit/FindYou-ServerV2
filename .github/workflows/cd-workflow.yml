@@ -76,7 +76,6 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd /home/ubuntu/FindYou-ServerV2
-#            docker-compose pull --ignore-pull-failures 추후 다중 컨테이너로 확장 시 도입 고려
             docker-compose pull
             docker-compose down
             docker-compose up -d
