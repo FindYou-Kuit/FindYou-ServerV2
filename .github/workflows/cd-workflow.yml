@@ -61,6 +61,12 @@ jobs:
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
+      - name: 📦 Update docker-compose.yml on EC2
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
+          chmod 400 ec2-key.pem
+          scp -i ec2-key.pem -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/FindYou-ServerV2/docker-compose.yml
+
       - name: 🚀 Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -77,11 +83,6 @@ jobs:
             echo "🚮 Cleaning up old images"
             sudo docker image prune -f
 
-      - name: 📦 Update docker-compose.yml on EC2
-        run: |
-          echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
-          chmod 400 ec2-key.pem
-          scp -i ec2-key.pem -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/FindYou-ServerV2/docker-compose.yml
 
       - name: ❌ Remove GitHub Actions IP
         if: always()
