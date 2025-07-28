@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
+import com.kuit.findyou.domain.user.service.register.RegisterUserServiceImpl;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     @InjectMocks
-    private UserServiceImpl userService;
+    private RegisterUserServiceImpl userService;
     @Mock
     private UserRepository userRepository;
     @Mock

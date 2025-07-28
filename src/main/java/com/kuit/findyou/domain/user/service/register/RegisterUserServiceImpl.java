@@ -1,8 +1,6 @@
-package com.kuit.findyou.domain.user.service;
+package com.kuit.findyou.domain.user.service.register;
 
 import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
@@ -22,7 +20,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService{
+public class RegisterUserServiceImpl implements RegisterUserService {
     private final UserRepository userRepository;
     private final ImageUploader imageUploader;
     private final JwtUtil jwtUtil;
@@ -54,13 +52,6 @@ public class UserServiceImpl implements UserService{
         // 회원가입 완료 응답하기
         String accessToken = jwtUtil.createAccessJwt(save.getId(), save.getRole());
         return new RegisterUserResponse(save.getId(), save.getName(), accessToken);
-    }
-
-    @Override
-    public CheckDuplicateNicknameResponse checkDuplicateNickname(CheckDuplicateNicknameRequest request) {
-        boolean exists = userRepository.existsByName(request.nickname());
-        log.info("[checkDuplicateNickname] result = {}", exists);
-        return new CheckDuplicateNicknameResponse(exists);
     }
 
     private User mapToUser(RegisterUserRequest request, String profileImageUrl) {
