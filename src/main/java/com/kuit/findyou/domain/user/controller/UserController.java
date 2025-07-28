@@ -16,7 +16,6 @@ import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
-import com.kuit.findyou.domain.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.CHECK_DUPLICATE_NICKNAME;
@@ -42,7 +41,6 @@ public class UserController {
         return BaseResponse.ok(result);
     }
 
-    private final UserService userService;
     @Operation(
             summary = "회원정보 등록 API",
             description = """
@@ -56,7 +54,7 @@ public class UserController {
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
         log.info("[registerUser] kakaoId = {}", request.kakaoId());
-        return new BaseResponse<>(userService.registerUser(request));
+        return new BaseResponse<>(userServiceFacade.registerUser(request));
     }
 
     @Operation(
@@ -67,6 +65,6 @@ public class UserController {
     @PostMapping("/check/duplicate-nickname")
     public BaseResponse<CheckDuplicateNicknameResponse> checkDuplicateNickname(CheckDuplicateNicknameRequest request){
         log.info("[checkDuplicateNickname] nickname = {}", request.nickname());
-        return new BaseResponse<>(userService.checkDuplicateNickname(request));
+        return new BaseResponse<>(userServiceFacade.checkDuplicateNickname(request));
     }
 }
