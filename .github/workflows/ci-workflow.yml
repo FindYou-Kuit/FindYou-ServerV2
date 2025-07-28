@@ -27,8 +27,8 @@ jobs:
       - name: 👏🏻 grant execute permission for gradlew
         run: chmod +x gradlew
 
-#      - name: 🐘 build with Gradle (with test)
-#        run: ./gradlew clean build --stacktrace
-      - name: 🐘 build with Gradle (skip test)
-        run: ./gradlew clean build -x test --stacktrace
+      - name: 🐘 build with Gradle (with test)
+        run: ./gradlew clean build --stacktrace
+#      - name: 🐘 build with Gradle (skip test)
+#        run: ./gradlew clean build -x test --stacktrace
      
