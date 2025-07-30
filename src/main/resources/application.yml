@@ -23,7 +23,7 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -129,3 +129,19 @@ cloud:
     s3:
       bucket: ${S3_BUCKET_NAME}
       base-url: ${S3_BASE_URL}
+
+resilience4j:
+  retry:
+    instances:
+      kakao:
+        max-attempts: 3
+        wait-duration: 500ms
+        retry-exceptions:
+          - org.springframework.web.client.RestClientException
+          - org.springframework.web.client.ResourceAccessException
+  ratelimiter:
+    instances:
+      kakao:
+        limit-for-period: 7
+        limit-refresh-period: 1s
+        timeout-duration: 2s
