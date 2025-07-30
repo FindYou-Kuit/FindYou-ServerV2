@@ -201,9 +201,6 @@ public class ProtectingAnimalApiClient {
         return apiItems.stream()
                 .filter(item -> !existingNoticeNumbers.contains(item.noticeNo()))
                 .map(item -> {
-
-                    // Kakao API 통해 좌표 조회
-
                     ProtectingReport report = convertToProtectingReport(item);
                     List<ReportImage> images = new ArrayList<>();
 

@@ -45,16 +45,10 @@ class ReportDetailServiceImplTest {
     private ReportDetailStrategy<WitnessReport, WitnessReportDetailResponseDTO> witnessStrategy;
 
     @Mock
-    private KakaoCoordinateClient kakaoCoordinateClient;
-
-    @Mock
     private ViewedReportRepository viewedReportRepository;
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private CoordinateUpdateService coordinateUpdateService;
 
     @Mock
     private EntityManager em;
@@ -70,7 +64,7 @@ class ReportDetailServiceImplTest {
                 ReportTag.WITNESS, witnessStrategy
         );
 
-        reportDetailService = new ReportDetailServiceImpl(strategies, viewedReportRepository, interestReportRepository, kakaoCoordinateClient, coordinateUpdateService, userRepository);
+        reportDetailService = new ReportDetailServiceImpl(strategies, viewedReportRepository, interestReportRepository, userRepository);
 
         TestReflectionUtil.setField(reportDetailService, "em", em);
     }
