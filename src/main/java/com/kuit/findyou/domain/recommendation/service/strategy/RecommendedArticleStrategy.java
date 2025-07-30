@@ -18,7 +18,7 @@ public class RecommendedArticleStrategy implements RecommendedContentStrategy {
         return articleRepository.findAll().stream()
                 .map(article -> new RecommendedContentResponse(
                         article.getTitle(),
-                        article.getSource(), // uploader 역할
+                        article.getUploader(), // uploader 역할
                         article.getUrl()
                 ))
                 .toList();

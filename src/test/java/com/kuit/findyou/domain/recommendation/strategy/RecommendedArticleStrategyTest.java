@@ -32,14 +32,14 @@ public class RecommendedArticleStrategyTest {
     void getRecommendedContents_shouldReturnMappedDtoList() {
         // given
         var video1 = RecommendedArticle.builder()
-                .title("강아지 뉴스")
-                .source("찾아유")
+                .title("강아지 기사")
+                .uploader("찾아유")
                 .url("news.com/1")
                 .build();
 
         var video2 = RecommendedArticle.builder()
-                .title("고양이 뉴스")
-                .source("차자유")
+                .title("고양이 기사")
+                .uploader("차자유")
                 .url("news.com/2")
                 .build();
 
@@ -50,7 +50,7 @@ public class RecommendedArticleStrategyTest {
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result).extracting("title").containsExactly("강아지 뉴스", "고양이 뉴스");
+        assertThat(result).extracting("title").containsExactly("강아지 기사", "고양이 기사");
         assertThat(result).extracting("uploader").containsExactly("찾아유", "차자유");
         assertThat(result).extracting("url").containsExactly("news.com/1", "news.com/2");
     }
