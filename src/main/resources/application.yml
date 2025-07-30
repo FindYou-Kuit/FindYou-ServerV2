@@ -116,3 +116,14 @@ findyou:
     access:
       expire-ms: ${JWT_ACCESS_EXPIRE_MS}
     secret-key : ${JWT_SECRET_KEY}
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2 # 서울 리전
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+      base-url: ${S3_BASE_URL}

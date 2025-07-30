@@ -1,7 +1,6 @@
 package com.kuit.findyou.global.common.response.status;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum BaseExceptionResponseStatus implements ResponseStatus{
@@ -23,6 +22,12 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     INVALID_JWT(401, "올바르지 않은 토큰입니다."),
     EXPIRED_JWT(401, "만료된 토큰입니다"),
     JWT_NOT_FOUND(400, "토큰을 찾을 수 없습니다"),
+
+    // 회원가입
+    ALREADY_REGISTERED_USER(400, "이미 회원가입한 유저입니다."),
+
+    // 인프라
+    IMAGE_UPLOAD_FAILED(502, "외부 서버 문제로 인해 이미지 업로드에 실패했습니다"),
 
     // 유저 - User
     USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),

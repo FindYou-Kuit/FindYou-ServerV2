@@ -20,6 +20,24 @@ findyou:
       expire-ms: 6000000
     secret-key : secretkey1224secretkey1224secretkey1224secretkey1224
 
+  default-images:
+    default-image-url-map:
+      image1: default1
+      image2: default2
+      image3: default3
+      image4: default4
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2 # 서울 리전
+    credentials:
+      access-key: key
+      secret-key: key
+    s3:
+      bucket: bucket
+      base-url: base-url
+
 openapi:
   protecting-animal:
     api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2

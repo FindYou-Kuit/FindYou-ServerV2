@@ -17,6 +17,45 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @DisplayName("중복된 닉네임 존재 여부가 조회되는지 테스트")
+    @Test
+    void should_ReturnTrue_When_DuplicateNameExists(){
+        // given
+        final String NAME = "유저";
+        final Role ROLE = Role.USER;
+        final Long KAKAO_ID = 1234L;
+        final String DEVICE_ID = "1234";
+        User user = createUser(NAME, ROLE, KAKAO_ID, DEVICE_ID);
+
+        // when
+        boolean exists = userRepository.existsByName(NAME);
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
+    @DisplayName("디바이스 ID로 유저가 조회되는지 테스트")
+    @Test
+    void should_ReturnUser_When_UserWithDeviceIdExists(){
+        // given
+        final String NAME = "유저";
+        final Role ROLE = Role.USER;
+        final Long KAKAO_ID = 1234L;
+        final String DEVICE_ID = "1234";
+        User user = createUser(NAME, ROLE, KAKAO_ID, DEVICE_ID);
+
+        // when
+        Optional<User> optUser = userRepository.findByDeviceId(DEVICE_ID);
+
+        // then
+        assertThat(optUser.isPresent()).isTrue();
+        User foundUser = optUser.get();
+        assertThat(foundUser.getName()).isEqualTo(NAME);
+        assertThat(foundUser.getRole()).isEqualTo(ROLE);
+        assertThat(foundUser.getKakaoId()).isEqualTo(KAKAO_ID);
+        assertThat(foundUser.getDeviceId()).isEqualTo(DEVICE_ID);
+    }
+
     @DisplayName("카카오 ID로 유저가 조회되는지 테스트")
     @Test
     void should_ReturnUser_When_UserWithKakaoIdExists(){
@@ -24,7 +63,8 @@ class UserRepositoryTest {
         final String NAME = "유저";
         final Role ROLE = Role.USER;
         final Long KAKAO_ID = 1234L;
-        User user = createUser(NAME, ROLE, KAKAO_ID);
+        final String DEVICE_ID = "1234";
+        User user = createUser(NAME, ROLE, KAKAO_ID, DEVICE_ID);
 
         // when
         Optional<User> optUser = userRepository.findByKakaoId(KAKAO_ID);
@@ -35,13 +75,15 @@ class UserRepositoryTest {
         assertThat(foundUser.getName()).isEqualTo(NAME);
         assertThat(foundUser.getRole()).isEqualTo(ROLE);
         assertThat(foundUser.getKakaoId()).isEqualTo(KAKAO_ID);
+        assertThat(foundUser.getDeviceId()).isEqualTo(DEVICE_ID);
     }
 
-    private User createUser(String name, Role role, Long kakaoId){
+    private User createUser(String name, Role role, Long kakaoId, String deviceId){
         User build = User.builder()
                 .name(name)
                 .role(role)
                 .kakaoId(kakaoId)
+                .deviceId(deviceId)
                 .build();
         return userRepository.save(build);
     }
