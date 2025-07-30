@@ -29,6 +29,14 @@ public enum SwaggerResponseDescription {
             WITNESS_REPORT_NOT_FOUND
     ))),
 
+    RECOMMENDED_VIDEO(new LinkedHashSet<>(Set.of(
+            API_NOT_FOUND
+    ))),
+
+    RECOMMENDED_ARTICLE(new LinkedHashSet<>(Set.of(
+            API_NOT_FOUND
+    ))),
+
     DEFAULT(new LinkedHashSet<>());
 
 
