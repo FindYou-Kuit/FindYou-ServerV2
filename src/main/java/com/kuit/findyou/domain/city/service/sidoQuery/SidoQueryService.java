@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.city.service.sidoQuery;
 
-import com.kuit.findyou.domain.city.dto.response.SidoNameResponseDTO;
+import com.kuit.findyou.domain.city.dto.response.SidoListResponseDTO;
 
 public interface SidoQueryService {
 
-    SidoNameResponseDTO getSidoNames();
+    SidoListResponseDTO getSidoNames();
 }

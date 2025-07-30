@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.city.controller;
 
-import com.kuit.findyou.domain.city.dto.response.SidoNameResponseDTO;
+import com.kuit.findyou.domain.city.dto.response.SidoListResponseDTO;
 import com.kuit.findyou.domain.city.service.facade.CityServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
@@ -24,7 +24,7 @@ public class CityController {
     @Operation(summary = "시도 정보 반환 API", description = "시도 정보를 반환하기 위한 API")
     @GetMapping("/api/v2/sidos")
     @CustomExceptionDescription(DEFAULT)
-    public BaseResponse<SidoNameResponseDTO> getSidoNames() {
+    public BaseResponse<SidoListResponseDTO> getSidoNames() {
         return BaseResponse.ok(cityServiceFacade.getSidoNames());
     }
 }
