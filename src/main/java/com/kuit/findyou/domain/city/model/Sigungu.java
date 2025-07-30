@@ -9,7 +9,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "sigungus")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("status = 'Y'")
 public class Sigungu extends BaseEntity {
 
     @Id

@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLRestriction("status = 'Y'")
 public class Sido extends BaseEntity{
 
     @Id
