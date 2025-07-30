@@ -35,7 +35,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
 
     // 추천 컨텐츠 - Recommendation
     RECOMMENDED_VIDEO_NOT_FOUND(404, "추천 영상이 존재하지 않습니다."),
-    RECOMMENDED_ARTICLE_NOT_FOUND(404, "추천 기사가 존재하지 않습니다.");
+    RECOMMENDED_NEWS_NOT_FOUND(404, "추천 기사가 존재하지 않습니다.");
 
     private final boolean success = false;
     private final int code;

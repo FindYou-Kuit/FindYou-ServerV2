@@ -27,7 +27,7 @@ public class RecommendedContentService {
         if (strategy == null) {
             throw switch (type){
                 case VIDEO -> new CustomException(RECOMMENDED_VIDEO_NOT_FOUND);
-                case ARTICLE -> new CustomException(RECOMMENDED_ARTICLE_NOT_FOUND);
+                case NEWS -> new CustomException(RECOMMENDED_NEWS_NOT_FOUND);
                 default -> new CustomException(API_NOT_FOUND);
             };
         }

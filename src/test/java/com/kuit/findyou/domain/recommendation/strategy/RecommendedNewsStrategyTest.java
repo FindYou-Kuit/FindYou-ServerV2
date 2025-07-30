@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.recommendation.strategy;
 
-import com.kuit.findyou.domain.recommendation.model.RecommendedArticle;
-import com.kuit.findyou.domain.recommendation.repository.RecommendedArticleRepository;
-import com.kuit.findyou.domain.recommendation.service.strategy.RecommendedArticleStrategy;
+import com.kuit.findyou.domain.recommendation.model.RecommendedNews;
+import com.kuit.findyou.domain.recommendation.repository.RecommendedNewsRepository;
+import com.kuit.findyou.domain.recommendation.service.strategy.RecommendedNewsStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,30 +17,30 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-public class RecommendedArticleStrategyTest {
+public class RecommendedNewsStrategyTest {
 
     @Mock
-    private RecommendedArticleRepository articleRepository;
+    private RecommendedNewsRepository newsRepository;
 
     @InjectMocks
-    private RecommendedArticleStrategy strategy;
+    private RecommendedNewsStrategy strategy;
 
     @Test
     void getRecommendedContents_shouldReturnMappedDtoList() {
         // given
-        var video1 = RecommendedArticle.builder()
+        var video1 = RecommendedNews.builder()
                 .title("강아지 기사")
                 .uploader("찾아유")
                 .url("news.com/1")
                 .build();
 
-        var video2 = RecommendedArticle.builder()
+        var video2 = RecommendedNews.builder()
                 .title("고양이 기사")
                 .uploader("차자유")
                 .url("news.com/2")
                 .build();
 
-        when(articleRepository.findAll()).thenReturn(List.of(video1, video2));
+        when(newsRepository.findAll()).thenReturn(List.of(video1, video2));
 
         // when
         var result = strategy.getRecommendedContents();

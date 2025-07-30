@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.recommendation.repository;
 
-import com.kuit.findyou.domain.recommendation.model.RecommendedArticle;
+import com.kuit.findyou.domain.recommendation.model.RecommendedNews;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,24 +16,24 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @DataJpaTest
 @Transactional
 @ActiveProfiles("test")
-public class RecommendedArticleRepositoryTest {
+public class RecommendedNewsRepositoryTest {
     @Autowired
-    private RecommendedArticleRepository articleRepository;
+    private RecommendedNewsRepository newsRepository;
 
     @Test
     @DisplayName("추천 기사 저장 및 조회")
     void saveAndFindAll() {
         // given
-        RecommendedArticle article = RecommendedArticle.builder()
+        RecommendedNews article = RecommendedNews.builder()
                 .title("강아지 영상")
                 .uploader("찾아유 일보")
                 .url("https://news.com/v/1")
                 .build();
 
-        articleRepository.save(article);
+        newsRepository.save(article);
 
         // when
-        List<RecommendedArticle> result = articleRepository.findAll();
+        List<RecommendedNews> result = newsRepository.findAll();
 
         // then
         assertThat(result).hasSize(1);
