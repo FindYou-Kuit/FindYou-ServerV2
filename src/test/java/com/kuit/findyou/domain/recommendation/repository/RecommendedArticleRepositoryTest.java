@@ -26,7 +26,7 @@ public class RecommendedArticleRepositoryTest {
         // given
         RecommendedArticle article = RecommendedArticle.builder()
                 .title("강아지 영상")
-                .source("찾아유 일보")
+                .uploader("찾아유 일보")
                 .url("https://news.com/v/1")
                 .build();
 
@@ -37,6 +37,6 @@ public class RecommendedArticleRepositoryTest {
 
         // then
         assertThat(result).hasSize(1);
-        AssertionsForClassTypes.assertThat(result.get(0).getSource()).isEqualTo("찾아유 일보");
+        AssertionsForClassTypes.assertThat(result.get(0).getUploader()).isEqualTo("찾아유 일보");
     }
 }
