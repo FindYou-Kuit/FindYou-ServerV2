@@ -25,6 +25,6 @@ public class RecommendedArticle extends BaseEntity{
     @Column(name = "source", length = 2083, nullable = false)
     private String source;
 
-    @Column(name = "link", length = 2083, nullable = false)
-    private String link;
+    @Column(name = "url", length = 2083, nullable = false)
+    private String url;
 }
