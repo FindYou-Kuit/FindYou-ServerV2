@@ -14,7 +14,7 @@ public class SigunguQueryServiceImpl implements SigunguQueryService{
 
     @Override
     public SigunguListResponseDTO getSigunguList(Long sidoId) {
-        return new SigunguListResponseDTO(sigunguRepository.findBySido_Id(sidoId).stream()
+        return new SigunguListResponseDTO(sigunguRepository.findBySidoId(sidoId).stream()
                 .map(Sigungu::getName)
                 .toList());
     }

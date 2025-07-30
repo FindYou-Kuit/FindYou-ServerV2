@@ -31,7 +31,7 @@ public class CityController {
         return BaseResponse.ok(cityServiceFacade.getSidoList());
     }
 
-    @Operation(summary = "시군구 정보 반환 API", description = "시도 정보를 반환하기 위한 API")
+    @Operation(summary = "시군구 정보 반환 API", description = "시군구 정보를 반환하기 위한 API")
     @GetMapping("/api/v2/sigungus")
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<SigunguListResponseDTO> getSigunguList(
