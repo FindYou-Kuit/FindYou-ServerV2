@@ -27,8 +27,4 @@ public class Sido extends BaseEntity{
     @OneToMany(mappedBy = "sido", orphanRemoval = true)
     @Builder.Default
     private List<Sigungu> sigunguList = new ArrayList<>();
-
-    public void addSigungu(Sigungu sigungu) {
-        sigunguList.add(sigungu);
-    }
 }
