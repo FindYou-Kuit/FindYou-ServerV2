@@ -4,5 +4,5 @@ import com.kuit.findyou.domain.city.dto.response.SidoListResponseDTO;
 
 public interface SidoQueryService {
 
-    SidoListResponseDTO getSidoNames();
+    SidoListResponseDTO getSidoList();
 }

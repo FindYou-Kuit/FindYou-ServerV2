@@ -12,7 +12,7 @@ public class CityServiceFacade {
     private final SidoQueryService sidoQueryService;
 
     public SidoListResponseDTO getSidoNames() {
-        return sidoQueryService.getSidoNames();
+        return sidoQueryService.getSidoList();
     }
 
 }
