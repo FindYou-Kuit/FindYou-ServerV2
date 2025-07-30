@@ -1,14 +1,17 @@
 package com.kuit.findyou.domain.city.controller;
 
 import com.kuit.findyou.domain.city.dto.response.SidoListResponseDTO;
+import com.kuit.findyou.domain.city.dto.response.SigunguListResponseDTO;
 import com.kuit.findyou.domain.city.service.facade.CityServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
@@ -24,7 +27,17 @@ public class CityController {
     @Operation(summary = "시도 정보 반환 API", description = "시도 정보를 반환하기 위한 API")
     @GetMapping("/api/v2/sidos")
     @CustomExceptionDescription(DEFAULT)
-    public BaseResponse<SidoListResponseDTO> getSidoNames() {
-        return BaseResponse.ok(cityServiceFacade.getSidoNames());
+    public BaseResponse<SidoListResponseDTO> getSidoList() {
+        return BaseResponse.ok(cityServiceFacade.getSidoList());
+    }
+
+    @Operation(summary = "시군구 정보 반환 API", description = "시도 정보를 반환하기 위한 API")
+    @GetMapping("/api/v2/sigungus")
+    @CustomExceptionDescription(DEFAULT)
+    public BaseResponse<SigunguListResponseDTO> getSigunguList(
+            @Parameter(description = "시도 ID", example = "1")
+            @RequestParam("sidoId") Long sidoId
+    ) {
+        return BaseResponse.ok(cityServiceFacade.getSigunguList(sidoId));
     }
 }
