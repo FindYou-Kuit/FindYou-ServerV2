@@ -41,11 +41,11 @@ public class RecommendedContentController {
 
     @Operation(summary = "추천 기사 조회 API", description = "추천 기사 목록을 조회합니다.")
     @GetMapping("/news")
-    @CustomExceptionDescription(RECOMMENDED_ARTICLE)
-    public BaseResponse<List<RecommendedContentResponse>> getRecommendedArticles(
+    @CustomExceptionDescription(RECOMMENDED_NEWS)
+    public BaseResponse<List<RecommendedContentResponse>> getRecommendedNews(
             @Parameter(hidden = true) @LoginUserId Long userId
     ) {
-        List<RecommendedContentResponse> response = recommendedContentFacade.getRecommendedContents(ContentType.ARTICLE);
+        List<RecommendedContentResponse> response = recommendedContentFacade.getRecommendedContents(ContentType.NEWS);
         return BaseResponse.ok(response);
     }
 }

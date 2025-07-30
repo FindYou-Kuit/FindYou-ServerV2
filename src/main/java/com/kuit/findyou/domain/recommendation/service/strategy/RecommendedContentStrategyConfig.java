@@ -12,11 +12,11 @@ public class RecommendedContentStrategyConfig {
     @Bean
     public Map<ContentType, RecommendedContentStrategy> strategyMap(
             RecommendedVideoStrategy videoStrategy,
-            RecommendedNewsStrategy articleStrategy
+            RecommendedNewsStrategy newsStrategy
     ) {
         return Map.of(
                 ContentType.VIDEO, videoStrategy,
-                ContentType.ARTICLE, articleStrategy
+                ContentType.NEWS, newsStrategy
         );
     }
 }

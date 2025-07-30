@@ -33,8 +33,8 @@ public enum SwaggerResponseDescription {
             RECOMMENDED_VIDEO_NOT_FOUND
     ))),
 
-    RECOMMENDED_ARTICLE(new LinkedHashSet<>(Set.of(
-            RECOMMENDED_ARTICLE_NOT_FOUND
+    RECOMMENDED_NEWS(new LinkedHashSet<>(Set.of(
+            RECOMMENDED_NEWS_NOT_FOUND
     ))),
 
     DEFAULT(new LinkedHashSet<>());
