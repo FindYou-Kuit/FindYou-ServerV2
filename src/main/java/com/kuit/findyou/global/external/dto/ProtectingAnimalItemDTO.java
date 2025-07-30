@@ -1,4 +1,4 @@
-package com.kuit.findyou.global.common.external.dto;
+package com.kuit.findyou.global.external.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

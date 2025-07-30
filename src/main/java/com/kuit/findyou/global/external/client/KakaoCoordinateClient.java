@@ -1,6 +1,6 @@
-package com.kuit.findyou.global.common.external.client;
+package com.kuit.findyou.global.external.client;
 
-import com.kuit.findyou.global.common.external.dto.KakaoAddressResponse;
+import com.kuit.findyou.global.external.dto.KakaoAddressResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

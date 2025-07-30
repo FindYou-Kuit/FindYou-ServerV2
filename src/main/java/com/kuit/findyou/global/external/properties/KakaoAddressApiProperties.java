@@ -1,4 +1,4 @@
-package com.kuit.findyou.global.common.external.properties;
+package com.kuit.findyou.global.external.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

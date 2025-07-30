@@ -1,4 +1,4 @@
-package com.kuit.findyou.global.common.external.client;
+package com.kuit.findyou.global.external.client;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
@@ -7,10 +7,10 @@ import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
-import com.kuit.findyou.global.common.external.dto.ProtectingAnimalApiFullResponse;
-import com.kuit.findyou.global.common.external.dto.ProtectingAnimalItemDTO;
-import com.kuit.findyou.global.common.external.properties.ProtectingAnimalApiProperties;
-import com.kuit.findyou.global.common.external.util.ProtectingAnimalParser;
+import com.kuit.findyou.global.external.dto.ProtectingAnimalApiFullResponse;
+import com.kuit.findyou.global.external.dto.ProtectingAnimalItemDTO;
+import com.kuit.findyou.global.external.properties.ProtectingAnimalApiProperties;
+import com.kuit.findyou.global.external.util.ProtectingAnimalParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

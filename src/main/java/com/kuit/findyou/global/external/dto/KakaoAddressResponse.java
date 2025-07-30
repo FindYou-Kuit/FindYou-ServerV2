@@ -1,4 +1,4 @@
-package com.kuit.findyou.global.common.external.dto;
+package com.kuit.findyou.global.external.dto;
 
 import java.util.List;
 

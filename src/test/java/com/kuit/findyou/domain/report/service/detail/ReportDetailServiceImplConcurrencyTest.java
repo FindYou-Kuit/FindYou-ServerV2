@@ -18,7 +18,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.kuit.findyou.domain.report.model.*;
-import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
+import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

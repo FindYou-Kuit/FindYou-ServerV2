@@ -1,7 +1,7 @@
 package com.kuit.findyou.global.config;
 
-import com.kuit.findyou.global.common.external.properties.KakaoAddressApiProperties;
-import com.kuit.findyou.global.common.external.properties.ProtectingAnimalApiProperties;
+import com.kuit.findyou.global.external.properties.KakaoAddressApiProperties;
+import com.kuit.findyou.global.external.properties.ProtectingAnimalApiProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
