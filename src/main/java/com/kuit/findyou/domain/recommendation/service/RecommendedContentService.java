@@ -3,12 +3,15 @@ package com.kuit.findyou.domain.recommendation.service;
 import com.kuit.findyou.domain.recommendation.dto.RecommendedContentResponse;
 import com.kuit.findyou.domain.recommendation.dto.ContentType;
 import com.kuit.findyou.domain.recommendation.service.strategy.RecommendedContentStrategy;
+import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
 @RequiredArgsConstructor
 @Service
@@ -22,7 +25,11 @@ public class RecommendedContentService {
 
         RecommendedContentStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            throw new IllegalArgumentException("지원하지 않는 콘텐츠 타입입니다: " + type);
+            throw switch (type){
+                case VIDEO -> new CustomException(RECOMMENDED_VIDEO_NOT_FOUND);
+                case ARTICLE -> new CustomException(RECOMMENDED_ARTICLE_NOT_FOUND);
+                default -> new CustomException(API_NOT_FOUND);
+            };
         }
 
         return strategy.getRecommendedContents();

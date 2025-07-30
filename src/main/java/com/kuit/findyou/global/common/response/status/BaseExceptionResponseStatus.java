@@ -31,7 +31,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     PROTECTING_REPORT_NOT_FOUND(404, "존재하지 않는 보호글입니다."),
     MISSING_REPORT_NOT_FOUND(404, "존재하지 않는 실종 신고글입니다."),
     WITNESS_REPORT_NOT_FOUND(404, "존재하지 않는 목격 신고글입니다."),
-    ILLEGAL_TAG(500, "잘못된 태그값입니다.");
+    ILLEGAL_TAG(500, "잘못된 태그값입니다."),
+
+    // 추천 컨텐츠 - Recommendation
+    RECOMMENDED_VIDEO_NOT_FOUND(404, "추천 영상이 존재하지 않습니다."),
+    RECOMMENDED_ARTICLE_NOT_FOUND(404, "추천 기사가 존재하지 않습니다.");
 
     private final boolean success = false;
     private final int code;
