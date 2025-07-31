@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
 import com.kuit.findyou.domain.breed.dto.response.BreedListResponseDTO;
 import com.kuit.findyou.domain.breed.service.breedAiDetection.BreedAiDetectionService;
 import com.kuit.findyou.domain.breed.service.breedQuery.BreedQueryService;
+import com.kuit.findyou.global.external.util.OpenAiPromptBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
