@@ -3,6 +3,7 @@ package com.kuit.findyou.global.external.client;
 import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.dto.OpenAiResponse;
+import com.kuit.findyou.global.external.exception.OpenAiClientException;
 import com.kuit.findyou.global.external.util.OpenAiParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,7 +12,6 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BREED_ANALYSIS_FAILED;
 
 @Component
 @Slf4j
@@ -52,8 +52,7 @@ public class OpenAiClient {
                     .body(OpenAiResponse.class);
 
             if (response == null || response.choices() == null || response.choices().isEmpty()) {
-                log.warn("OpenAI Vision API 응답이 비어있습니다.");
-                throw new CustomException(BREED_ANALYSIS_FAILED);
+                throw new OpenAiClientException("OpenAI Vision API 응답이 비어있습니다.");
             }
 
             String content = response.choices().get(0).message().content();
@@ -64,15 +63,13 @@ public class OpenAiClient {
             List<String> colors = OpenAiParser.parseColors(content);
 
             if (species == null || breed == null || colors.isEmpty()) {
-                log.warn("GPT 응답 파싱 실패: species={}, breed={}, colors={}", species, breed, colors);
-                throw new CustomException(BREED_ANALYSIS_FAILED);
+                throw new OpenAiClientException("GPT 응답 파싱에 실패하였습니다.");
             }
 
             return new BreedAiDetectionResponseDTO(species, breed, colors);
 
         } catch (Exception e) {
-            log.error("OpenAI Vision API 호출 중 오류 발생", e);
-            throw new CustomException(BREED_ANALYSIS_FAILED);
+            throw new OpenAiClientException("OpenAI Vision API 호출 중 오류가 발생했습니다.");
         }
     }
 }
