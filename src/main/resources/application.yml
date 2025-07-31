@@ -99,6 +99,11 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       connection-timeout: 30000
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 
 openapi:
   protecting-animal:
