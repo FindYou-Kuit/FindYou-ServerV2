@@ -1,0 +1,95 @@
+name: CD with Gradle and Docker
+
+on:
+  push:
+    branches:
+      - 'dev'
+      - 'main'
+      - 'feat/#24-cicd-pipeline'
+  pull_request:
+    branches:
+      - 'dev'
+      - 'main'
+      - 'feat/#24-cicd-pipeline'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: ☕️ set up JDK 17        # 프로젝트의 java 버전에 맞추어 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 👏🏻 grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🐘 build with Gradle (with test)
+        run: ./gradlew clean build --stacktrace
+#      - name: 🐘 build with Gradle (skip test)
+#        run: ./gradlew clean build -x test --stacktrace
+
+      - name: 🐳 Docker build & push
+        run: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }} .
+            docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}
+
+
+      - name: 🫴🏻 Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: 🪪 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-northeast-2'
+
+      - name: ➕ Add GitHub Actions IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: 📦 Update docker-compose.yml on EC2
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
+          chmod 400 ec2-key.pem
+          scp -i ec2-key.pem -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/FindYou-ServerV2/docker-compose.yml
+
+      - name: 🚀 Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            cd /home/ubuntu/FindYou-ServerV2
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+            
+            echo "🚮 Cleaning up old images"
+            sudo docker image prune -f
+
+
+      - name: ❌ Remove GitHub Actions IP
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --region ap-northeast-2 \
+            --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
