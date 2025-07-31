@@ -7,7 +7,6 @@ import com.kuit.findyou.domain.home.dto.LossInfoServiceApiResponse;
 import com.kuit.findyou.domain.home.dto.RescueAnimalStatsServiceApiResponse;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.external.dto.ProtectingAnimalApiFullResponse;
-import com.kuit.findyou.global.common.external.properties.ProtectingAnimalApiProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,19 +26,22 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class HomeStatisticsService {
     @Value("${openapi.protecting-animal.api-key}")
     private String serviceKey;
-    private final ProtectingAnimalApiProperties protectingAnimalApiProperties;
+    private final RestClient rescueAnimalStatRestClient;
     private final RestClient protectingAnimalRestClient;
+    private final RestClient lossAnimalInfoRestClient;
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private final String REDIS_KEY_FOR_CACHED_STATISTICS = "home:statistics";
     public HomeStatisticsService(
-            ProtectingAnimalApiProperties protectingAnimalApiProperties,
+            @Qualifier("rescueAnimalStatsRestClient") RestClient rescueAnimalStatRestClient,
             @Qualifier("protectingAnimalRestClient") RestClient protectingAnimalRestClient,
+            @Qualifier("lossAnimalInfoRestClient") RestClient lossAnimalInfoRestClient,
             RedisTemplate redisTemplate,
             ObjectMapper objectMapper
     ){
-        this.protectingAnimalApiProperties = protectingAnimalApiProperties;
+        this.rescueAnimalStatRestClient = rescueAnimalStatRestClient;
         this.protectingAnimalRestClient = protectingAnimalRestClient;
+        this.lossAnimalInfoRestClient = lossAnimalInfoRestClient;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
     }
@@ -92,9 +94,13 @@ public class HomeStatisticsService {
         String bgnde =  startDate.format(formatter);
         String endde = endDate.format(formatter);
 
-        RestClient restClient = RestClient.create();
-        RescueAnimalStatsServiceApiResponse response1 = restClient.get()
-                .uri("https://apis.data.go.kr/1543061/rescueAnimalStatsService/rescueAnimalStats?serviceKey=" + serviceKey+ "&bgnde="+ bgnde+ "&endde=" + endde+ "&_type=json")
+        RescueAnimalStatsServiceApiResponse response1 = rescueAnimalStatRestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("serviceKey", serviceKey)
+                        .queryParam("bgnde", bgnde)
+                        .queryParam("endde", endde)
+                        .queryParam("_type", "json")
+                        .build())
                 .retrieve()
                 .body(RescueAnimalStatsServiceApiResponse.class);
 
@@ -114,7 +120,7 @@ public class HomeStatisticsService {
         ProtectingAnimalApiFullResponse response2 = protectingAnimalRestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/abandonmentPublic_v2")
-                        .queryParam("serviceKey", protectingAnimalApiProperties.apiKey())
+                        .queryParam("serviceKey", serviceKey)
                         .queryParam("bgnde", bgnde)
                         .queryParam("endde", endde)
                         .queryParam("_type", "json")
@@ -127,9 +133,13 @@ public class HomeStatisticsService {
         log.info("rescuedAnimalCount = {}", rescuedAnimalCount);
 
 
-        restClient = RestClient.create();
-        LossInfoServiceApiResponse response3 = restClient.get()
-                .uri("https://apis.data.go.kr/1543061/lossInfoService/lossInfo?serviceKey=" + serviceKey + "&bgnde=" + bgnde + "&endde=" + endde + "&_type=json")
+        LossInfoServiceApiResponse response3 = lossAnimalInfoRestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("serviceKey", serviceKey)
+                        .queryParam("bgnde", bgnde)
+                        .queryParam("endde", endde)
+                        .queryParam("_type", "json")
+                        .build())
                 .retrieve()
                 .body(LossInfoServiceApiResponse.class);
 
