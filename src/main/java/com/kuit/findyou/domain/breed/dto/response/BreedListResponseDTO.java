@@ -1,14 +1,10 @@
 package com.kuit.findyou.domain.breed.dto.response;
 
-import com.kuit.findyou.domain.city.dto.response.SidoDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.util.List;
 
 public record BreedListResponseDTO(
 
