@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class GptChatResponseParser {
+public class OpenAiParser {
 
     /**
      * 응답 문자열에서 축종(Species)을 추출

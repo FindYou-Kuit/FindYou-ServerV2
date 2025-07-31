@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record GptChatResponse(
+public record OpenAiResponse(
         List<Choice> choices
 ) {
     public record Choice(
