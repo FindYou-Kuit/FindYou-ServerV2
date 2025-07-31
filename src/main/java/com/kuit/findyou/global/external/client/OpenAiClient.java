@@ -1,7 +1,9 @@
 package com.kuit.findyou.global.external.client;
 
+import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
 import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.external.dto.GptChatResponse;
+import com.kuit.findyou.global.external.dto.OpenAiResponse;
+import com.kuit.findyou.global.external.util.OpenAiParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -72,7 +74,7 @@ public class OpenAiClient {
         this.openAiRestClient = openAiRestClient;
     }
 
-    public String analyzeImage(String imageUrl) {
+    public BreedAiDetectionResponseDTO analyzeImage(String imageUrl) {
         try {
             Map<String, Object> body = Map.of(
                     "model", "gpt-4o",
@@ -95,18 +97,24 @@ public class OpenAiClient {
             );
 
 
-            GptChatResponse response = openAiRestClient.post()
+            OpenAiResponse response = openAiRestClient.post()
                     .uri("")
                     .body(body)
                     .retrieve()
-                    .body(GptChatResponse.class);
+                    .body(OpenAiResponse.class);
 
             if (response == null || response.choices().isEmpty()) {
                 log.warn("[OpenAI 응답 없음] imageUrl={}", imageUrl);
                 throw new CustomException(BREED_ANALYSIS_FAILED);
             }
 
-            return response.choices().get(0).message().content();
+            String content = response.choices().get(0).message().content();
+
+            return new BreedAiDetectionResponseDTO(
+                    OpenAiParser.parseSpecies(content),
+                    OpenAiParser.parseBreed(content),
+                    OpenAiParser.parseColors(content)
+            );
         } catch (Exception e) {
             log.error("[OpenAI Vision API 호출 실패] imageUrl={}", imageUrl, e);
             throw new CustomException(BREED_ANALYSIS_FAILED);
