@@ -45,3 +45,6 @@ openapi:
   kakao:
     api-url: "https://dapi.kakao.com/v2/local/search/address.json"
     api-key: test-key
+  openai:
+    api-url: "https://api.openai.com/v1/chat/completions"
+    api-key: test-key
