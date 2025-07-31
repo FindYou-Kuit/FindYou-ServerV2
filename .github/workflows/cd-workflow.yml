@@ -5,12 +5,10 @@ on:
     branches:
       - 'dev'
       - 'main'
-      - 'feat/#24-cicd-pipeline'
   pull_request:
     branches:
       - 'dev'
       - 'main'
-      - 'feat/#24-cicd-pipeline'
 
 permissions:
   contents: read
@@ -32,8 +30,6 @@ jobs:
 
       - name: 🐘 build with Gradle (with test)
         run: ./gradlew clean build --stacktrace
-#      - name: 🐘 build with Gradle (skip test)
-#        run: ./gradlew clean build -x test --stacktrace
 
       - name: 🐳 Docker build & push
         run: |
