@@ -9,6 +9,7 @@ import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class BreedController {
     @Operation(summary = "품종 AI 판별 API", description = "AI를 활용해 품종을 판별하기 위한 API")
     @PostMapping("/ai-detection")
     @CustomExceptionDescription(BREED_AI_DETECTION)
-    public BaseResponse<BreedAiDetectionResponseDTO> analyzeBreedWithAi(@RequestBody ImageUrlRequestDTO request) {
+    public BaseResponse<BreedAiDetectionResponseDTO> analyzeBreedWithAi(@Valid @RequestBody ImageUrlRequestDTO request) {
         return BaseResponse.ok(breedServiceFacade.analyzeBreedWithAi(request.imageUrl()));
     }
 }

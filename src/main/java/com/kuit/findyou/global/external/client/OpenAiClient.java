@@ -1,9 +1,6 @@
 package com.kuit.findyou.global.external.client;
 
 import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
-import com.kuit.findyou.domain.breed.model.Breed;
-import com.kuit.findyou.domain.breed.model.Species;
-import com.kuit.findyou.domain.breed.repository.BreedRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.dto.OpenAiResponse;
 import com.kuit.findyou.global.external.util.OpenAiParser;
@@ -14,9 +11,6 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static com.kuit.findyou.domain.breed.model.Species.*;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BREED_ANALYSIS_FAILED;
 
 @Component
@@ -25,7 +19,7 @@ public class OpenAiClient {
 
     private final RestClient openAiRestClient;
 
-    public OpenAiClient(@Qualifier("openAiRestClient") RestClient openAiRestClient, BreedRepository breedRepository) {
+    public OpenAiClient(@Qualifier("openAiRestClient") RestClient openAiRestClient) {
         this.openAiRestClient = openAiRestClient;
     }
 
@@ -68,6 +62,11 @@ public class OpenAiClient {
             String species = OpenAiParser.parseSpecies(content);
             String breed = OpenAiParser.parseBreed(content);
             List<String> colors = OpenAiParser.parseColors(content);
+
+            if (species == null || breed == null || colors.isEmpty()) {
+                log.warn("GPT 응답 파싱 실패: species={}, breed={}, colors={}", species, breed, colors);
+                throw new CustomException(BREED_ANALYSIS_FAILED);
+            }
 
             return new BreedAiDetectionResponseDTO(species, breed, colors);
 
