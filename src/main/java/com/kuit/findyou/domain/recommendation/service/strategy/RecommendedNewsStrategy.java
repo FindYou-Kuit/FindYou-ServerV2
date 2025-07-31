@@ -18,7 +18,7 @@ public class RecommendedNewsStrategy implements RecommendedContentStrategy {
         return newsRepository.findAll().stream()
                 .map(news -> new RecommendedContentResponse(
                         news.getTitle(),
-                        news.getUploader(), // uploader 역할
+                        news.getUploader(),
                         news.getUrl()
                 ))
                 .toList();
