@@ -31,7 +31,7 @@ public class KakaoCoordinateClient {
     public Coordinate requestCoordinateOrDefault(String address) {
         try {
             return self.requestCoordinateFromKakaoApi(address); // retry + rateLimit
-        } catch (ResourceAccessException e) {
+        } catch (Exception e) {
             log.error("[카카오 좌표 API 3회 재시도 실패 - fallback 적용] address={}", address, e);
             return DEFAULT_COORDINATE;
         }
