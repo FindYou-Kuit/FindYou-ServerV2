@@ -107,6 +107,8 @@ openapi:
   kakao:
     api-url: "https://dapi.kakao.com/v2/local/search/address.json"
     api-key: ${KAKAO_REST_API_KEY}
+  openai:
+    api-key: ${OPENAI_API_KEY}
 
 
 logging:
