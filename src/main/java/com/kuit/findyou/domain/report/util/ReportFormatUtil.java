@@ -8,11 +8,11 @@ public class ReportFormatUtil {
     private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
 
     public static String formatAge(String age) {
-        return UNKNOWN.equals(age) ? UNKNOWN : age + "살";
+        return age == null || UNKNOWN.equals(age) ? UNKNOWN : age + "살";
     }
 
     public static String formatWeight(String weight) {
-        return UNKNOWN.equals(weight) ? UNKNOWN : weight + "kg";
+        return weight == null || UNKNOWN.equals(weight) ? UNKNOWN : weight + "kg";
     }
 
     public static Double formatCoordinate(BigDecimal coordinate) {
