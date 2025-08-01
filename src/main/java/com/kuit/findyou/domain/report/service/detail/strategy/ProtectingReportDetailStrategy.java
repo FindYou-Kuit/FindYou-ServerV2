@@ -2,7 +2,9 @@ package com.kuit.findyou.domain.report.service.detail.strategy;
 
 import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
+import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
+import com.kuit.findyou.domain.report.util.ReportFormatUtil;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -28,8 +30,8 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
                 report.getReportImagesUrlList(),
                 report.getBreed(),
                 report.getTag().getValue(),
-                report.getAge().equals("미상") ? "미상" : report.getAge() + "살",
-                report.getWeight().equals("미상") ? "미상" : report.getWeight() + "kg",
+                ReportFormatUtil.formatAge(report.getAge()),
+                ReportFormatUtil.formatWeight(report.getWeight()),
                 report.getFurColor(),
                 report.getSex().getValue(),
                 report.getNeutering().toString(),
