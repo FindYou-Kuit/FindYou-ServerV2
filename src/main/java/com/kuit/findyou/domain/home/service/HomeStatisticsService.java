@@ -54,19 +54,36 @@ public class HomeStatisticsService {
     }
 
     public GetHomeResponse.TotalStatistics updateTotalStatistics() {
-        log.info("[updateTotalStatistics] 캐시 업데이트 시작");
+        log.info("[updateTotalStatistics] 캐시 업데이트 작업 시작");
         // 모든 통계 구하기
-        GetHomeResponse.Statistics recent7DaysStatistics = parseStatistics(7);
-        GetHomeResponse.Statistics recent3MonthsStatistics = parseStatistics(90);
-        GetHomeResponse.Statistics recent1YearStatistics = parseStatistics(365);
-        GetHomeResponse.TotalStatistics totalStatistics = new GetHomeResponse.TotalStatistics(recent7DaysStatistics, recent3MonthsStatistics, recent1YearStatistics);
+        CompletableFuture<GetHomeResponse.Statistics> recent7DaysFuture = CompletableFuture.supplyAsync(() -> {
+            return parseStatistics(7);
+        }, statisticsExecutor);
 
-        // 레디스에 저장
-        cacheTotalStatistics(totalStatistics);
+        CompletableFuture<GetHomeResponse.Statistics> recent3MonthsFuture = CompletableFuture.supplyAsync(() -> {
+            return parseStatistics(90);
+        }, statisticsExecutor);
 
-        log.info("[updateTotalStatistics] 캐시 업데이트 완료");
+        CompletableFuture<GetHomeResponse.Statistics> recent1YearFuture = CompletableFuture.supplyAsync(() -> {
+            return parseStatistics(365);
+        }, statisticsExecutor);
 
-        return totalStatistics;
+        try{
+            GetHomeResponse.Statistics recent7DaysStatistics = recent7DaysFuture.get();
+            GetHomeResponse.Statistics recent3MonthsStatistics = recent3MonthsFuture.get();
+            GetHomeResponse.Statistics recent1YearStatistics = recent1YearFuture.get();
+            GetHomeResponse.TotalStatistics totalStatistics = new GetHomeResponse.TotalStatistics(recent7DaysStatistics, recent3MonthsStatistics, recent1YearStatistics);
+
+            // 레디스에 저장
+            cacheTotalStatistics(totalStatistics);
+
+            log.info("[updateTotalStatistics] 캐시 업데이트 작업 완료");
+
+            return totalStatistics;
+
+        } catch (ExecutionException | InterruptedException e) {
+            throw new CustomException(INTERNAL_SERVER_ERROR);
+        }
     }
 
     private void cacheTotalStatistics(GetHomeResponse.TotalStatistics totalStats) {
