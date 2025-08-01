@@ -10,6 +10,10 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 
 @Getter
 public enum SwaggerResponseDescription {
+    GET_HOME(new LinkedHashSet<>(Set.of(
+            HOME_DATA_CACHING_FAILED
+    ))),
+
     REGISTER_USER(new LinkedHashSet<>(Set.of(
             ALREADY_REGISTERED_USER,
             IMAGE_UPLOAD_FAILED
