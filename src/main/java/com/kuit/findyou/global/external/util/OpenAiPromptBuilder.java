@@ -23,12 +23,12 @@ public class OpenAiPromptBuilder {
                         Species,Breed,Color1,Color2,Color3,...
 
                          \\
-                        - The species must be one of the following: "개", "고양이", "기타".
+                        - The species must be one of the following: "강아지", "고양이", "기타".
                          \\
                         - The breed must be exactly one, and it must match the species category:
 
                          \\
-                        If the species is "개":
+                        If the species is "강아지":
                          %s
 
                          \\
@@ -50,7 +50,7 @@ public class OpenAiPromptBuilder {
 
                          \\
                         **Example input & expected response:**
-                         개,골든 리트리버,노란색
+                         강아지,골든 리트리버,노란색
                          고양이,러시안 블루,회색,검은색
                          기타,기타축종,하얀색""",
                 dogBreeds, catBreeds, etcBreeds, FIXED_COLORS);
