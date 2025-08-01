@@ -19,7 +19,11 @@ public record GetHomeResponse(
             Statistics recent3months,
             @Schema(description = "최근 1년 통계")
             Statistics recent1Year
-    ){ }
+    ){
+        public static TotalStatistics empty(){
+            return new TotalStatistics(Statistics.empty(), Statistics.empty(), Statistics.empty());
+        }
+    }
 
     @Schema(description = "통계 정보")
     public record Statistics(
@@ -31,5 +35,9 @@ public record GetHomeResponse(
             String adoptedAnimalCount,
             @Schema(description = "신고", example = "2000")
             String reportedAnimalCount
-    ){}
+    ){
+        public static Statistics empty(){
+            return new Statistics("-", "-", "-", "-");
+        }
+    }
 }
