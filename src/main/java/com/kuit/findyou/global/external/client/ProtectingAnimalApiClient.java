@@ -35,16 +35,19 @@ public class ProtectingAnimalApiClient {
     private final ReportImageRepository reportImageRepository;
     private final ProtectingAnimalApiProperties properties;
     private final RestClient protectingAnimalRestClient;
+    private final KakaoCoordinateClient kakaoCoordinateClient;
 
     public ProtectingAnimalApiClient(
             ProtectingReportRepository protectingReportRepository,
             ReportImageRepository reportImageRepository,
             ProtectingAnimalApiProperties properties,
+            KakaoCoordinateClient kakaoCoordinateClient,
             @Qualifier("protectingAnimalRestClient") RestClient protectingAnimalRestClient
     ) {
         this.protectingReportRepository = protectingReportRepository;
         this.reportImageRepository = reportImageRepository;
         this.properties = properties;
+        this.kakaoCoordinateClient = kakaoCoordinateClient;
         this.protectingAnimalRestClient = protectingAnimalRestClient;
     }
 
@@ -166,14 +169,17 @@ public class ProtectingAnimalApiClient {
     }
 
     private ProtectingReport convertToProtectingReport(ProtectingAnimalItemDTO item) {
+
+        KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(item.careAddr());
+
         return ProtectingReport.builder()
                 .breed(item.kindNm())
                 .species(item.upKindNm())
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.changeToLocalDate(item.happenDt()))
                 .address(item.careAddr())
-                .latitude(null)
-                .longitude(null)
+                .latitude(coordinate.latitude())
+                .longitude(coordinate.longitude())
                 .user(null)
                 .sex(Sex.valueOf(item.sexCd()))
                 .age(ProtectingAnimalParser.parseAge(item.age()))
@@ -195,6 +201,9 @@ public class ProtectingAnimalApiClient {
         return apiItems.stream()
                 .filter(item -> !existingNoticeNumbers.contains(item.noticeNo()))
                 .map(item -> {
+
+                    // Kakao API 통해 좌표 조회
+
                     ProtectingReport report = convertToProtectingReport(item);
                     List<ReportImage> images = new ArrayList<>();
 
