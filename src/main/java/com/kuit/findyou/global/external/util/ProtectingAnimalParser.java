@@ -5,6 +5,7 @@ import org.springframework.web.util.HtmlUtils;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,15 +34,28 @@ public class ProtectingAnimalParser {
     }
 
     /**
-     * 나이(age) 문자열에서 괄호 앞의 연도만 추출.
-     * 예: "2020(년생)" → "2020"
+     * 출생 연도를 기반으로 만 나이를 계산.
+     * 예: "2020(년생)" → "5"
      *
-     * @param age 공공데이터 age 필드
-     * @return 추출된 연도 문자열, 실패 시 "미상"
+     * @param age 공공데이터 age 필드 (예: "2020(년생)")
+     * @return 계산된 나이 (문자열), 실패 시 "미상"
      */
     public static String parseAge(String age) {
-        if (age == null || age.isBlank()) return UNKNOWN;
-        return age.split("\\(")[0].trim();
+        try {
+            if (age == null || age.isBlank()) return UNKNOWN;
+
+            String yearStr = age.split("\\(")[0].trim();
+            int birthYear = Integer.parseInt(yearStr);
+
+            // 출생일 1월 1일로 가정 (정확한 날짜 정보가 없기 때문에)
+            LocalDate birthDate = LocalDate.of(birthYear, 1, 1);
+            LocalDate today = LocalDate.now();
+
+            long years = ChronoUnit.YEARS.between(birthDate, today);
+            return String.valueOf(years);
+        } catch (Exception e) {
+            return UNKNOWN;
+        }
     }
 
     /**
@@ -52,20 +66,31 @@ public class ProtectingAnimalParser {
      * @return 파싱된 몸무게 문자열, 실패 시 "미상"
      */
     public static String parseWeight(String weight) {
-        if (weight == null || weight.isBlank()) return UNKNOWN;
+        try {
+            if (weight == null || weight.isBlank()) return UNKNOWN;
 
-        String value = weight.split("\\(")[0];
-        return value.replace(',', '.').trim();
+            String value = weight.split("\\(")[0];
+            return value.replace(',', '.').trim();
+        } catch (Exception e) {
+            return UNKNOWN;
+        }
     }
 
     /**
      * HTML 인코딩된 색상 문자열을 디코딩하고 '&'를 ','로 치환
      * 예: "갈색&검정" → "갈색,검정"
+     *
+     * @param colorCd 공공데이터 colorCd 필드
+     * @return 파싱된 색상 문자열, 실패 시 "미상"
      */
     public static String parseColor(String colorCd) {
-        if (colorCd == null || colorCd.isBlank()) return UNKNOWN;
+        try {
+            if (colorCd == null || colorCd.isBlank()) return UNKNOWN;
 
-        return colorCd.replace("&", ",").trim();          // "갈색,검정"
+            return colorCd.replace("&", ",").trim();
+        } catch (Exception e) {
+            return UNKNOWN;
+        }
     }
 
 }

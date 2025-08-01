@@ -28,7 +28,7 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
                 report.getReportImagesUrlList(),
                 report.getBreed(),
                 report.getTag().getValue(),
-                report.getAge(),
+                report.getAge().equals("미상") ? "미상" : report.getAge() + "살",
                 report.getSex().getValue(),
                 report.getDate().toString(),
                 report.getRfid(),
