@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Species {
 
-    DOG("개"), CAT("고양이"), ETC("기타");
+    DOG("강아지"), CAT("고양이"), ETC("기타");
 
     private final String value;
 

@@ -34,7 +34,7 @@ public class WitnessReport extends Report {
     public WitnessReport(String breed, String species, ReportTag tag, LocalDate date,
                           String address, BigDecimal latitude, BigDecimal longitude, User user, String furColor, String significant,
                           String reporterName, String landmark) {
-        super(null, breed, species, tag, date, address, latitude, longitude, user, null, new ArrayList<>(),
+        super(null, breed, species, tag, date, address, latitude, longitude, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.furColor = furColor;
         this.significant = significant;

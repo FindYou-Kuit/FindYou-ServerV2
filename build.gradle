@@ -74,6 +74,10 @@ dependencies {
 	// AWS
 	implementation platform('software.amazon.awssdk:bom:2.25.8')
 	implementation 'software.amazon.awssdk:s3'
+
+	// Resilience4J
+	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+
 }
 
 tasks.named('test') {

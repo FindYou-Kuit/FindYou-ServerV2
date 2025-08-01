@@ -31,8 +31,6 @@ public class ReportDetailServiceImpl implements ReportDetailService {
     private final Map<ReportTag, ReportDetailStrategy<? extends Report, ?>> strategies;
     private final ViewedReportRepository viewedReportRepository;
     private final InterestReportRepository interestReportRepository;
-    private final KakaoCoordinateClient kakaoCoordinateClient;
-    private final CoordinateUpdateService coordinateUpdateService;
     private final UserRepository userRepository;
 
     @PersistenceContext
@@ -57,21 +55,6 @@ public class ReportDetailServiceImpl implements ReportDetailService {
 
         // 4. 관심 여부 조회
         boolean interest = interestReportRepository.existsByReportIdAndUserId(report.getId(), userId);
-
-        // 5. 좌표가 없으면 갱신 시도
-        if (report.isCoordinatesAbsent()) {
-            var coordinate = kakaoCoordinateClient.getCoordinatesFromAddress(report.getAddress());
-
-            try {
-                coordinateUpdateService.updateCoordinates(tag, reportId, coordinate.latitude(), coordinate.longitude());
-                log.info("[좌표 갱신 성공]");
-            } catch (OptimisticLockingFailureException | OptimisticLockException e) {
-                log.warn("[좌표 갱신 실패]");
-            }
-        }
-
-        // 6. DB에서 최신 좌표값 다시 조회
-        em.refresh(report);
 
         return strategy.getDetail(report, interest);
     }
