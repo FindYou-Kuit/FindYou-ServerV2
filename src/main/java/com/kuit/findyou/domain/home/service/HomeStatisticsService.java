@@ -65,18 +65,11 @@ public class HomeStatisticsService {
 
     public GetHomeResponse.TotalStatistics updateTotalStatistics() throws CacheUpdateFailedException {
         log.info("[updateTotalStatistics] 캐시 업데이트 작업 시작");
+
         // 모든 통계 구하기
-        CompletableFuture<GetHomeResponse.Statistics> recent7DaysFuture = CompletableFuture.supplyAsync(() -> {
-            return parseStatistics(7);
-        }, statisticsExecutor);
-
-        CompletableFuture<GetHomeResponse.Statistics> recent3MonthsFuture = CompletableFuture.supplyAsync(() -> {
-            return parseStatistics(90);
-        }, statisticsExecutor);
-
-        CompletableFuture<GetHomeResponse.Statistics> recent1YearFuture = CompletableFuture.supplyAsync(() -> {
-            return parseStatistics(365);
-        }, statisticsExecutor);
+        CompletableFuture<GetHomeResponse.Statistics> recent7DaysFuture = parseStatisticsAsync(7);
+        CompletableFuture<GetHomeResponse.Statistics> recent3MonthsFuture = parseStatisticsAsync(90);
+        CompletableFuture<GetHomeResponse.Statistics> recent1YearFuture = parseStatisticsAsync(365);
 
         try{
             GetHomeResponse.Statistics recent7DaysStatistics = recent7DaysFuture.get();
@@ -95,6 +88,10 @@ public class HomeStatisticsService {
             log.error("[updateTotalStatistics] 예외 발생", e);
             throw new CacheUpdateFailedException();
         }
+    }
+
+    private CompletableFuture<GetHomeResponse.Statistics> parseStatisticsAsync(int dayOfPeriod) {
+        return CompletableFuture.supplyAsync(() -> parseStatistics(dayOfPeriod), statisticsExecutor);
     }
 
     public void cacheTotalStatistics(GetHomeResponse.TotalStatistics totalStats) {
@@ -129,61 +126,12 @@ public class HomeStatisticsService {
         String bgnde =  startDate.format(formatter);
         String endde = endDate.format(formatter);
 
-        CompletableFuture<String> protectingAndAdotedFuture = CompletableFuture.supplyAsync(()->{
-            RescueAnimalStatsServiceApiResponse response1 = rescueAnimalStatRestClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .queryParam("serviceKey", serviceKey)
-                            .queryParam("bgnde", bgnde)
-                            .queryParam("endde", endde)
-                            .queryParam("_type", "json")
-                            .build())
-                    .retrieve()
-                    .body(RescueAnimalStatsServiceApiResponse.class);
-
-            String protectingAnimalCount = "0";
-            String adoptedAnimalCount = "0";
-
-            for(RescueAnimalStatsServiceApiResponse.Item item : response1.response().body().items().item()){
-                if(isProtectingAnimalTotalCount(item)) protectingAnimalCount = item.total();
-                else if(isAdoptedAnimalCount(item)) adoptedAnimalCount = item.total();
-            }
-
-            return protectingAnimalCount + "," + adoptedAnimalCount;
-        }, statisticsExecutor);
-
-        CompletableFuture<String> rescuedFuture = CompletableFuture.supplyAsync(() -> {
-            ProtectingAnimalApiFullResponse response2 = protectingAnimalRestClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/abandonmentPublic_v2")
-                            .queryParam("serviceKey", serviceKey)
-                            .queryParam("bgnde", bgnde)
-                            .queryParam("endde", endde)
-                            .queryParam("_type", "json")
-                            .build())
-                    .retrieve()
-                    .body(ProtectingAnimalApiFullResponse.class);
-
-            String rescuedAnimalCount = response2.response().body().totalCount();
-            return rescuedAnimalCount;
-        }, statisticsExecutor);
-
-        CompletableFuture<String> reportedFuture = CompletableFuture.supplyAsync(() -> {
-            LossInfoServiceApiResponse response3 = lossAnimalInfoRestClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .queryParam("serviceKey", serviceKey)
-                            .queryParam("bgnde", bgnde)
-                            .queryParam("endde", endde)
-                            .queryParam("_type", "json")
-                            .build())
-                    .retrieve()
-                    .body(LossInfoServiceApiResponse.class);
-
-            String reportedAnimalCount = response3.response().body().totalCount();
-            return reportedAnimalCount;
-        }, statisticsExecutor);
+        CompletableFuture<String> protectingAndAdoptedFuture = parseProtectingAndAdoptedAnimalCountAsync(bgnde, endde);
+        CompletableFuture<String> rescuedFuture = parseRescuedAnimalCountAsync(bgnde, endde);
+        CompletableFuture<String> reportedFuture = parseReportedAnimalCountAsync(bgnde, endde);
 
         try{
-            String[] token = protectingAndAdotedFuture.get().split(",");
+            String[] token = protectingAndAdoptedFuture.get().split(",");
             String protectingAnimalCount = token[0];
             String adoptedAnimalCount = token[1];
             String reportedAnimalCount = reportedFuture.get();
@@ -196,6 +144,69 @@ public class HomeStatisticsService {
             log.error("[parseStatistics] 예외 발생", e);
             throw new CustomException(INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private CompletableFuture<String> parseReportedAnimalCountAsync(String bgnde, String endde) {
+        return CompletableFuture.supplyAsync(() -> parseReportedAnimalCount(bgnde, endde), statisticsExecutor);
+    }
+
+    private CompletableFuture<String> parseRescuedAnimalCountAsync(String bgnde, String endde) {
+        return CompletableFuture.supplyAsync(()-> parseRescuedAnimalCount(bgnde, endde), statisticsExecutor);
+    }
+
+    private CompletableFuture<String> parseProtectingAndAdoptedAnimalCountAsync(String bgnde, String endde) {
+        return CompletableFuture.supplyAsync(()-> parseProtectingAndAdoptedAnimalCount(bgnde, endde), statisticsExecutor);
+    }
+
+    private String parseReportedAnimalCount(String bgnde, String endde) {
+        LossInfoServiceApiResponse response3 = lossAnimalInfoRestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("serviceKey", serviceKey)
+                        .queryParam("bgnde", bgnde)
+                        .queryParam("endde", endde)
+                        .queryParam("_type", "json")
+                        .build())
+                .retrieve()
+                .body(LossInfoServiceApiResponse.class);
+
+        String reportedAnimalCount = response3.response().body().totalCount();
+        return reportedAnimalCount;
+    }
+
+    private String parseRescuedAnimalCount(String bgnde, String endde) {
+        ProtectingAnimalApiFullResponse response2 = protectingAnimalRestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/abandonmentPublic_v2")
+                        .queryParam("serviceKey", serviceKey)
+                        .queryParam("bgnde", bgnde)
+                        .queryParam("endde", endde)
+                        .queryParam("_type", "json")
+                        .build())
+                .retrieve()
+                .body(ProtectingAnimalApiFullResponse.class);
+
+        String rescuedAnimalCount = response2.response().body().totalCount();
+        return rescuedAnimalCount;
+    }
+
+    private String parseProtectingAndAdoptedAnimalCount(String bgnde, String endde) {
+        RescueAnimalStatsServiceApiResponse response1 = rescueAnimalStatRestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("serviceKey", serviceKey)
+                        .queryParam("bgnde", bgnde)
+                        .queryParam("endde", endde)
+                        .queryParam("_type", "json")
+                        .build())
+                .retrieve()
+                .body(RescueAnimalStatsServiceApiResponse.class);
+
+        String protectingAnimalCount = "0";
+        String adoptedAnimalCount = "0";
+        for(RescueAnimalStatsServiceApiResponse.Item item : response1.response().body().items().item()){
+            if(isProtectingAnimalTotalCount(item)) protectingAnimalCount = item.total();
+            else if(isAdoptedAnimalCount(item)) adoptedAnimalCount = item.total();
+        }
+        return protectingAnimalCount + "," + adoptedAnimalCount;
     }
 
     private static boolean isAdoptedAnimalCount(RescueAnimalStatsServiceApiResponse.Item item) {
