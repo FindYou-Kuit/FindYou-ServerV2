@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
 import com.kuit.findyou.domain.home.dto.LossInfoServiceApiResponse;
 import com.kuit.findyou.domain.home.dto.RescueAnimalStatsServiceApiResponse;
+import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.external.dto.ProtectingAnimalApiFullResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.HOME_DATA_CACHING_FAILED;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INTERNAL_SERVER_ERROR;
 
 import java.util.concurrent.CompletableFuture;
@@ -54,7 +54,16 @@ public class HomeStatisticsService {
         this.objectMapper = objectMapper;
     }
 
-    public GetHomeResponse.TotalStatistics updateTotalStatistics() {
+    public GetHomeResponse.TotalStatistics updateAndGet(){
+        try {
+            return updateTotalStatistics();
+        } catch (CacheUpdateFailedException e) {
+            cacheTotalStatistics(GetHomeResponse.TotalStatistics.empty());
+            return GetHomeResponse.TotalStatistics.empty();
+        }
+    }
+
+    public GetHomeResponse.TotalStatistics updateTotalStatistics() throws CacheUpdateFailedException {
         log.info("[updateTotalStatistics] 캐시 업데이트 작업 시작");
         // 모든 통계 구하기
         CompletableFuture<GetHomeResponse.Statistics> recent7DaysFuture = CompletableFuture.supplyAsync(() -> {
@@ -83,19 +92,12 @@ public class HomeStatisticsService {
             return totalStatistics;
 
         } catch (ExecutionException | InterruptedException e) {
-            log.error("[updateTotalStatistics] 캐시 업데이트 실패 -> 캐시 TTL 연장 시도");
-            Optional<GetHomeResponse.TotalStatistics> cachedTotalStatistics = getCachedTotalStatistics();
-            if(cachedTotalStatistics.isEmpty()){
-                log.warn("[updateTotalStatistics] 캐시 TTL 연장 실패");
-                throw new CustomException(HOME_DATA_CACHING_FAILED);
-            }
-            cacheTotalStatistics(cachedTotalStatistics.get());
-            log.error("[updateTotalStatistics] 캐시 TTL 연장 성공");
-            return cachedTotalStatistics.get();
+            log.error("[updateTotalStatistics] 예외 발생", e);
+            throw new CacheUpdateFailedException();
         }
     }
 
-    private void cacheTotalStatistics(GetHomeResponse.TotalStatistics totalStats) {
+    public void cacheTotalStatistics(GetHomeResponse.TotalStatistics totalStats) {
         try{
             String json = objectMapper.writeValueAsString(totalStats);
             redisTemplate.opsForValue().set(REDIS_KEY_FOR_CACHED_STATISTICS, json, Duration.ofHours(24));
