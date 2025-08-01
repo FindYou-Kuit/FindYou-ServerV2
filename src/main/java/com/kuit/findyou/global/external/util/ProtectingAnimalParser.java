@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.external.util;
 
+import com.kuit.findyou.domain.breed.model.Species;
 import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDate;
@@ -8,6 +9,8 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.kuit.findyou.domain.breed.model.Species.*;
 
 public class ProtectingAnimalParser {
 
@@ -93,4 +96,16 @@ public class ProtectingAnimalParser {
         }
     }
 
-}
+    /**
+     * 공공데이터의 upKindNm 값 '개' 를 '강아지' 로 변환.
+     * 예: "개" → "강아지"
+     *
+     * @param species 공공데이터의 축종명 (예: "개", "고양이", "기타 등등")
+     * @return 개 -> 강아지 / 그 외는 그대로
+     */
+    public static String parseSpecies(String species) {
+        if (species == null || species.isBlank()) return UNKNOWN;
+
+        return species.trim().equals("개") ? DOG.getValue() : species;
+        };
+    }
