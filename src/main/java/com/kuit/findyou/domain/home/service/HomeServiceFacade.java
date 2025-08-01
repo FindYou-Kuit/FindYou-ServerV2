@@ -23,7 +23,7 @@ public class HomeServiceFacade {
         // 통계 정보 조회
         // 레디스에 없으면 직접 외부 서버 호출
         GetHomeResponse.TotalStatistics totalStatistics = homeStatisticsService.getCachedTotalStatistics()
-                .orElseGet(() -> homeStatisticsService.updateTotalStatistics()); // lazy evaluation이라서 필요할 때만 실행됨
+                .orElseGet(() -> homeStatisticsService.updateAndGet()); // lazy evaluation이라서 필요할 때만 실행됨
 
         List<ProtectingAnimalPreview> protectingAnimals = null;
         List<WitnessedOrMissingAnimalPreview> witnessedOrMissingAnimals = null;
