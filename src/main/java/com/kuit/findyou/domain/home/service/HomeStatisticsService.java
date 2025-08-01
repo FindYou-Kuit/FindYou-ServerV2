@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.HOME_DATA_CACHING_FAILED;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INTERNAL_SERVER_ERROR;
 
 import java.util.concurrent.CompletableFuture;
@@ -82,7 +83,15 @@ public class HomeStatisticsService {
             return totalStatistics;
 
         } catch (ExecutionException | InterruptedException e) {
-            throw new CustomException(INTERNAL_SERVER_ERROR);
+            log.error("[updateTotalStatistics] 캐시 업데이트 실패 -> 캐시 TTL 연장 시도");
+            Optional<GetHomeResponse.TotalStatistics> cachedTotalStatistics = getCachedTotalStatistics();
+            if(cachedTotalStatistics.isEmpty()){
+                log.warn("[updateTotalStatistics] 캐시 TTL 연장 실패");
+                throw new CustomException(HOME_DATA_CACHING_FAILED);
+            }
+            cacheTotalStatistics(cachedTotalStatistics.get());
+            log.error("[updateTotalStatistics] 캐시 TTL 연장 성공");
+            return cachedTotalStatistics.get();
         }
     }
 
@@ -182,6 +191,7 @@ public class HomeStatisticsService {
 
             return new GetHomeResponse.Statistics(rescuedAnimalCount, protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount);
         } catch (ExecutionException | InterruptedException e) {
+            log.error("[parseStatistics] 예외 발생", e);
             throw new CustomException(INTERNAL_SERVER_ERROR);
         }
     }
