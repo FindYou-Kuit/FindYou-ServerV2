@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.HOME_DATA_CACHING_FAILED;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.HOME_STATISTICS_UPDATE_FAILED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class HomeStatisticsUpdateScheduler {
     private final HomeStatisticsService homeStatisticsService;
 
     // 매 시간마다 파싱
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 27 18 * * *")
     public void execute(){
         try{
             homeStatisticsService.updateTotalStatistics();
@@ -33,7 +33,7 @@ public class HomeStatisticsUpdateScheduler {
                 log.warn("[excute] 캐시에 데이터 없어서 TTL 연장 실패");
                 log.warn("[excute] 빈 통계 저장");
                 homeStatisticsService.cacheTotalStatistics(GetHomeResponse.TotalStatistics.empty());
-                throw new CustomException(HOME_DATA_CACHING_FAILED);
+                throw new CustomException(HOME_STATISTICS_UPDATE_FAILED);
             }
             homeStatisticsService.cacheTotalStatistics(cachedTotalStatistics.get());
             log.error("[excute] 캐시 TTL 연장 성공");
