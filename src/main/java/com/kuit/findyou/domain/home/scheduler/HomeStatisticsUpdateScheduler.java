@@ -20,7 +20,7 @@ public class HomeStatisticsUpdateScheduler {
     private final HomeStatisticsService homeStatisticsService;
 
     // 매 시간마다 파싱
-    @Scheduled(cron = "0 27 18 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void execute(){
         try{
             homeStatisticsService.updateTotalStatistics();
