@@ -23,7 +23,7 @@ public class BreedController {
     private final BreedServiceFacade breedServiceFacade;
 
     @Operation(summary = "품종 정보 반환 API", description = "품종 정보를 반환하기 위한 API")
-    @GetMapping()
+    @GetMapping
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<BreedListResponseDTO> getBreedList() {
         return BaseResponse.ok(breedServiceFacade.getBreedList());

@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.external.client;
 
+import com.kuit.findyou.domain.breed.model.Species;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.model.Neutering;
@@ -174,7 +175,7 @@ public class ProtectingAnimalApiClient {
 
         return ProtectingReport.builder()
                 .breed(item.kindNm())
-                .species(item.upKindNm())
+                .species(item.upKindNm().equals("개") ? Species.DOG.getValue() : item.upKindNm())
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.changeToLocalDate(item.happenDt()))
                 .address(item.careAddr())
