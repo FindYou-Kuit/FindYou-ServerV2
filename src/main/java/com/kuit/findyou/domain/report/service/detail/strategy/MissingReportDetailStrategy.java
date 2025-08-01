@@ -18,12 +18,8 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
 
     private final MissingReportRepository missingReportRepository;
 
-    private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
-
     @Override
     public MissingReportDetailResponseDTO getDetail(MissingReport report, boolean interest) {
-        BigDecimal latitude = report.getLatitude();
-        BigDecimal longitude = report.getLongitude();
 
         return new MissingReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
@@ -36,8 +32,8 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
                 report.getSignificant(),
                 report.getLandmark(),       // missingLocation
                 report.getAddress(),        // missingAddress
-                (latitude == null || latitude.equals(DEFAULT_COORDINATE)) ? null : latitude.doubleValue(),
-                (longitude == null || longitude.equals(DEFAULT_COORDINATE)) ? null : longitude.doubleValue(),
+                ReportFormatUtil.formatCoordinate(report.getLatitude()),
+                ReportFormatUtil.formatCoordinate(report.getLongitude()),
                 report.getReporterName(),
                 report.getReporterTel(),
                 interest

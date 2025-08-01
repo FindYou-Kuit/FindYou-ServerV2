@@ -19,12 +19,8 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
 
     private final ProtectingReportRepository protectingReportRepository;
 
-    private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
-
     @Override
     public ProtectingReportDetailResponseDTO getDetail(ProtectingReport report, boolean interest) {
-        BigDecimal latitude = report.getLatitude();
-        BigDecimal longitude = report.getLongitude();
 
         return new ProtectingReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
@@ -38,8 +34,8 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
                 report.getSignificant(),
                 report.getCareName(),
                 report.getAddress(),
-                (latitude == null || latitude.equals(DEFAULT_COORDINATE)) ? null : latitude.doubleValue(),
-                (longitude == null || longitude.equals(DEFAULT_COORDINATE)) ? null : longitude.doubleValue(),
+                ReportFormatUtil.formatCoordinate(report.getLatitude()),
+                ReportFormatUtil.formatCoordinate(report.getLongitude()),
                 report.getCareTel(),
                 report.getDate().toString(),
                 report.getFoundLocation(),
