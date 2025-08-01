@@ -9,8 +9,7 @@ import com.kuit.findyou.domain.report.repository.ViewedReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
+import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceContext;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.Map;
-
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.USER_NOT_FOUND;
 
 
 @Slf4j

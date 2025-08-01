@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLRestriction("status = 'Y'")
 public class Sido extends BaseEntity{
 
     @Id
@@ -28,8 +27,4 @@ public class Sido extends BaseEntity{
     @OneToMany(mappedBy = "sido", orphanRemoval = true)
     @Builder.Default
     private List<Sigungu> sigunguList = new ArrayList<>();
-
-    public void addSigungu(Sigungu sigungu) {
-        sigunguList.add(sigungu);
-    }
 }

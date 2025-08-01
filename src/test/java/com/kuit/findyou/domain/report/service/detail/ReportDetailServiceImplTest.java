@@ -9,7 +9,7 @@ import com.kuit.findyou.domain.report.repository.ViewedReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
+import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.common.util.TestReflectionUtil;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;

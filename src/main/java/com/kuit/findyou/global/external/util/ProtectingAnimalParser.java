@@ -1,4 +1,4 @@
-package com.kuit.findyou.global.common.external.util;
+package com.kuit.findyou.global.external.util;
 
 import org.springframework.web.util.HtmlUtils;
 
