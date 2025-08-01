@@ -21,6 +21,10 @@ import java.util.Optional;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INTERNAL_SERVER_ERROR;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+
 @Slf4j
 @Service
 public class HomeStatisticsService {
@@ -30,6 +34,7 @@ public class HomeStatisticsService {
     private final RestClient protectingAnimalRestClient;
     private final RestClient lossAnimalInfoRestClient;
     private final RedisTemplate<String, String> redisTemplate;
+    private final ExecutorService statisticsExecutor;
     private final ObjectMapper objectMapper;
     private final String REDIS_KEY_FOR_CACHED_STATISTICS = "home:statistics";
     public HomeStatisticsService(
@@ -37,12 +42,14 @@ public class HomeStatisticsService {
             @Qualifier("protectingAnimalRestClient") RestClient protectingAnimalRestClient,
             @Qualifier("lossAnimalInfoRestClient") RestClient lossAnimalInfoRestClient,
             RedisTemplate redisTemplate,
+            ExecutorService executor,
             ObjectMapper objectMapper
     ){
         this.rescueAnimalStatRestClient = rescueAnimalStatRestClient;
         this.protectingAnimalRestClient = protectingAnimalRestClient;
         this.lossAnimalInfoRestClient = lossAnimalInfoRestClient;
         this.redisTemplate = redisTemplate;
+        this.statisticsExecutor = executor;
         this.objectMapper = objectMapper;
     }
 
@@ -94,60 +101,79 @@ public class HomeStatisticsService {
         String bgnde =  startDate.format(formatter);
         String endde = endDate.format(formatter);
 
-        RescueAnimalStatsServiceApiResponse response1 = rescueAnimalStatRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("serviceKey", serviceKey)
-                        .queryParam("bgnde", bgnde)
-                        .queryParam("endde", endde)
-                        .queryParam("_type", "json")
-                        .build())
-                .retrieve()
-                .body(RescueAnimalStatsServiceApiResponse.class);
+        CompletableFuture<String> protectingAndAdotedFuture = CompletableFuture.supplyAsync(()->{
+            RescueAnimalStatsServiceApiResponse response1 = rescueAnimalStatRestClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("serviceKey", serviceKey)
+                            .queryParam("bgnde", bgnde)
+                            .queryParam("endde", endde)
+                            .queryParam("_type", "json")
+                            .build())
+                    .retrieve()
+                    .body(RescueAnimalStatsServiceApiResponse.class);
 
-        String protectingAnimalCount = "0";
-        String adoptedAnimalCount = "0";
-        for(RescueAnimalStatsServiceApiResponse.Item item : response1.response().body().items().item()){
-            if("chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "보호중".equals(item.prcesssName())){
-                protectingAnimalCount = item.total();
+            String protectingAnimalCount = "0";
+            String adoptedAnimalCount = "0";
+
+            for(RescueAnimalStatsServiceApiResponse.Item item : response1.response().body().items().item()){
+                if(isProtectingAnimalTotalCount(item)) protectingAnimalCount = item.total();
+                else if(isAdoptedAnimalCount(item)) adoptedAnimalCount = item.total();
             }
-            else if("chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "입양".equals(item.prcesssName())){
-                adoptedAnimalCount = item.total();
-            }
+
+            return protectingAnimalCount + "," + adoptedAnimalCount;
+        }, statisticsExecutor);
+
+        CompletableFuture<String> rescuedFuture = CompletableFuture.supplyAsync(() -> {
+            ProtectingAnimalApiFullResponse response2 = protectingAnimalRestClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/abandonmentPublic_v2")
+                            .queryParam("serviceKey", serviceKey)
+                            .queryParam("bgnde", bgnde)
+                            .queryParam("endde", endde)
+                            .queryParam("_type", "json")
+                            .build())
+                    .retrieve()
+                    .body(ProtectingAnimalApiFullResponse.class);
+
+            String rescuedAnimalCount = response2.response().body().totalCount();
+            return rescuedAnimalCount;
+        }, statisticsExecutor);
+
+        CompletableFuture<String> reportedFuture = CompletableFuture.supplyAsync(() -> {
+            LossInfoServiceApiResponse response3 = lossAnimalInfoRestClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("serviceKey", serviceKey)
+                            .queryParam("bgnde", bgnde)
+                            .queryParam("endde", endde)
+                            .queryParam("_type", "json")
+                            .build())
+                    .retrieve()
+                    .body(LossInfoServiceApiResponse.class);
+
+            String reportedAnimalCount = response3.response().body().totalCount();
+            return reportedAnimalCount;
+        }, statisticsExecutor);
+
+        try{
+            String[] token = protectingAndAdotedFuture.get().split(",");
+            String protectingAnimalCount = token[0];
+            String adoptedAnimalCount = token[1];
+            String reportedAnimalCount = reportedFuture.get();
+            String rescuedAnimalCount = rescuedFuture.get();
+
+            log.info("파싱 결과 protectingAnimalCount = {} adoptedAnimalCount = {} reportedAnimalCount = {} rescuedAnimalCount = {}", protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount, rescuedAnimalCount);
+
+            return new GetHomeResponse.Statistics(rescuedAnimalCount, protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new CustomException(INTERNAL_SERVER_ERROR);
         }
+    }
 
-        log.info("protectingAnimalCount = {} adoptedAnimalCount = {}", protectingAnimalCount, adoptedAnimalCount);
+    private static boolean isAdoptedAnimalCount(RescueAnimalStatsServiceApiResponse.Item item) {
+        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "입양".equals(item.prcesssName());
+    }
 
-        ProtectingAnimalApiFullResponse response2 = protectingAnimalRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/abandonmentPublic_v2")
-                        .queryParam("serviceKey", serviceKey)
-                        .queryParam("bgnde", bgnde)
-                        .queryParam("endde", endde)
-                        .queryParam("_type", "json")
-                        .build())
-                .retrieve()
-                .body(ProtectingAnimalApiFullResponse.class);
-
-        String rescuedAnimalCount = response2.response().body().totalCount();
-
-        log.info("rescuedAnimalCount = {}", rescuedAnimalCount);
-
-
-        LossInfoServiceApiResponse response3 = lossAnimalInfoRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("serviceKey", serviceKey)
-                        .queryParam("bgnde", bgnde)
-                        .queryParam("endde", endde)
-                        .queryParam("_type", "json")
-                        .build())
-                .retrieve()
-                .body(LossInfoServiceApiResponse.class);
-
-        String reportedAnimalCount = response3.response().body().totalCount();
-
-        log.info("reportedAnimalCount = {}", reportedAnimalCount);
-
-        GetHomeResponse.Statistics statistics = new GetHomeResponse.Statistics(reportedAnimalCount, protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount);
-        return statistics;
+    private static boolean isProtectingAnimalTotalCount(RescueAnimalStatsServiceApiResponse.Item item) {
+        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "보호중".equals(item.prcesssName());
     }
 }
