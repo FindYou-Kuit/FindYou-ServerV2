@@ -29,10 +29,7 @@ public class HomeServiceFacade {
         List<WitnessedOrMissingAnimalPreview> witnessedOrMissingAnimals = null;
 
         // 좌표 값이 있으면 이를 기반으로 보호중동물과 목격실종동물을 조회
-        if(coodinateExists(latitude, longitude)){
-            if(!isValidCoordinate(latitude, longitude)){
-                throw new CustomException(BAD_REQUEST);
-            }
+        if(coordinateExists(latitude, longitude)){
             protectingAnimals = retrieveHomeSectionService.retrieveProtectingReportPreviews(latitude, longitude, 10);
             witnessedOrMissingAnimals = retrieveHomeSectionService.retrieveWitnessedOrMissingReportPreviews(latitude, longitude, 10);
             return new GetHomeResponse(totalStatistics, protectingAnimals, witnessedOrMissingAnimals);
@@ -44,11 +41,7 @@ public class HomeServiceFacade {
         return new GetHomeResponse(totalStatistics, protectingAnimals, witnessedOrMissingAnimals);
     }
 
-    private boolean coodinateExists(Double latitude, Double longitude) {
+    private boolean coordinateExists(Double latitude, Double longitude) {
         return latitude != null && longitude != null;
-    }
-
-    private boolean isValidCoordinate(Double lat, Double lng) {
-        return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
     }
 }
