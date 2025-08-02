@@ -1,11 +1,10 @@
-package com.kuit.findyou.domain.volunteer.model;
+package com.kuit.findyou.domain.information.model;
 
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "volunteer_works")
