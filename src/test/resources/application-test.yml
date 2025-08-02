@@ -20,13 +20,6 @@ findyou:
       expire-ms: 6000000
     secret-key : secretkey1224secretkey1224secretkey1224secretkey1224
 
-  default-images:
-    default-image-url-map:
-      image1: default1
-      image2: default2
-      image3: default3
-      image4: default4
-
 cloud:
   aws:
     region:
@@ -41,6 +34,12 @@ cloud:
 openapi:
   protecting-animal:
     api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2
+    api-key: test-key
+  rescue-animal-stats:
+    api-url: https://apis.data.go.kr/1543061/rescueAnimalStatsService/rescueAnimalStats
+    api-key: test-key
+  loss-animal-info:
+    api-url: https://apis.data.go.kr/1543061/lossInfoService/lossInfo
     api-key: test-key
   kakao:
     api-url: "https://dapi.kakao.com/v2/local/search/address.json"
