@@ -73,22 +73,29 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             """)
     List<ReportProjection> findReportProjectionsByIdIn(@Param("ids") List<Long> ids);
 
-    @Query(value = """
-        SELECT r.id AS reportId, 
-            (SELECT ri.image_url FROM report_images ri WHERE ri.report_id = r.id LIMIT 1) AS thumbnailImageUrl,
+    @Query("""
+        SELECT 
+            r.id AS reportId,
+            (SELECT ri.imageUrl FROM ReportImage ri WHERE ri.report.id = r.id ORDER BY ri.id LIMIT 1) AS thumbnailImageUrl,
             r.breed AS title,
-            r.tag AS tag
-            r.date AS date
+            r.tag AS tag,
+            r.date AS date,
             r.address AS address,
-            (6371 * acos(cos(radians(:lat)) * cos(radians(r.latitude)) *
-            cos(radians(r.longitude) - radians(:lng)) + 
-            sin(radians(:lat)) * sin(radians(r.latitude)))
-            ) AS distance 
-        FROM reports r 
-        WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL AND tag IN (:tags)
-        ORDER BY distance ASC 
-        LIMIT :limit
-        """, nativeQuery = true)
-    List<PreviewWithDistance> findNearestReports(@Param("lat")Double latitude, @Param("lng") Double longitude, @Param("tags") String tags, int limit);
+            6371 * acos(cos(radians(:lat)) * cos(radians(r.latitude)) *
+                        cos(radians(r.longitude) - radians(:lng)) + 
+                        sin(radians(:lat)) * sin(radians(r.latitude))) AS distance
+        FROM Report r
+        WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL AND r.tag IN :tags
+        ORDER BY 
+            6371 * acos(cos(radians(:lat)) * cos(radians(r.latitude)) *
+                        cos(radians(r.longitude) - radians(:lng)) + 
+                        sin(radians(:lat)) * sin(radians(r.latitude))) ASC
+    """)
+    List<PreviewWithDistance> findNearestReports(
+            @Param("lat") Double latitude,
+            @Param("lng") Double longitude,
+            @Param("tags") List<ReportTag> tags,
+            Pageable pageable
+    );
 }
 

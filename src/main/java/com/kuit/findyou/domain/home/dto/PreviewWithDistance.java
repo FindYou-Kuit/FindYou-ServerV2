@@ -5,14 +5,13 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Getter
-@AllArgsConstructor
-public class PreviewWithDistance {
-    private Long reportId;
-    private String thumbnailImageUrl;
-    private String title;
-    private String tag;
-    private LocalDate date;
-    private String address;
-    private Double distance;
+
+public interface PreviewWithDistance {
+    Long getReportId();
+    String getThumbnailImageUrl();
+    String getTitle();
+    String getTag();
+    LocalDate getDate();
+    String getAddress();
+    Double getDistance();
 }

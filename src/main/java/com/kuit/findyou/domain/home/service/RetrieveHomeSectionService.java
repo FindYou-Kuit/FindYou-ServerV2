@@ -20,15 +20,16 @@ import java.util.stream.Collectors;
 public class RetrieveHomeSectionService {
     private final ReportRepository reportRepository;
     public List<ProtectingAnimalPreview> retrieveProtectingReportPreviews(Double latitude, Double longitude, int size) {
-        List<PreviewWithDistance> nearestReports = reportRepository.findNearestReports(latitude, longitude, ReportTag.PROTECTING.name(), size);
+        List<ReportTag> tags = List.of(ReportTag.PROTECTING);
+        List<PreviewWithDistance> nearestReports = reportRepository.findNearestReports(latitude, longitude, tags, PageRequest.of(0, size));
         return nearestReports.stream()
                 .map(ProtectingAnimalPreview::of)
                 .collect(Collectors.toList());
     }
 
     public List<WitnessedOrMissingAnimalPreview> retrieveWitnessedOrMissingReportPreviews(Double latitude, Double longitude, int size) {
-        String tags = ReportTag.WITNESS.name() + "," + ReportTag.MISSING.name();
-        List<PreviewWithDistance> nearestReports = reportRepository.findNearestReports(latitude, longitude, tags, size);
+        List<ReportTag> tags = List.of(ReportTag.WITNESS, ReportTag.MISSING);
+        List<PreviewWithDistance> nearestReports = reportRepository.findNearestReports(latitude, longitude, tags, PageRequest.of(0, size));
         return nearestReports.stream()
                 .map(WitnessedOrMissingAnimalPreview::of)
                 .collect(Collectors.toList());
