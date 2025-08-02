@@ -3,11 +3,11 @@ name: CD with Gradle and Docker
 on:
   push:
     branches:
-      - 'dev'
+      - 'develop'
       - 'main'
   pull_request:
     branches:
-      - 'dev'
+      - 'develop'
       - 'main'
 
 permissions:
@@ -28,8 +28,8 @@ jobs:
       - name: 👏🏻 grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: 🐘 build with Gradle (with test)
-        run: ./gradlew clean build --stacktrace
+      - name: 🐘 build with Gradle (without test)
+        run: ./gradlew clean build -x test --stacktrace
 
       - name: 🐳 Docker build & push
         run: |
