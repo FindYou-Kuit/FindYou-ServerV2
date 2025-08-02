@@ -1,6 +1,5 @@
-package com.kuit.findyou.domain.subscribe.model;
+package com.kuit.findyou.domain.notification.model;
 
-import com.kuit.findyou.domain.keyword.model.Keyword;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;

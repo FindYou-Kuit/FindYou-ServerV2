@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.fcmToken.model;
+package com.kuit.findyou.domain.notification.model;
 
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.model.BaseEntity;

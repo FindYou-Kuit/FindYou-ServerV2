@@ -1,12 +1,12 @@
 package com.kuit.findyou.domain.user.model;
 
-import com.kuit.findyou.domain.fcmToken.model.FcmToken;
+import com.kuit.findyou.domain.notification.model.FcmToken;
 import com.kuit.findyou.domain.notification.model.NotificationHistory;
 import com.kuit.findyou.domain.notification.model.ReceiveNotification;
 import com.kuit.findyou.domain.report.model.InterestReport;
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ViewedReport;
-import com.kuit.findyou.domain.subscribe.model.Subscribe;
+import com.kuit.findyou.domain.notification.model.Subscribe;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
