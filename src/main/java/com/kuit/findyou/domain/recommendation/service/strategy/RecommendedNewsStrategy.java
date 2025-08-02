@@ -1,11 +1,15 @@
 package com.kuit.findyou.domain.recommendation.service.strategy;
 
 import com.kuit.findyou.domain.recommendation.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.recommendation.model.RecommendedNews;
 import com.kuit.findyou.domain.recommendation.repository.RecommendedNewsRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.RECOMMENDED_NEWS_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Component
@@ -15,12 +19,16 @@ public class RecommendedNewsStrategy implements RecommendedContentStrategy {
 
     @Override
     public List<RecommendedContentResponse> getRecommendedContents() {
-        return newsRepository.findAll().stream()
+        List<RecommendedContentResponse> contents = newsRepository.findAll().stream()
                 .map(news -> new RecommendedContentResponse(
                         news.getTitle(),
                         news.getUploader(),
                         news.getUrl()
                 ))
                 .toList();
+        if (contents.isEmpty()) {
+            throw new CustomException(RECOMMENDED_NEWS_NOT_FOUND);
+        }
+        return contents;
     }
 }
