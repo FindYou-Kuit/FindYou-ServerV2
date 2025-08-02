@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.RECOMMENDED_VIDEO_NOT_FOUND;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.STRATEGY_NOT_FOUND;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
@@ -71,6 +72,6 @@ class RecommendedContentServiceTest {
         // when & then
         assertThatThrownBy(() -> service.getContents(ContentType.VIDEO))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(RECOMMENDED_VIDEO_NOT_FOUND.getMessage());
+                .hasMessage(STRATEGY_NOT_FOUND.getMessage());
     }
 }

@@ -25,7 +25,7 @@ public class RecommendedContentService {
 
         RecommendedContentStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            new CustomException(STRATEGY_NOT_FOUND);
+            throw new CustomException(STRATEGY_NOT_FOUND);
         }
 
         return strategy.getRecommendedContents();
