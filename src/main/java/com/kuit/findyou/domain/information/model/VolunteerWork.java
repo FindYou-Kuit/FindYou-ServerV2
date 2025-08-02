@@ -33,6 +33,6 @@ public class VolunteerWork extends BaseEntity {
     @Column(name = "volunteer_end_at")
     private LocalDate volunteerEndAt;
 
-    @Column(name = "volunteerTime", length = 50)
+    @Column(name = "volunteer_time", length = 50)
     private String volunteerTime;
 }
