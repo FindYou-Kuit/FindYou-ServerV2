@@ -18,6 +18,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     API_NOT_FOUND(404, "존재하지 않는 API입니다."),
     METHOD_NOT_ALLOWED(405, "유효하지 않은 Http 메서드입니다."),
     INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다."),
+    STRATEGY_NOT_FOUND(500, "해당 콘텐츠 타입의 처리 전략이 존재하지 않습니다."),
 
     // JWT 토큰
     INVALID_JWT(401, "올바르지 않은 토큰입니다."),
