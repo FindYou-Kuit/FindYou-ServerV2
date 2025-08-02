@@ -25,7 +25,7 @@ public class RecommendedContentService {
 
         RecommendedContentStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            throw new CustomException(STRATEGY_NOT_FOUND);
+            throw new IllegalStateException("해당 콘텐츠 타입의 처리 전략이 존재하지 않습니다.");
         }
 
         return strategy.getRecommendedContents();

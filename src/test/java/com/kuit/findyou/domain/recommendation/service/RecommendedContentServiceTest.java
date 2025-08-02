@@ -3,15 +3,12 @@ package com.kuit.findyou.domain.recommendation.service;
 import com.kuit.findyou.domain.recommendation.dto.ContentType;
 import com.kuit.findyou.domain.recommendation.dto.RecommendedContentResponse;
 import com.kuit.findyou.domain.recommendation.service.strategy.RecommendedContentStrategy;
-import com.kuit.findyou.global.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.RECOMMENDED_VIDEO_NOT_FOUND;
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.STRATEGY_NOT_FOUND;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
@@ -71,7 +68,7 @@ class RecommendedContentServiceTest {
 
         // when & then
         assertThatThrownBy(() -> service.getContents(ContentType.VIDEO))
-                .isInstanceOf(CustomException.class)
-                .hasMessage(STRATEGY_NOT_FOUND.getMessage());
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("해당 콘텐츠 타입의 처리 전략이 존재하지 않습니다.");
     }
 }
