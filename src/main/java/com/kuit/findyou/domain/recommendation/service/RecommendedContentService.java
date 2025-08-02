@@ -25,11 +25,7 @@ public class RecommendedContentService {
 
         RecommendedContentStrategy strategy = strategies.get(type);
         if (strategy == null) {
-            throw switch (type){
-                case VIDEO -> new CustomException(RECOMMENDED_VIDEO_NOT_FOUND);
-                case NEWS -> new CustomException(RECOMMENDED_NEWS_NOT_FOUND);
-                default -> new CustomException(API_NOT_FOUND);
-            };
+            new CustomException(STRATEGY_NOT_FOUND);
         }
 
         return strategy.getRecommendedContents();
