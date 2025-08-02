@@ -4,13 +4,17 @@ import com.kuit.findyou.domain.home.dto.GetHomeRequest;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
 import com.kuit.findyou.domain.home.service.HomeServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.GET_HOME;
 
 @Tag(name = "Home", description = "홈화면 관련 API")
@@ -29,7 +33,12 @@ public class HomeController {
     )
     @CustomExceptionDescription(GET_HOME)
     @GetMapping
-    public BaseResponse<GetHomeResponse> getHome(@ModelAttribute GetHomeRequest request){
+    public BaseResponse<GetHomeResponse> getHome(@Valid @ModelAttribute GetHomeRequest request,
+                                                 BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            throw new CustomException(BAD_REQUEST);
+        }
+
         log.info("[getHome] latitude = {} longitude = {}", request.lat(), request.lng());
         return new BaseResponse<>(homeServiceFacade.getHome(request.lat(), request.lng()));
     }
