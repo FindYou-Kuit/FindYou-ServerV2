@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
 import com.kuit.findyou.domain.home.dto.LossInfoServiceApiResponse;
+import com.kuit.findyou.domain.home.dto.ProtectingAndAdoptedAnimalCount;
 import com.kuit.findyou.domain.home.dto.RescueAnimalStatsServiceApiResponse;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
 import com.kuit.findyou.global.common.exception.CustomException;
@@ -126,14 +127,14 @@ public class HomeStatisticsService {
         String bgnde =  startDate.format(formatter);
         String endde = endDate.format(formatter);
 
-        CompletableFuture<String> protectingAndAdoptedFuture = parseProtectingAndAdoptedAnimalCountAsync(bgnde, endde);
+        CompletableFuture<ProtectingAndAdoptedAnimalCount> protectingAndAdoptedFuture = parseProtectingAndAdoptedAnimalCountAsync(bgnde, endde);
         CompletableFuture<String> rescuedFuture = parseRescuedAnimalCountAsync(bgnde, endde);
         CompletableFuture<String> reportedFuture = parseReportedAnimalCountAsync(bgnde, endde);
 
         try{
-            String[] token = protectingAndAdoptedFuture.get().split(",");
-            String protectingAnimalCount = token[0];
-            String adoptedAnimalCount = token[1];
+            ProtectingAndAdoptedAnimalCount protectingAndAdoptedAnimalCount = protectingAndAdoptedFuture.get();
+            String protectingAnimalCount = protectingAndAdoptedAnimalCount.protectingAnimalCount();
+            String adoptedAnimalCount = protectingAndAdoptedAnimalCount.adoptedAnimalCount();
             String reportedAnimalCount = reportedFuture.get();
             String rescuedAnimalCount = rescuedFuture.get();
 
@@ -154,7 +155,7 @@ public class HomeStatisticsService {
         return CompletableFuture.supplyAsync(()-> parseRescuedAnimalCount(bgnde, endde), statisticsExecutor);
     }
 
-    private CompletableFuture<String> parseProtectingAndAdoptedAnimalCountAsync(String bgnde, String endde) {
+    private CompletableFuture<ProtectingAndAdoptedAnimalCount> parseProtectingAndAdoptedAnimalCountAsync(String bgnde, String endde) {
         return CompletableFuture.supplyAsync(()-> parseProtectingAndAdoptedAnimalCount(bgnde, endde), statisticsExecutor);
     }
 
@@ -189,7 +190,7 @@ public class HomeStatisticsService {
         return rescuedAnimalCount;
     }
 
-    private String parseProtectingAndAdoptedAnimalCount(String bgnde, String endde) {
+    private ProtectingAndAdoptedAnimalCount parseProtectingAndAdoptedAnimalCount(String bgnde, String endde) {
         RescueAnimalStatsServiceApiResponse response1 = rescueAnimalStatRestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("serviceKey", serviceKey)
@@ -206,7 +207,8 @@ public class HomeStatisticsService {
             if(isProtectingAnimalTotalCount(item)) protectingAnimalCount = item.total();
             else if(isAdoptedAnimalCount(item)) adoptedAnimalCount = item.total();
         }
-        return protectingAnimalCount + "," + adoptedAnimalCount;
+
+        return new ProtectingAndAdoptedAnimalCount(protectingAnimalCount, adoptedAnimalCount);
     }
 
     private static boolean isAdoptedAnimalCount(RescueAnimalStatsServiceApiResponse.Item item) {
