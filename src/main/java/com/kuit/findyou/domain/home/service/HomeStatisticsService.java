@@ -111,7 +111,7 @@ public class HomeStatisticsService {
                 log.info("[getCachedTotalStatistics] 캐시에 데이터 없음");
                 return Optional.empty();
             }
-            log.info("[getCachedTotalStatistics] 캐시에 데이터 있음");
+            log.info("[getCachedTotalStatistics] 캐시에 데이터 있음 json = {}", json);
             return Optional.of(objectMapper.readValue(json, GetHomeResponse.TotalStatistics.class));
         }
         catch (JsonProcessingException e){
@@ -137,7 +137,7 @@ public class HomeStatisticsService {
             String reportedAnimalCount = reportedFuture.get();
             String rescuedAnimalCount = rescuedFuture.get();
 
-            log.info("파싱 결과 protectingAnimalCount = {} adoptedAnimalCount = {} reportedAnimalCount = {} rescuedAnimalCount = {}", protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount, rescuedAnimalCount);
+            log.info("파싱 결과 protectingAnimalCount = {} adoptedAnimalCount = {} lostAnimalCount = {} rescuedAnimalCount = {}", protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount, rescuedAnimalCount);
 
             return new GetHomeResponse.Statistics(rescuedAnimalCount, protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount);
         } catch (ExecutionException | InterruptedException e) {
