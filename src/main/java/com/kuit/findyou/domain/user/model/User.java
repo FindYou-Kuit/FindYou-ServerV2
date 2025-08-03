@@ -114,4 +114,8 @@ public class User extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
         this.role = Role.USER;
     }
+
+    public boolean isGuest(){
+        return this.role == Role.GUEST;
+    }
 }
