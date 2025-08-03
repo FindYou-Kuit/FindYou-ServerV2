@@ -33,7 +33,7 @@ public record GetHomeResponse(
             @Schema(description = "입양", example = "2000")
             String adoptedAnimalCount,
             @Schema(description = "신고", example = "2000")
-            String reportedAnimalCount
+            String lostAnimalCount
     ){
         public static Statistics empty(){
             return new Statistics("-", "-", "-", "-");
