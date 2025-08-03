@@ -1,5 +1,7 @@
 package com.kuit.findyou.domain.auth.controller;
 
+import com.kuit.findyou.domain.auth.dto.GuestLoginRequest;
+import com.kuit.findyou.domain.auth.dto.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.KakaoLoginResponse;
 import com.kuit.findyou.domain.auth.service.AuthService;
@@ -33,5 +35,11 @@ public class AuthController {
     public BaseResponse<KakaoLoginResponse> kakaoLogin(@RequestBody KakaoLoginRequest request){
         log.info("[kakaoLogin]");
         return BaseResponse.ok(authService.kakaoLogin(request));
+    }
+
+    @PostMapping("/login/guest")
+    public BaseResponse<GuestLoginResponse> guestLogin(@RequestBody GuestLoginRequest request){
+        log.info("[guestLogin] deviceId = {}", request.deviceId());
+        return BaseResponse.ok(authService.guestLogin(request));
     }
 }
