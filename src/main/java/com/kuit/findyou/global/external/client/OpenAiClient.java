@@ -1,9 +1,9 @@
 package com.kuit.findyou.global.external.client;
 
 import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
-import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.dto.OpenAiResponse;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
+import com.kuit.findyou.global.external.exception.OpenAiParsingException;
 import com.kuit.findyou.global.external.util.OpenAiParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,7 +25,6 @@ public class OpenAiClient {
 
     public BreedAiDetectionResponseDTO analyzeImage(String imageUrl, String prompt) {
         try {
-
             Map<String, Object> requestBody = Map.of(
                     "model", "gpt-4o",
                     "max_tokens", 50,
@@ -62,14 +61,15 @@ public class OpenAiClient {
             String breed = OpenAiParser.parseBreed(content);
             List<String> colors = OpenAiParser.parseColors(content);
 
-            if (species == null || breed == null || colors.isEmpty()) {
-                throw new OpenAiClientException("GPT 응답 파싱에 실패하였습니다.");
-            }
-
             return new BreedAiDetectionResponseDTO(species, breed, colors);
 
+        } catch (OpenAiParsingException e) {
+            log.warn("GPT 응답 파싱 실패: {}", e.getMessage());
+            throw new OpenAiClientException("GPT 응답 파싱에 실패하였습니다: " + e.getMessage(), e);
+
         } catch (Exception e) {
-            throw new OpenAiClientException("OpenAI Vision API 호출 중 오류가 발생했습니다.");
+            log.error("OpenAI Vision API 호출 중 오류 발생", e);
+            throw new OpenAiClientException("OpenAI Vision API 호출 중 오류가 발생했습니다.", e);
         }
     }
 }
