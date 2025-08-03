@@ -53,7 +53,7 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "CHAR(1)", nullable = false, length = 1)
     private ReceiveNotification  receiveNotification = ReceiveNotification.N;
 
-    @Column(length = 100)
+    @Column(length = 100, unique = true)
     private String deviceId;
 
     // 신고글에 대해 orphanRemoval = true 만 설정
