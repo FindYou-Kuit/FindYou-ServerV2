@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.report.repository;
 
+import com.kuit.findyou.domain.home.dto.PreviewWithDistance;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.user.model.Role;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -326,5 +328,96 @@ class ReportRepositoryTest {
         protectingReportRepository.save(protectingReport);
 
         em.flush();
+    }
+
+    @Test
+    @DisplayName("위도 경도를 이용하여 거리 순으로 신고글 조회에 성공한다")
+    void should_ReturnReportsSortedByDistance_When_GivenLatLngAndTags(){
+        // given
+        protectingReportRepository.deleteAll();
+        Report reportA = protectingReportRepository.save((ProtectingReport) createReportByLatLngAndTag(37.5665, 126.9780, ReportTag.PROTECTING)); // 서울
+        Report reportB = protectingReportRepository.save((ProtectingReport) createReportByLatLngAndTag(35.1796, 129.0756, ReportTag.PROTECTING)); // 부산
+        Report reportC = protectingReportRepository.save((ProtectingReport) createReportByLatLngAndTag(33.4996, 126.5312, ReportTag.PROTECTING)); // 제주
+        em.flush();
+
+        Double searchLat = 37.5665; // 기준점은 서울
+        Double searchLng = 126.9780;
+        List<ReportTag> tags = List.of(ReportTag.PROTECTING);
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // when
+        List<PreviewWithDistance> results = reportRepository.findNearestReports(searchLat, searchLng, tags, pageable);
+
+        // then
+        assertThat(results).hasSize(3);
+
+        List<Long> sortedIds = results.stream().map(PreviewWithDistance::getReportId).toList();
+        assertThat(sortedIds).containsExactly(reportA.getId(), reportB.getId(), reportC.getId()); // 거리 순 정렬 검증
+    }
+
+    private Report createReportByLatLngAndTag(Double lat, Double lng, ReportTag tag){
+        if (tag == ReportTag.MISSING){
+            return MissingReport.createMissingReport(
+                    "골든 리트리버",
+                    "개",
+                    ReportTag.MISSING,
+                    LocalDate.now().minusDays(5),
+                    "서울시 강남구",
+                    testUser,
+                    Sex.M,
+                    "RFID123456",
+                    "3살",
+                    "25kg",
+                    "황금색",
+                    "목에 빨간 목걸이",
+                    "김철수",
+                    "010-1234-5678",
+                    "강남역 근처",
+                    new BigDecimal(lat),
+                    new BigDecimal(lng)
+            );
+        }
+        else if(tag == ReportTag.WITNESS){
+            return  WitnessReport.createWitnessReport(
+                    "믹스견",
+                    "개",
+                    ReportTag.WITNESS,
+                    LocalDate.now().minusDays(3),
+                    "서울시 서초구",
+                    testUser,
+                    "검은색",
+                    "오른쪽 다리 절뚝임",
+                    "이영희",
+                    "서초역 2번 출구",
+                    new BigDecimal(lat),
+                    new BigDecimal(lng)
+            );
+        }
+        else if(tag == ReportTag.PROTECTING){
+            return ProtectingReport.createProtectingReport(
+                    "페르시안",
+                    "고양이",
+                    ReportTag.PROTECTING,
+                    LocalDate.now().minusDays(1),
+                    "서울시 마포구 월드컵북로 212",
+                    testUser,
+                    Sex.F,
+                    "2살",
+                    "4kg",
+                    "흰색",
+                    Neutering.Y,
+                    "왼쪽 귀에 상처",
+                    "마포대교 근처",
+                    "NOTICE-2024-001",
+                    LocalDate.now(),
+                    LocalDate.now().plusDays(14),
+                    "마포구 동물보호센터",
+                    "02-123-4567",
+                    "마포구청",
+                    new BigDecimal(lat),
+                    new BigDecimal(lng)
+            );
+        }
+        return null;
     }
 }
