@@ -34,7 +34,7 @@ class HomeServiceFacadeTest {
     @Mock
     private RetrieveHomeSectionService retrieveHomeSectionService;
 
-    @DisplayName("요청의 위도 경도가 올바르면 조회에 성공한다")
+    @DisplayName("요청의 위도 경도가 올바르면 홈화면 조회에 성공한다")
     @Test
     void should_Succeed_When_RequestedWithCorrectCoordinate(){
         // given
@@ -71,7 +71,7 @@ class HomeServiceFacadeTest {
         assertThat(response.witnessedOrMissingAnimals().get(0)).isEqualTo(witnessedOrMissingAnimals.get(0));
     }
 
-    @DisplayName("요청에 위도 경도가 없어도 조회에 성공한다")
+    @DisplayName("요청에 위도 경도가 없어도 홈화면 조회에 성공한다")
     @Test
     void should_Succeed_When_RequestedWithoutCoordinate(){
         // given
