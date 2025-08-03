@@ -4,6 +4,8 @@ import com.kuit.findyou.domain.auth.dto.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.KakaoLoginResponse;
+import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
+import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
@@ -39,8 +41,17 @@ public class AuthServiceImpl implements AuthService {
     public GuestLoginResponse guestLogin(GuestLoginRequest request) {
         log.info("[guestLogin] deviceId = {}", request.deviceId());
 
-        // 디바이스 id에 해당하는 유저가 없으면 로그인 실패
-        User user = userRepository.findByDeviceId(request.deviceId()).orElseThrow(() -> new CustomException(GUEST_LOGIN_FAILED));
+        User user = userRepository.findByDeviceId(request.deviceId())
+                .orElseGet(()->{
+                    // 디바이스 id에 해당하는 유저가 없으면 게스트 추가
+                    User build = User.builder()
+                            .name("게스트")
+                            .profileImageUrl(DefaultProfileImage.DEFAULT.getName())
+                            .role(Role.GUEST)
+                            .deviceId(request.deviceId())
+                            .build();
+                    return userRepository.save(build);
+                });
 
         // 게스트가 아니면 로그인 실패
         if(!user.isGuest()){
