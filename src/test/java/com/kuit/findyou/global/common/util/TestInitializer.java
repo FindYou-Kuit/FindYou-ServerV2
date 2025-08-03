@@ -45,7 +45,7 @@ public class TestInitializer {
         createTestViewedReport(testUser, testMissingReport);
     }
 
-    private User createTestUser() {
+    public User createTestUser() {
         User user = User.builder()
                 .name("홍길동")
                 .profileImageUrl("http://example.com/profile.png")
@@ -55,7 +55,7 @@ public class TestInitializer {
         return userRepository.save(user);
     }
 
-    private ProtectingReport createTestProtectingReportWithImage(User user) {
+    public ProtectingReport createTestProtectingReportWithImage(User user) {
         ProtectingReport report = ProtectingReport.createProtectingReport(
                 "믹스견", "개", ReportTag.PROTECTING,
                 LocalDate.now(), "서울", user,
@@ -76,7 +76,7 @@ public class TestInitializer {
         return report;
     }
 
-    private MissingReport createTestMissingReportWithImage(User user) {
+    public MissingReport createTestMissingReportWithImage(User user) {
         MissingReport report = MissingReport.createMissingReport(
                 "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 10, 5),
                 "서울시 강남구", user, Sex.F, "RF12345", "3",
@@ -93,7 +93,7 @@ public class TestInitializer {
         return report;
     }
 
-    private WitnessReport createTestWitnessReportWithImage(User user) {
+    public WitnessReport createTestWitnessReportWithImage(User user) {
         WitnessReport report = WitnessReport.createWitnessReport(
                 "진돗개", "개", ReportTag.WITNESS, LocalDate.of(2024, 8, 10),
                 "부산시 해운대구", user, "하얀 털", "목줄 없음",
