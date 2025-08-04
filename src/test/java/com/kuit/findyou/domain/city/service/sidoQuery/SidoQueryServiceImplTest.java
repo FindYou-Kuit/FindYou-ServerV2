@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-@Transactional
 class SidoQueryServiceImplTest {
 
     @Mock

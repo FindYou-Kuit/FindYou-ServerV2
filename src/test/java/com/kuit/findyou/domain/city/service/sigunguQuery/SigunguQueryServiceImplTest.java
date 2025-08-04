@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@Transactional
 @ActiveProfiles("test")
 class SigunguQueryServiceImplTest {
 
@@ -37,11 +36,6 @@ class SigunguQueryServiceImplTest {
     SigunguQueryServiceImpl sigunguQueryService;
 
     private final Long sidoId = 1L;
-
-    @BeforeEach
-    void setUp() {
-        sigunguQueryService = new SigunguQueryServiceImpl(sigunguRepository, sidoRepository);
-    }
 
     @Test
     @DisplayName("시/도 id 를 기반으로 해당 시/도에 속한 시/군/구 리스트 조회 성공")
