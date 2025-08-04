@@ -33,9 +33,6 @@ public class ReportDetailServiceImpl implements ReportDetailService {
     private final InterestReportRepository interestReportRepository;
     private final UserRepository userRepository;
 
-    @PersistenceContext
-    private EntityManager em;
-
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public <REPORT_TYPE extends Report, DTO_TYPE> DTO_TYPE getReportDetail(ReportTag tag, Long reportId, Long userId) {

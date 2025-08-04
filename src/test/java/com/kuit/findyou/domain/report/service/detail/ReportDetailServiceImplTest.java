@@ -9,9 +9,6 @@ import com.kuit.findyou.domain.report.repository.ViewedReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
-import com.kuit.findyou.global.common.util.TestReflectionUtil;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,9 +47,6 @@ class ReportDetailServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private EntityManager em;
-
     @InjectMocks
     private ReportDetailServiceImpl reportDetailService;
 
@@ -65,8 +59,6 @@ class ReportDetailServiceImplTest {
         );
 
         reportDetailService = new ReportDetailServiceImpl(strategies, viewedReportRepository, interestReportRepository, userRepository);
-
-        TestReflectionUtil.setField(reportDetailService, "em", em);
     }
 
     @Test
