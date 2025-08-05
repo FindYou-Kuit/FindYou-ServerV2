@@ -30,33 +30,36 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @RequestMapping("api/v2/informations/shelters-and-hospitals")
 @RequiredArgsConstructor
 public class AnimalShelterController {
+
     private final AnimalShelterService animalShelterService;
 
     @Operation(summary = "보호소/병원 조회", description = "관할구역 및 유형으로 보호소/병원을 조회합니다.")
     @GetMapping
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<Map<String, List<AnimalShelterResponse>>> getShelters(
-            @Parameter(description = "커서 페이징용 마지막 ID", required = true, example = "10")
-            @RequestParam Long lastId,
+            @Parameter(description = "커서 페이징용 마지막 ID", example = "10")
+            @RequestParam(defaultValue = "0") Long lastId,
 
             @Parameter(description = "기관 종류 (all | shelter | hospital)",example = "hospital")
             @RequestParam(defaultValue = "all") String type,
 
             @Parameter(description = "도/광역시", example = "서울특별시")
-            @RequestParam(required = false) String sido,
+            @RequestParam(defaultValue = "") String sido,
 
             @Parameter(description = "구/리/시/읍", example = "강남구")
-            @RequestParam(required = false) String sigungu,
+            @RequestParam(defaultValue = "") String sigungu,
 
             @Parameter(description = "위도", example = "37.4967")
-            @RequestParam(required = false) Double lat,
+            @RequestParam(defaultValue = "") String lat,
 
             @Parameter(description = "경도", example = "127.0623")
-            @RequestParam(required = false, name = "long") Double lng
+            @RequestParam(defaultValue = "") String lng
     ) {
         Long userId = getUserIdFromSecurityContext();
+        Double latitude = (lat != null && !lat.isBlank()) ? Double.parseDouble(lat) : null;
+        Double longitude = (lng != null && !lng.isBlank()) ? Double.parseDouble(lng) : null;
         List<AnimalShelterResponse> shelters = animalShelterService.getShelters(
-                userId, lastId, type, sido, sigungu, lat, lng
+                userId, lastId, type, sido, sigungu, latitude, longitude
         );
         return BaseResponse.ok(Map.of("centers", shelters));
     }
