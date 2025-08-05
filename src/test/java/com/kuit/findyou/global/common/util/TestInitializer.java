@@ -36,6 +36,7 @@ public class TestInitializer {
     @Transactional
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
+        reportWriter = testUser;
 
         User shelterUser = createTestUser();
         defaultUser = shelterUser;
