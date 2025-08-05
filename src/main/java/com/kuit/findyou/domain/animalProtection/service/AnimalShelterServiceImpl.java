@@ -38,7 +38,7 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
 
     @Override
     public List<AnimalShelterResponse> getNearbyCenters(Long userId, Long lastId, double lat, double lng) {
-        final double MAX_DISTANCE_KM = 7.0;
+        final double MAX_DISTANCE_KM = 3.0;
 
         List<AnimalShelter> nearby = animalShelterRepository.findAllWithLatLngAfterId(lastId);
 
