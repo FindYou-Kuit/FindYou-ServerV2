@@ -23,10 +23,15 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
         if (lastId == null || type == null) {
             throw new CustomException(BAD_REQUEST);
         }
+        String hospital = "병원"; //유형 필터에 사용되는 키워드
 
+        //관할구역 필터
         String jurisdiction = (sido != null && sigungu != null) ? sido + " " + sigungu : null;
 
-        List<AnimalShelter> results = animalShelterRepository.findWithFilter(lastId, type, jurisdiction);
-        return List.of();
+        List<AnimalShelter> results = animalShelterRepository.findWithFilter(lastId, type, hospital, jurisdiction);
+
+        return results.stream()
+                .map(AnimalShelterResponse::from)
+                .toList();
     }
 }

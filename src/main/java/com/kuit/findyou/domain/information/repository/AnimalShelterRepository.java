@@ -17,6 +17,6 @@ public interface AnimalShelterRepository extends JpaRepository<AnimalShelter,Lon
       AND (:jurisdiction IS NULL OR a.jurisdiction LIKE %:jurisdiction%)
     ORDER BY a.id ASC
     """)
-    List<AnimalShelter> findWithFilter(@Param("lastId") Long lastId, @Param("type") String type, @Param("jurisdiction") String jurisdiction);
+    List<AnimalShelter> findWithFilter(@Param("lastId") Long lastId, @Param("type") String type,@Param("hospital") String hospital, @Param("jurisdiction") String jurisdiction);
 
 }
