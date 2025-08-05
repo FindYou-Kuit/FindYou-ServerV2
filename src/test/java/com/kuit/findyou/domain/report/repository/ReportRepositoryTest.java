@@ -1,6 +1,5 @@
 package com.kuit.findyou.domain.report.repository;
 
-import com.kuit.findyou.domain.home.dto.PreviewWithDistance;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.user.model.Role;
@@ -346,12 +345,12 @@ class ReportRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        List<PreviewWithDistance> results = reportRepository.findNearestReports(searchLat, searchLng, tags, pageable);
+        List<ReportProjection> results = reportRepository.findNearestReports(searchLat, searchLng, tags, pageable);
 
         // then
         assertThat(results).hasSize(3);
 
-        List<Long> sortedIds = results.stream().map(PreviewWithDistance::getReportId).toList();
+        List<Long> sortedIds = results.stream().map(ReportProjection::getReportId).toList();
         assertThat(sortedIds).containsExactly(reportA.getId(), reportB.getId(), reportC.getId()); // 거리 순 정렬 검증
     }
 

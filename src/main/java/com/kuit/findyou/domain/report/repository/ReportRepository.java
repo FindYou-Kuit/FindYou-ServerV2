@@ -1,6 +1,5 @@
 package com.kuit.findyou.domain.report.repository;
 
-import com.kuit.findyou.domain.home.dto.PreviewWithDistance;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ReportTag;
@@ -80,10 +79,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             r.breed AS title,
             r.tag AS tag,
             r.date AS date,
-            r.address AS address,
-            6371 * acos(cos(radians(:lat)) * cos(radians(r.latitude)) *
-                        cos(radians(r.longitude) - radians(:lng)) + 
-                        sin(radians(:lat)) * sin(radians(r.latitude))) AS distance
+            r.address AS address
         FROM Report r
         WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL AND r.tag IN :tags
         ORDER BY 
@@ -91,7 +87,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
                         cos(radians(r.longitude) - radians(:lng)) + 
                         sin(radians(:lat)) * sin(radians(r.latitude))) ASC
     """)
-    List<PreviewWithDistance> findNearestReports(
+    List<ReportProjection> findNearestReports(
             @Param("lat") Double latitude,
             @Param("lng") Double longitude,
             @Param("tags") List<ReportTag> tags,

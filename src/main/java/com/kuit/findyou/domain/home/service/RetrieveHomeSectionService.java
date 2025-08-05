@@ -1,6 +1,5 @@
 package com.kuit.findyou.domain.home.service;
 
-import com.kuit.findyou.domain.home.dto.PreviewWithDistance;
 import com.kuit.findyou.domain.home.dto.ProtectingAnimalPreview;
 import com.kuit.findyou.domain.home.dto.WitnessedOrMissingAnimalPreview;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
@@ -21,7 +20,7 @@ public class RetrieveHomeSectionService {
     private final ReportRepository reportRepository;
     public List<ProtectingAnimalPreview> retrieveProtectingReportPreviews(Double latitude, Double longitude, int size) {
         List<ReportTag> tags = List.of(ReportTag.PROTECTING);
-        List<PreviewWithDistance> nearestReports = reportRepository.findNearestReports(latitude, longitude, tags, PageRequest.of(0, size));
+        List<ReportProjection> nearestReports = reportRepository.findNearestReports(latitude, longitude, tags, PageRequest.of(0, size));
         return nearestReports.stream()
                 .map(ProtectingAnimalPreview::of)
                 .collect(Collectors.toList());
@@ -29,7 +28,7 @@ public class RetrieveHomeSectionService {
 
     public List<WitnessedOrMissingAnimalPreview> retrieveWitnessedOrMissingReportPreviews(Double latitude, Double longitude, int size) {
         List<ReportTag> tags = List.of(ReportTag.WITNESS, ReportTag.MISSING);
-        List<PreviewWithDistance> nearestReports = reportRepository.findNearestReports(latitude, longitude, tags, PageRequest.of(0, size));
+        List<ReportProjection> nearestReports = reportRepository.findNearestReports(latitude, longitude, tags, PageRequest.of(0, size));
         return nearestReports.stream()
                 .map(WitnessedOrMissingAnimalPreview::of)
                 .collect(Collectors.toList());

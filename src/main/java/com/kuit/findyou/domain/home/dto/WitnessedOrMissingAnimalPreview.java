@@ -21,9 +21,6 @@ public record WitnessedOrMissingAnimalPreview(
             @Schema(description = "보호 장소", example = "서울시 광진구")
             String careAddress
     ){
-    public static WitnessedOrMissingAnimalPreview of(PreviewWithDistance dto){
-        return new WitnessedOrMissingAnimalPreview(dto.getReportId(), dto.getThumbnailImageUrl(), dto.getTitle(), ReportTag.valueOf(dto.getTag()).getValue(), dto.getDate(), dto.getAddress());
-    }
     public static WitnessedOrMissingAnimalPreview of(ReportProjection dto){
         return new WitnessedOrMissingAnimalPreview(dto.getReportId(), dto.getThumbnailImageUrl(), dto.getTitle(), ReportTag.valueOf(dto.getTag()).getValue(), dto.getDate(), dto.getAddress());
     }

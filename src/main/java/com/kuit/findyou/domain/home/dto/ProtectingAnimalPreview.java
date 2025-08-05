@@ -21,9 +21,6 @@ public record ProtectingAnimalPreview(
             @Schema(description = "보호 장소", example = "서울시 광진구")
             String careAddress
     ){
-    public static ProtectingAnimalPreview of(PreviewWithDistance dto){
-        return new ProtectingAnimalPreview(dto.getReportId(), dto.getThumbnailImageUrl(), dto.getTitle(), ReportTag.valueOf(dto.getTag()).getValue(), dto.getDate(), dto.getAddress());
-    }
     public static ProtectingAnimalPreview of(ReportProjection dto){
         return new ProtectingAnimalPreview(dto.getReportId(), dto.getThumbnailImageUrl(), dto.getTitle(), ReportTag.valueOf(dto.getTag()).getValue(), dto.getDate(), dto.getAddress());
     }
