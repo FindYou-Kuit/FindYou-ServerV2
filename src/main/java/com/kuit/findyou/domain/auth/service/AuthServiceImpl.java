@@ -10,6 +10,7 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
                 });
     }
 
-    // todo transactional
+    @Transactional
     @Override
     public GuestLoginResponse guestLogin(GuestLoginRequest request) {
         log.info("[guestLogin] deviceId = {}", request.deviceId());
