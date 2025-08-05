@@ -1,6 +1,7 @@
 package com.kuit.findyou.global.config;
 
 import com.kuit.findyou.global.external.properties.KakaoAddressApiProperties;
+import com.kuit.findyou.global.external.properties.OpenAiApiProperties;
 import com.kuit.findyou.global.external.properties.ProtectingAnimalApiProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +12,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 @Configuration
 @EnableConfigurationProperties({
         ProtectingAnimalApiProperties.class,
-        KakaoAddressApiProperties.class
+        KakaoAddressApiProperties.class,
+        OpenAiApiProperties.class
 })
 public class OpenApiConfig {
 
@@ -38,6 +40,20 @@ public class OpenApiConfig {
                 .defaultHeader("Authorization", "KakaoAK " + props.apiKey())
                 .build();
     }
+
+    @Bean
+    public RestClient openAiRestClient(OpenAiApiProperties props) {
+        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(props.apiUrl());
+        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
+
+        return RestClient.builder()
+                .uriBuilderFactory(factory)
+                .baseUrl(props.apiUrl())
+                .defaultHeader("Authorization", "Bearer " + props.apiKey())
+                .defaultHeader("Content-Type", "application/json")
+                .build();
+    }
+
 
 
 }

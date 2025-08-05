@@ -35,6 +35,10 @@ public enum SwaggerResponseDescription {
             WITNESS_REPORT_NOT_FOUND
     ))),
 
+    BREED_AI_DETECTION(new LinkedHashSet<>(Set.of(
+            BREED_ANALYSIS_FAILED
+    ))),
+
     DEFAULT(new LinkedHashSet<>());
 
 

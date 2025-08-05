@@ -36,7 +36,10 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     PROTECTING_REPORT_NOT_FOUND(404, "존재하지 않는 보호글입니다."),
     MISSING_REPORT_NOT_FOUND(404, "존재하지 않는 실종 신고글입니다."),
     WITNESS_REPORT_NOT_FOUND(404, "존재하지 않는 목격 신고글입니다."),
-    ILLEGAL_TAG(500, "잘못된 태그값입니다.");
+    ILLEGAL_TAG(500, "잘못된 태그값입니다."),
+
+    // 품종 - Breed
+    BREED_ANALYSIS_FAILED(502, "AI를 통한 품종 판별에 실패했습니다.");
 
     private final boolean success = false;
     private final int code;

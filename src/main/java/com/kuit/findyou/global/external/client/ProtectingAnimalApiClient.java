@@ -175,7 +175,7 @@ public class ProtectingAnimalApiClient {
 
         return ProtectingReport.builder()
                 .breed(item.kindNm())
-                .species(item.upKindNm().equals("개") ? Species.DOG.getValue() : item.upKindNm())
+                .species(ProtectingAnimalParser.parseSpecies(item.upKindNm()))
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.changeToLocalDate(item.happenDt()))
                 .address(item.careAddr())

@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.breed.dto.response.BreedListResponseDTO;
 import com.kuit.findyou.domain.breed.model.Breed;
 import com.kuit.findyou.domain.breed.model.Species;
 import com.kuit.findyou.domain.breed.repository.BreedRepository;
+import com.kuit.findyou.domain.breed.util.BreedGroupingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,18 +22,13 @@ public class BreedQueryServiceImpl implements BreedQueryService {
 
     @Override
     public BreedListResponseDTO getBreedList() {
-        List<Breed> breeds = breedRepository.findAll(); // 단일 쿼리
+        List<Breed> breeds = breedRepository.findAll();
 
-        // species 별로 Map<String, List<String>> 으로 그룹핑
-        Map<String, List<String>> grouped = breeds.stream()
-                .collect(Collectors.groupingBy(
-                        Breed::getSpecies,
-                        Collectors.mapping(Breed::getName, Collectors.toList())
-                ));
+        Map<String, List<String>> breedGroup = BreedGroupingUtil.getGroupedBreedNamesBySpecies(breeds);
 
-        List<String> dogBreeds = grouped.getOrDefault(DOG.getValue(), List.of());
-        List<String> catBreeds = grouped.getOrDefault(CAT.getValue(), List.of());
-        List<String> etcBreeds = grouped.getOrDefault(ETC.getValue(), List.of());
+        List<String> dogBreeds = breedGroup.getOrDefault(DOG.getValue(), List.of());
+        List<String> catBreeds = breedGroup.getOrDefault(CAT.getValue(), List.of());
+        List<String> etcBreeds = breedGroup.getOrDefault(ETC.getValue(), List.of());
 
         return new BreedListResponseDTO(dogBreeds, catBreeds, etcBreeds);
     }
