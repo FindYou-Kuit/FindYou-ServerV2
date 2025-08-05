@@ -37,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
                 });
     }
 
+    // todo transactional
     @Override
     public GuestLoginResponse guestLogin(GuestLoginRequest request) {
         log.info("[guestLogin] deviceId = {}", request.deviceId());
