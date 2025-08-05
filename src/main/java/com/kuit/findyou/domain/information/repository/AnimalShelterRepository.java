@@ -11,12 +11,20 @@ public interface AnimalShelterRepository extends JpaRepository<AnimalShelter,Lon
     @Query("""
     SELECT a FROM AnimalShelter a
     WHERE a.id > :lastId
-      AND (:type = 'all' 
-           OR (:type = 'hospital' AND a.shelterName LIKE %:hospital%)
-           OR (:type = 'shelter' AND a.shelterName NOT LIKE %:hospital%))
-      AND (:jurisdiction IS NULL OR a.jurisdiction LIKE %:jurisdiction%)
+      AND (
+          :type = 'all' 
+          OR (:type = 'hospital' AND a.shelterName LIKE CONCAT('%', :hospital, '%'))
+          OR (:type = 'shelter' AND a.shelterName NOT LIKE CONCAT('%', :hospital, '%'))
+      )
+      AND (
+          :jurisdiction IS NULL OR a.jurisdiction LIKE CONCAT('%', :jurisdiction, '%')
+      )
     ORDER BY a.id ASC
-    """)
-    List<AnimalShelter> findWithFilter(@Param("lastId") Long lastId, @Param("type") String type,@Param("hospital") String hospital, @Param("jurisdiction") String jurisdiction);
+""")
+    List<AnimalShelter> findWithFilter(@Param("lastId") Long lastId,
+                                       @Param("type") String type,
+                                       @Param("hospital") String hospital,
+                                       @Param("jurisdiction") String jurisdiction
+    );
 
 }
