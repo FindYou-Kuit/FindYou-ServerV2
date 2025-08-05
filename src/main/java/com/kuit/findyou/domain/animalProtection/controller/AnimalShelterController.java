@@ -5,24 +5,20 @@ import com.kuit.findyou.domain.animalProtection.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.animalProtection.service.AnimalShelterService;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
-import com.kuit.findyou.global.common.swagger.SwaggerResponseDescription;
 import com.kuit.findyou.global.jwt.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.file.attribute.UserPrincipal;
 import java.util.List;
 import java.util.Map;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
 
 @RestController
@@ -56,12 +52,16 @@ public class AnimalShelterController {
             @RequestParam(defaultValue = "") String lng
     ) {
         Long userId = getUserIdFromSecurityContext();
-        Double latitude = (lat != null && !lat.isBlank()) ? Double.parseDouble(lat) : null;
-        Double longitude = (lng != null && !lng.isBlank()) ? Double.parseDouble(lng) : null;
-        List<AnimalShelterResponse> shelters = animalShelterService.getShelters(
-                userId, lastId, type, sido, sigungu, latitude, longitude
-        );
-        return BaseResponse.ok(Map.of("centers", shelters));
+
+        // 이 뷰에 최초에 접근할 때 사용자 위치 기반 조회 (반경 7km)
+        if (!lat.isBlank() && !lng.isBlank()) {
+            Double latitude = Double.parseDouble(lat);
+            Double longitude = Double.parseDouble(lng);
+            List<AnimalShelterResponse> results = animalShelterService.getNearbyCenters(userId, lastId, latitude, longitude);
+            return BaseResponse.ok(Map.of("centers", results));
+        }
+        List<AnimalShelterResponse> results = animalShelterService.getShelters(userId, lastId, type, sido, sigungu, null, null);
+        return BaseResponse.ok(Map.of("centers", results));
     }
     private Long getUserIdFromSecurityContext() {
         CustomUserDetails userDetails = (CustomUserDetails)

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AnimalShelterService {
     List<AnimalShelterResponse> getShelters(Long userId, Long lastId, String type, String sido, String sigungu, Double lat, Double lng);
+    List<AnimalShelterResponse> getNearbyCenters(Long userId, Long lastId, double lat, double lng);
 }

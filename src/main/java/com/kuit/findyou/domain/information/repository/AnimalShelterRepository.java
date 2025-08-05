@@ -27,4 +27,13 @@ public interface AnimalShelterRepository extends JpaRepository<AnimalShelter,Lon
                                        @Param("jurisdiction") String jurisdiction
     );
 
+    @Query("""
+    SELECT a FROM AnimalShelter a
+    WHERE a.id > :lastId
+      AND a.latitude IS NOT NULL
+      AND a.longitude IS NOT NULL
+    ORDER BY a.id ASC
+""")
+    List<AnimalShelter> findAllWithLatLngAfterId(@Param("lastId") Long lastId);
+
 }
