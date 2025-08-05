@@ -30,4 +30,10 @@ public class AnimalShelter extends BaseEntity {
 
     @Column(name = "shelter_name", length = 70, nullable = false)
     private String shelterName;
+
+    @Column(name = "latitude", nullable = false)
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = false)
+    private Double longitude;
 }
