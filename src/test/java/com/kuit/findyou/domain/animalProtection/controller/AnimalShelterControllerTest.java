@@ -16,9 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,11 +57,12 @@ public class AnimalShelterControllerTest {
                 .param("type", "hospital")
                 .param("sido", "서울특별시")
                 .param("sigungu", "강남구")
-                .when()
+        .when()
                 .get("/api/v2/informations/shelters-and-hospitals")
-                .then()
+        .then()
                 .statusCode(200)
-                .body("data.centers.size()", greaterThan(0))
+                .body("data.centers[0].jurisdiction.size()", equalTo(2))
+                .body("data.centers[0].jurisdiction", hasItems("서울특별시 강남구", "서울특별시 서초구"))
                 .body("data.centers[0].centerName", containsString("병원"));
     }
 
@@ -79,9 +78,9 @@ public class AnimalShelterControllerTest {
                 .param("lastId", 0L)
                 .param("lat", 37.5)
                 .param("lng", 127.1)
-                .when()
+        .when()
                 .get("/api/v2/informations/shelters-and-hospitals")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("data.centers.size()", greaterThan(0))
                 .body("data.centers[0].centerName", notNullValue());

@@ -147,7 +147,7 @@ public class TestInitializer {
         AnimalShelter shelter1 = AnimalShelter.builder().shelterName("서울시보호소").jurisdiction("서울특별시 강남구").phoneNumber("02-123-4567")
                 .address("서울시 강남구 테헤란로 1길").latitude(37.5).longitude(127.1).build();
 
-        AnimalShelter hospital1 = AnimalShelter.builder().shelterName("행복동물병원").jurisdiction("서울특별시 강남구").phoneNumber("02-999-9999")
+        AnimalShelter hospital1 = AnimalShelter.builder().shelterName("행복동물병원").jurisdiction("서울특별시 강남구,서울특별시 서초구").phoneNumber("02-999-9999")
                 .address("서울시 강남구 봉은사로 3길").latitude(37.51).longitude(127.11).build();
 
         AnimalShelter shelter2 = AnimalShelter.builder().shelterName("부산동물보호소").jurisdiction("부산광역시 해운대구").phoneNumber("051-123-4567")
