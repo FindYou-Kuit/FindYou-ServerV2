@@ -1,13 +1,10 @@
 name: CI with Gradle   
-on:         
-  push:
-    branches:
-      - 'main'
-      - 'develop'
+on:
   pull_request:
     branches:
       - 'main'
       - 'develop'
+
 permissions:
   contents: read
 
@@ -27,3 +24,16 @@ jobs:
 
       - name: 🐘 build with Gradle (with test)
         run: ./gradlew clean build --stacktrace
+
+      - name: ✉️ Post test results as a comment on the PR
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
+
+      - name: 🙁 Annotate failed test cases on changed lines
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ github.token }}
