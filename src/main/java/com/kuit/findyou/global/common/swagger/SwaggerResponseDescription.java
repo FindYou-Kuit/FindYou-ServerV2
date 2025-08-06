@@ -47,6 +47,10 @@ public enum SwaggerResponseDescription {
             RECOMMENDED_NEWS_NOT_FOUND
     ))),
 
+    GET_SIGUNGU_LIST(new LinkedHashSet<>(Set.of(
+            SIDO_NOT_FOUND
+    ))),
+
     DEFAULT(new LinkedHashSet<>());
 
 
