@@ -53,14 +53,14 @@ public class AnimalShelterController {
     ) {
         Long userId = getUserIdFromSecurityContext();
 
-        // 이 뷰에 최초에 접근할 때 사용자 위치 기반 조회 (반경 7km)
+        // 이 뷰에 최초에 접근할 때 사용자 위치 기반 조회 (반경 3km)
         if (!lat.isBlank() && !lng.isBlank()) {
             Double latitude = Double.parseDouble(lat);
             Double longitude = Double.parseDouble(lng);
-            List<AnimalShelterResponse> results = animalShelterService.getNearbyCenters(userId, lastId, latitude, longitude);
+            List<AnimalShelterResponse> results = animalShelterService.getNearbyCenters(lastId, latitude, longitude);
             return BaseResponse.ok(Map.of("centers", results));
         }
-        List<AnimalShelterResponse> results = animalShelterService.getShelters(userId, lastId, type, sido, sigungu, null, null);
+        List<AnimalShelterResponse> results = animalShelterService.getShelters(lastId, type, sido, sigungu, null, null);
         return BaseResponse.ok(Map.of("centers", results));
     }
     private Long getUserIdFromSecurityContext() {
