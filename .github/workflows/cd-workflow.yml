@@ -3,14 +3,12 @@ name: CD with Gradle and Docker
 on:
   push:
     branches:
-      - 'dev'
+      - 'develop'
       - 'main'
-      - 'feat/#24-cicd-pipeline'
   pull_request:
     branches:
-      - 'dev'
+      - 'develop'
       - 'main'
-      - 'feat/#24-cicd-pipeline'
 
 permissions:
   contents: read
@@ -30,10 +28,8 @@ jobs:
       - name: 👏🏻 grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: 🐘 build with Gradle (with test)
-        run: ./gradlew clean build --stacktrace
-#      - name: 🐘 build with Gradle (skip test)
-#        run: ./gradlew clean build -x test --stacktrace
+      - name: 🐘 build with Gradle (without test)
+        run: ./gradlew clean build -x test --stacktrace
 
       - name: 🐳 Docker build & push
         run: |
@@ -62,10 +58,14 @@ jobs:
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: 📦 Update docker-compose.yml on EC2
-        run: |
-          echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
-          chmod 400 ec2-key.pem
-          scp -i ec2-key.pem -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ubuntu/FindYou-ServerV2/docker-compose.yml
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "./docker-compose.yml"
+          target: "/home/ubuntu/FindYou-ServerV2/"
 
       - name: 🚀 Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master

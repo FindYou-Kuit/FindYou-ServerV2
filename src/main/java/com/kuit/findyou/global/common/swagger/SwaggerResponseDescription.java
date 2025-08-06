@@ -39,6 +39,14 @@ public enum SwaggerResponseDescription {
             BREED_ANALYSIS_FAILED
     ))),
 
+    RECOMMENDED_VIDEO(new LinkedHashSet<>(Set.of(
+            RECOMMENDED_VIDEO_NOT_FOUND
+    ))),
+
+    RECOMMENDED_NEWS(new LinkedHashSet<>(Set.of(
+            RECOMMENDED_NEWS_NOT_FOUND
+    ))),
+
     DEFAULT(new LinkedHashSet<>());
 
 
