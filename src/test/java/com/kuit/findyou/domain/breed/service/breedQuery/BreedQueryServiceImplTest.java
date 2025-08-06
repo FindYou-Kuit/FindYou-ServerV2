@@ -46,7 +46,7 @@ class BreedQueryServiceImplTest {
 
         // then
         assertThat(response.dogBreedList()).containsExactlyInAnyOrder("진돗개", "포메라니안");
-        assertThat(response.catBreedList()).containsExactly("코리안 숏헤어");
+        assertThat(response.catBreedList()).containsExactly("코리안 롱헤어");
         assertThat(response.etcBreedList()).containsExactly("기타축종");
     }
 
