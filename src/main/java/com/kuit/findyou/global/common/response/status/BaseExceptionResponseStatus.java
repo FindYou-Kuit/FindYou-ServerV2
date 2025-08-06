@@ -42,7 +42,10 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     RECOMMENDED_VIDEO_NOT_FOUND(404, "추천 영상이 존재하지 않습니다."),
     RECOMMENDED_NEWS_NOT_FOUND(404, "추천 기사가 존재하지 않습니다."),
     // 품종 - Breed
-    BREED_ANALYSIS_FAILED(502, "AI를 통한 품종 판별에 실패했습니다.");
+    BREED_ANALYSIS_FAILED(502, "AI를 통한 품종 판별에 실패했습니다."),
+
+    // 시도 / 시군구
+    SIDO_NOT_FOUND(404, "존재하지 않는 시/도입니다.");
 
     private final boolean success = false;
     private final int code;

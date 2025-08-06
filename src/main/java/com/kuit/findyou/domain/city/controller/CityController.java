@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
+import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.GET_SIGUNGU_LIST;
 
 @RestController
 @Slf4j
@@ -33,7 +34,7 @@ public class CityController {
 
     @Operation(summary = "시군구 정보 반환 API", description = "시군구 정보를 반환하기 위한 API")
     @GetMapping("/api/v2/sigungus")
-    @CustomExceptionDescription(DEFAULT)
+    @CustomExceptionDescription(GET_SIGUNGU_LIST)
     public BaseResponse<SigunguListResponseDTO> getSigunguList(
             @Parameter(description = "시도 ID", example = "1")
             @RequestParam("sidoId") Long sidoId
