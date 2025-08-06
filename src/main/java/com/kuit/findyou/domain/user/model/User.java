@@ -1,12 +1,13 @@
 package com.kuit.findyou.domain.user.model;
 
-import com.kuit.findyou.domain.fcmToken.model.FcmToken;
+import com.kuit.findyou.domain.notification.model.FcmToken;
 import com.kuit.findyou.domain.notification.model.NotificationHistory;
 import com.kuit.findyou.domain.notification.model.ReceiveNotification;
 import com.kuit.findyou.domain.report.model.InterestReport;
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ViewedReport;
-import com.kuit.findyou.domain.subscribe.model.Subscribe;
+import com.kuit.findyou.domain.notification.model.Subscribe;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,6 +16,8 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.ALREADY_REGISTERED_USER;
 
 @Entity
 @Table(name = "users")
@@ -31,14 +34,14 @@ public class User extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", length = 50, nullable = false)
+    @Column(name = "name", length = 50)
     private String name;
 
     @Lob
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
-    @Column(name = "kakao_id", nullable = false)
+    @Column(name = "kakao_id")
     private Long kakaoId;
 
     @Enumerated(EnumType.STRING)
@@ -50,6 +53,8 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "CHAR(1)", nullable = false, length = 1)
     private ReceiveNotification  receiveNotification = ReceiveNotification.N;
 
+    @Column(length = 100)
+    private String deviceId;
 
     // 신고글에 대해 orphanRemoval = true 만 설정
     @OneToMany(mappedBy = "user", orphanRemoval = true)
@@ -97,4 +102,16 @@ public class User extends BaseEntity {
     public void addNotificationHistory(NotificationHistory notificationHistory) { notificationHistories.add(notificationHistory); }
     public void addSubscribe(Subscribe subscribe) { subscribes.add(subscribe); }
     public void setFcmToken(FcmToken fcmToken) {this.fcmToken = fcmToken;}
+
+    public void upgradeToMember(Long kakaoId, String nickname, String profileImageUrl){
+        // 비회원이어야 회원이 될 수 있음
+        if(this.role != Role.GUEST){
+            throw new CustomException(ALREADY_REGISTERED_USER);
+        }
+
+        this.kakaoId = kakaoId;
+        this.name = nickname;
+        this.profileImageUrl = profileImageUrl;
+        this.role = Role.USER;
+    }
 }

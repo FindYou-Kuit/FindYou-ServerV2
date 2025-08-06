@@ -9,7 +9,7 @@ import com.kuit.findyou.domain.report.repository.ViewedReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.ReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.global.common.external.client.KakaoCoordinateClient;
+import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.common.util.TestReflectionUtil;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,16 +45,10 @@ class ReportDetailServiceImplTest {
     private ReportDetailStrategy<WitnessReport, WitnessReportDetailResponseDTO> witnessStrategy;
 
     @Mock
-    private KakaoCoordinateClient kakaoCoordinateClient;
-
-    @Mock
     private ViewedReportRepository viewedReportRepository;
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private CoordinateUpdateService coordinateUpdateService;
 
     @Mock
     private EntityManager em;
@@ -70,7 +64,7 @@ class ReportDetailServiceImplTest {
                 ReportTag.WITNESS, witnessStrategy
         );
 
-        reportDetailService = new ReportDetailServiceImpl(strategies, viewedReportRepository, interestReportRepository, kakaoCoordinateClient, coordinateUpdateService, userRepository);
+        reportDetailService = new ReportDetailServiceImpl(strategies, viewedReportRepository, interestReportRepository, userRepository);
 
         TestReflectionUtil.setField(reportDetailService, "em", em);
     }

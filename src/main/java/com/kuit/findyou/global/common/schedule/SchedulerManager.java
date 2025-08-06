@@ -1,6 +1,6 @@
 package com.kuit.findyou.global.common.schedule;
 
-import com.kuit.findyou.global.common.external.client.ProtectingAnimalApiClient;
+import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

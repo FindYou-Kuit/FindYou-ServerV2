@@ -10,6 +10,12 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 
 @Getter
 public enum SwaggerResponseDescription {
+    REGISTER_USER(new LinkedHashSet<>(Set.of(
+            ALREADY_REGISTERED_USER,
+            IMAGE_UPLOAD_FAILED
+    ))),
+
+    CHECK_DUPLICATE_NICKNAME(new LinkedHashSet<>(Set.of())),
 
     KAKAO_LOGIN(new LinkedHashSet<>(Set.of())),
 
@@ -27,6 +33,10 @@ public enum SwaggerResponseDescription {
 
     WITNESS_REPORT_DETAIL(new LinkedHashSet<>(Set.of(
             WITNESS_REPORT_NOT_FOUND
+    ))),
+
+    BREED_AI_DETECTION(new LinkedHashSet<>(Set.of(
+            BREED_ANALYSIS_FAILED
     ))),
 
     RECOMMENDED_VIDEO(new LinkedHashSet<>(Set.of(

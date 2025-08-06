@@ -12,7 +12,6 @@ import java.util.List;
 @Table(name = "report_images")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("status = 'Y'")
 public class ReportImage extends BaseEntity {
 
     @Id

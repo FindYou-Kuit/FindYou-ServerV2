@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.report.service.detail.strategy;
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.WitnessReportRepository;
+import com.kuit.findyou.domain.report.util.ReportFormatUtil;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,8 @@ public class WitnessReportDetailStrategy implements ReportDetailStrategy<Witness
 
     private final WitnessReportRepository witnessReportRepository;
 
-    private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
-
     @Override
     public WitnessReportDetailResponseDTO getDetail(WitnessReport report, boolean interest) {
-        BigDecimal latitude = report.getLatitude();
-        BigDecimal longitude = report.getLongitude();
 
         return new WitnessReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
@@ -32,8 +29,8 @@ public class WitnessReportDetailStrategy implements ReportDetailStrategy<Witness
                 report.getSignificant(),
                 report.getLandmark(),       // witnessLocation
                 report.getAddress(),        // witnessAddress
-                (latitude == null || latitude.equals(DEFAULT_COORDINATE)) ? null : latitude.doubleValue(),
-                (longitude == null || longitude.equals(DEFAULT_COORDINATE)) ? null : longitude.doubleValue(),
+                ReportFormatUtil.formatCoordinate(report.getLatitude()),
+                ReportFormatUtil.formatCoordinate(report.getLongitude()),
                 report.getReporterName(),
                 report.getDate().toString(),
                 interest

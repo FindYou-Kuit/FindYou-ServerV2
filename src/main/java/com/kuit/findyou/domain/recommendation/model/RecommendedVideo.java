@@ -3,7 +3,6 @@ package com.kuit.findyou.domain.recommendation.model;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLRestriction;
 
 
 @Entity

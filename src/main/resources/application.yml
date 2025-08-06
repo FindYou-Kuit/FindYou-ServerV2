@@ -107,6 +107,9 @@ openapi:
   kakao:
     api-url: "https://dapi.kakao.com/v2/local/search/address.json"
     api-key: ${KAKAO_REST_API_KEY}
+  openai:
+    api-url: "https://api.openai.com/v1/chat/completions"
+    api-key: ${OPENAI_API_KEY}
 
 
 logging:
@@ -118,3 +121,30 @@ findyou:
     access:
       expire-ms: ${JWT_ACCESS_EXPIRE_MS}
     secret-key : ${JWT_SECRET_KEY}
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2 # 서울 리전
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+      base-url: ${S3_BASE_URL}
+
+resilience4j:
+  retry:
+    instances:
+      kakao:
+        max-attempts: 3
+        wait-duration: 500ms
+        retry-exceptions:
+          - org.springframework.web.client.RestClientException
+          - org.springframework.web.client.ResourceAccessException
+  ratelimiter:
+    instances:
+      kakao:
+        limit-for-period: 7
+        limit-refresh-period: 1s
+        timeout-duration: 2s

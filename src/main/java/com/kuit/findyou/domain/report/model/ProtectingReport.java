@@ -64,7 +64,7 @@ public class ProtectingReport extends Report {
                              String foundLocation, String noticeNumber, LocalDate noticeStartDate,
                              LocalDate noticeEndDate, String careName,
                              String careTel, String authority) {
-        super(null, breed, species, tag, date, address, latitude, longitude, user, null, new ArrayList<>(),
+        super(null, breed, species, tag, date, address, latitude, longitude, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
         this.age = age;

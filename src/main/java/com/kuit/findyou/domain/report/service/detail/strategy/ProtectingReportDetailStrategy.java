@@ -2,7 +2,9 @@ package com.kuit.findyou.domain.report.service.detail.strategy;
 
 import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
+import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
+import com.kuit.findyou.domain.report.util.ReportFormatUtil;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,27 +19,23 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
 
     private final ProtectingReportRepository protectingReportRepository;
 
-    private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
-
     @Override
     public ProtectingReportDetailResponseDTO getDetail(ProtectingReport report, boolean interest) {
-        BigDecimal latitude = report.getLatitude();
-        BigDecimal longitude = report.getLongitude();
 
         return new ProtectingReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
                 report.getBreed(),
                 report.getTag().getValue(),
-                report.getAge(),
-                report.getWeight(),
+                ReportFormatUtil.formatAge(report.getAge()),
+                ReportFormatUtil.formatWeight(report.getWeight()),
                 report.getFurColor(),
                 report.getSex().getValue(),
                 report.getNeutering().toString(),
                 report.getSignificant(),
                 report.getCareName(),
                 report.getAddress(),
-                (latitude == null || latitude.equals(DEFAULT_COORDINATE)) ? null : latitude.doubleValue(),
-                (longitude == null || longitude.equals(DEFAULT_COORDINATE)) ? null : longitude.doubleValue(),
+                ReportFormatUtil.formatCoordinate(report.getLatitude()),
+                ReportFormatUtil.formatCoordinate(report.getLongitude()),
                 report.getCareTel(),
                 report.getDate().toString(),
                 report.getFoundLocation(),

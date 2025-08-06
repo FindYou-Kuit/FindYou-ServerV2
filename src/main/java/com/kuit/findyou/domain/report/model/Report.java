@@ -62,11 +62,6 @@ public abstract class Report extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Version // 글 상세 조회 시 위도,경도 값을 획득해 올 때, 동시성 처리를 위한 낙관적 락 도입
-    @JsonIgnore
-    @Column(name = "version", nullable = false)
-    private Long version;
-
     // 최근 본 글 삭제를 위한 양방향 연관관계 설정
     // orphanRemoval = true 만 설정
     @OneToMany(mappedBy = "report", orphanRemoval = true)
@@ -103,10 +98,5 @@ public abstract class Report extends BaseEntity {
         return reportImages.stream()
                 .map(ReportImage::getImageUrl)
                 .toList();
-    }
-
-    @JsonIgnore
-    public boolean isCoordinatesAbsent() {
-        return latitude == null || longitude == null;
     }
 }
