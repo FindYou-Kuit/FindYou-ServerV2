@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: read
+  checks: write         # check-runs 작성 허용
+  pull-requests: write  # PR 코멘트 작성 허용
 
 jobs:
   build:
