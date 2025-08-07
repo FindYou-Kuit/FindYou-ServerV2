@@ -13,6 +13,8 @@ spring:
         show_sql: true
         highlight_sql: true
         dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
 
 findyou:
   jwt:
