@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.user.dto.*;
 import com.kuit.findyou.domain.user.service.facade.UserServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
-import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
-import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.CHECK_DUPLICATE_NICKNAME;
@@ -29,6 +27,12 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RequiredArgsConstructor
 public class UserController {
     private final UserServiceFacade userServiceFacade;
+
+    @GetMapping("/me/interest-animals")
+    public BaseResponse<RetrieveInterestAnimalsResponse> retrieveInterestAnimals(@LoginUserId Long userId, @RequestParam Long lastId){
+        RetrieveInterestAnimalsResponse result = userServiceFacade.retrieveInterestAnimals(userId, lastId);
+        return BaseResponse.ok(result);
+    }
 
     @Operation(summary = "최근 본 동물 조회 API", description = "최근 본 동물을 조회하기 위한 API")
     @GetMapping("/me/viewed-animals")
