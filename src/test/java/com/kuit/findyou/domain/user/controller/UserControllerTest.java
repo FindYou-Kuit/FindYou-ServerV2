@@ -1,8 +1,10 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
+import com.kuit.findyou.domain.user.dto.RetrieveInterestAnimalsResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
+import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
@@ -37,6 +39,9 @@ class UserControllerTest {
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Autowired
+    UserRepository userRepository;
 
     User reportWriter;
 
@@ -110,5 +115,66 @@ class UserControllerTest {
 
         assertThat(response.nickname()).isEqualTo(NICKNAME);
         assertThat(role).isEqualTo(Role.USER);
+    }
+
+    @DisplayName("GET /api/v2/users/me/interest-animals : 유저가 관심동물을 가지고 있으면 반환한다")
+    @Test
+    void should_ReturnInterestAnimals_When_UserHasInterestAnimals(){
+        // given
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+
+        // when
+        RetrieveInterestAnimalsResponse response = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("lastId", Long.MAX_VALUE)
+                .when()
+                .get("/api/v2/users/me/interest-animals")
+                .then()
+                .extract()
+                .jsonPath()
+                .getObject("data", RetrieveInterestAnimalsResponse.class);
+
+        // then
+        assertThat(response.interestAnimals()).hasSize(3);
+        assertThat(response.isLast()).isTrue();
+    }
+
+    @DisplayName("GET /api/v2/users/me/interest-animals : 유저가 관심동물을 가지고 있지 않으면 빈 리스트를 반환한다")
+    @Test
+    void should_ReturnEmptyList_When_UserHasNoInterestAnimal(){
+        // given
+        User user = createUser();
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        RetrieveInterestAnimalsResponse response = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("lastId", Long.MAX_VALUE)
+                .when()
+                .get("/api/v2/users/me/interest-animals")
+                .then()
+                .extract()
+                .jsonPath()
+                .getObject("data", RetrieveInterestAnimalsResponse.class);
+
+        // then
+        assertThat(response.interestAnimals()).hasSize(0);
+        assertThat(response.lastId()).isEqualTo(-1L);
+        assertThat(response.isLast()).isTrue();
+    }
+
+    private User createUser() {
+        User user = User.builder()
+                .name("유저")
+                .kakaoId(1234L)
+                .role(Role.USER)
+                .deviceId("asdf1234asdf")
+                .profileImageUrl("image.png")
+                .build();
+        return userRepository.save(user);
     }
 }
