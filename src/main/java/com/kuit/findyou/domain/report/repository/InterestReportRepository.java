@@ -1,7 +1,9 @@
 package com.kuit.findyou.domain.report.repository;
 
 
+import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.InterestReport;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,5 +31,16 @@ public interface InterestReportRepository extends JpaRepository<InterestReport, 
             """)
     List<Long> findInterestedReportIdsByUserIdAndReportIds(@Param("userId") Long userId, @Param("reportIds") List<Long> reportIds);
 
-
+    @Query("""
+        SELECT ir.report.id AS reportId,
+            (SELECT ri.imageUrl FROM ReportImage ri WHERE ri.report.id = ir.report.id ORDER BY ri.id ASC LIMIT 1) AS thumbnailImageUrl,
+            ir.report.breed AS breed,
+            ir.report.tag AS tag,
+            ir.report.date AS date,
+            ir.report.address AS address
+        FROM InterestReport ir JOIN ir.report
+        WHERE ir.id < :lastId AND ir.user.id = :userId
+        ORDER BY ir.id DESC
+    """)
+    List<ReportProjection> findInterestReportsByCursor(@Param("userId") Long userId, @Param("lastId") Long lastId, Pageable pageable);
 }
