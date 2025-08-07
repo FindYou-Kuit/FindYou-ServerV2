@@ -1,16 +1,20 @@
 package com.kuit.findyou.domain.report.repository;
 
+import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
+import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -148,5 +152,32 @@ class InterestReportRepositoryTest {
         reportRepository.save(missingReport);
         reportRepository.save(witnessReport);
         reportRepository.save(protectingReport);
+    }
+
+    @Test
+    @DisplayName("3개의 관심동물이 있으면 3개가 조회된다")
+    void should_ReturnThreeInterestAnimals_When_TheyExist(){
+        // given
+        final int size = 20;
+        saveAllInterestReports();
+
+        // when
+        List<ReportProjection> result = interestReportRepository.findInterestReportsByCursor(testUser.getId(), Long.MAX_VALUE, PageRequest.of(0, size));
+
+        // then
+        assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("관심동물이 없으면 아무것도 조회되지 않는다")
+    void should_ReturnNothing_When_InterestAnimalsDoNotExist(){
+        // given
+        final int size = 20;
+
+        // when
+        List<ReportProjection> result = interestReportRepository.findInterestReportsByCursor(testUser.getId(), Long.MAX_VALUE, PageRequest.of(0, size));
+
+        // then
+        assertThat(result.size()).isEqualTo(0);
     }
 }
