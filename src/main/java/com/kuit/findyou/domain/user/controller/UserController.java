@@ -28,8 +28,18 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class UserController {
     private final UserServiceFacade userServiceFacade;
 
+    @Operation(
+            summary = "관심 동물 목록 조회 API",
+            description = """
+                유저가 등록한 관심동물 목록을 조회하기 위한 API.
+                커서페이징을 지원합니다. 직전 응답의 lastId를 요청에 포함해야 합니다. 처음에는 Long 타입의 MAX_VALUE를 전달합니다.
+            """
+    )
+    @CustomExceptionDescription(DEFAULT)
     @GetMapping("/me/interest-animals")
-    public BaseResponse<RetrieveInterestAnimalsResponse> retrieveInterestAnimals(@LoginUserId Long userId, @RequestParam Long lastId){
+    public BaseResponse<RetrieveInterestAnimalsResponse> retrieveInterestAnimals(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                                                 @RequestParam(required = false) Long lastId){
+        if(lastId == null) lastId = Long.MAX_VALUE;
         RetrieveInterestAnimalsResponse result = userServiceFacade.retrieveInterestAnimals(userId, lastId);
         return BaseResponse.ok(result);
     }
