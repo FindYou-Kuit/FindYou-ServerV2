@@ -21,7 +21,7 @@ services:
       retries: 5
 
   findyou-server:
-    image: jjjjyy0704/findyou_repository:latest
+    image: jjjjyy0704/findyou_repository:dev
     container_name: findyou-server-dev
     ports:
       - "9001:9001"
