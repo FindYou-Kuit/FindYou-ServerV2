@@ -1,0 +1,92 @@
+name: CD with Gradle and Docker
+
+on:
+  push:
+    branches:
+      - 'develop'
+  pull_request: # 임시 테스트용
+    branches:
+      - 'infra/#50-seperate-prod-dev'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: ☕️ set up JDK 17        # 프로젝트의 java 버전에 맞추어 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 👏🏻 grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🐘 build with Gradle (without test)
+        run: ./gradlew clean build -x test --stacktrace
+
+      - name: 🐳 Docker build & push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -f Dockerfile-dev -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}
+
+      - name: 🫴🏻 Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: 🪪 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-northeast-2'
+
+      - name: ➕ Add GitHub Actions IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.DEV_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: 📦 Update docker-compose-prod.yml on EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.DEV_EC2_USERNAME }}
+          key: ${{ secrets.DEV_EC2_KEY }}
+          port: ${{ secrets.DEV_EC2_PORT }}
+          source: "./docker-compose-dev.yml"
+          target: "/home/ubuntu/FindYou-ServerV2/"
+
+      - name: 🚀 Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.DEV_EC2_USERNAME }}
+          key: ${{ secrets.DEV_EC2_KEY }}
+          port: ${{ secrets.DEV_EC2_PORT }}
+          script: |
+            cd /home/ubuntu/FindYou-ServerV2
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+            
+            echo "🚮 Cleaning up old images"
+            sudo docker image prune -f
+
+
+      - name: ❌ Remove GitHub Actions IP
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --region ap-northeast-2 \
+            --group-id ${{ secrets.DEV_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
