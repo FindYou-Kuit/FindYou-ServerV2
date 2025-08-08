@@ -39,12 +39,15 @@ class ReportRetrieveServiceImplTest {
     @Mock
     private ReportRepository reportRepository;
 
+    @Mock
+    private InterestReportRepository interestReportRepository;
+
     @InjectMocks
     private ReportRetrieveServiceImpl reportRetrieveService;
 
     @BeforeEach
     void setUp() {
-        reportRetrieveService = new ReportRetrieveServiceImpl(reportRepository, cardFactory);
+        reportRetrieveService = new ReportRetrieveServiceImpl(reportRepository, interestReportRepository, cardFactory);
     }
 
     @Test
@@ -75,8 +78,10 @@ class ReportRetrieveServiceImplTest {
         CardResponseDTO mockResponse = new CardResponseDTO(List.of(mockCard), reportId, true);
 
         when(cardFactory.createCardResponse(
-                eq(projections), eq(userId), anyLong(), eq(true)
+                eq(projections), anySet() , anyLong(), eq(true)
         )).thenReturn(mockResponse);
+
+        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(eq(userId), anyList())).thenReturn(List.of(reportId));
 
         // when
         CardResponseDTO result = reportRetrieveService.retrieveReportsWithFilters(
@@ -98,10 +103,10 @@ class ReportRetrieveServiceImplTest {
         );
 
         verify(cardFactory).createCardResponse(
-                eq(projections), eq(userId), anyLong(), eq(true)
+                eq(projections), anySet(), anyLong(), eq(true)
         );
 
-        verify(cardFactory, times(1)).createCardResponse(any(), anyLong(), anyLong(), anyBoolean());
+        verify(cardFactory, times(1)).createCardResponse(any(), anySet(), anyLong(), anyBoolean());
 
     }
 
