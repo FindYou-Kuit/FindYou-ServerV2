@@ -80,7 +80,6 @@ jobs:
             echo "🚮 Cleaning up old images"
             sudo docker image prune -f
 
-
       - name: ❌ Remove GitHub Actions IP
         if: always()
         run: |
