@@ -48,8 +48,6 @@ class InterestReportServiceTest {
                 .mapToObj(i -> new ReportProjectionImpl(i, "image" + i + ".png", "breed" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "city"))
                 .collect(Collectors.toList());
 
-        projections.forEach(p -> System.out.println(p.getReportId()));
-
         when(interestReportRepository.findInterestReportsByCursor(userId, lastId, PageRequest.of(0, size + 1)))
                 .thenReturn(projections);
 
