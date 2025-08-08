@@ -54,7 +54,7 @@ jobs:
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
-      - name: 📦 Update docker-compose-prod.yml on EC2
+      - name: 📦 Update docker-compose-dev.yml on EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEV_EC2_HOST }}
@@ -73,9 +73,9 @@ jobs:
           port: ${{ secrets.DEV_EC2_PORT }}
           script: |
             cd /home/ubuntu/FindYou-ServerV2
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
+            docker compose pull
+            docker compose down
+            docker compose up -d
             
             echo "🚮 Cleaning up old images"
             sudo docker image prune -f
