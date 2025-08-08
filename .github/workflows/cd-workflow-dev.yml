@@ -73,10 +73,10 @@ jobs:
           port: ${{ secrets.DEV_EC2_PORT }}
           script: |
             cd /home/ubuntu/FindYou-ServerV2
-            docker compose pull
-            docker compose down
-            docker compose up -d
-            
+            docker compose -f docker-compose-dev.yml pull
+            docker compose -f docker-compose-dev.yml down
+            docker compose -f docker-compose-dev.yml up -d
+  
             echo "🚮 Cleaning up old images"
             sudo docker image prune -f
 
