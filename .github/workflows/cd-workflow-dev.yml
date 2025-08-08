@@ -6,7 +6,7 @@ on:
       - 'develop'
   pull_request: # 임시 테스트용
     branches:
-      - 'infra/#50-seperate-prod-dev'
+      - 'develop'
 
 permissions:
   contents: read
