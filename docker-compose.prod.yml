@@ -4,12 +4,12 @@ services:
     image: jjjjyy0704/findyou_repository:latest
     container_name: findyou-server
     ports:
-      - "9001:9001"
+      - "9002:9002"
     restart: always
     env_file:
       - .env
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: prod
       TZ: Asia/Seoul
 
 #test
