@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.user.controller;
 
+import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
-import com.kuit.findyou.domain.user.dto.RetrieveInterestAnimalsResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
@@ -124,7 +124,7 @@ class UserControllerTest {
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         // when
-        RetrieveInterestAnimalsResponse response = given()
+        CardResponseDTO response = given()
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -134,10 +134,10 @@ class UserControllerTest {
                 .then()
                 .extract()
                 .jsonPath()
-                .getObject("data", RetrieveInterestAnimalsResponse.class);
+                .getObject("data", CardResponseDTO.class);
 
         // then
-        assertThat(response.interestAnimals()).hasSize(3);
+        assertThat(response.cards()).hasSize(3);
         assertThat(response.isLast()).isTrue();
     }
 
@@ -149,7 +149,7 @@ class UserControllerTest {
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
         // when
-        RetrieveInterestAnimalsResponse response = given()
+        CardResponseDTO response = given()
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -159,10 +159,10 @@ class UserControllerTest {
                 .then()
                 .extract()
                 .jsonPath()
-                .getObject("data", RetrieveInterestAnimalsResponse.class);
+                .getObject("data", CardResponseDTO.class);
 
         // then
-        assertThat(response.interestAnimals()).hasSize(0);
+        assertThat(response.cards()).hasSize(0);
         assertThat(response.lastId()).isEqualTo(-1L);
         assertThat(response.isLast()).isTrue();
     }
