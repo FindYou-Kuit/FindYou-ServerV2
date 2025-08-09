@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.information.service;
 
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.animalProtection.model.AnimalShelter;
-import com.kuit.findyou.domain.animalProtection.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.model.AnimalShelter;
+import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
     private final AnimalShelterRepository animalShelterRepository;
 
     @Override
-    public List<AnimalShelterResponse> getShelters(Long userId, Long lastId, String type, String sido, String sigungu, Double lat, Double lng) {
+    public List<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng) {
 
         if (lastId == null || type == null) {
             throw new CustomException(BAD_REQUEST);
@@ -37,7 +37,7 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
     }
 
     @Override
-    public List<AnimalShelterResponse> getNearbyCenters(Long userId, Long lastId, double lat, double lng) {
+    public List<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng) {
         final double MAX_DISTANCE_KM = 3.0;
 
         List<AnimalShelter> nearby = animalShelterRepository.findAllWithLatLngAfterId(lastId);

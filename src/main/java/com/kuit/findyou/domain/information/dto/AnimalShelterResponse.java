@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.information.dto;
 
-import com.kuit.findyou.domain.animalProtection.model.AnimalShelter;
+import com.kuit.findyou.domain.information.model.AnimalShelter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

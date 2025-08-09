@@ -1,9 +1,9 @@
 package com.kuit.findyou.global.common.util;
 
-import com.kuit.findyou.domain.information.model.AnimalShelter;
-import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
+import com.kuit.findyou.domain.information.model.AnimalShelter;
+import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.model.Role;

@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.animalProtection.service;
 
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.animalProtection.model.AnimalShelter;
-import com.kuit.findyou.domain.animalProtection.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.model.AnimalShelter;
+import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
 import com.kuit.findyou.domain.information.service.AnimalShelterServiceImpl;
 import com.kuit.findyou.global.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +44,7 @@ public class AnimalShelterServiceImplTest {
         when(animalShelterRepository.findWithFilter(0L, "hospital", "병원", "서울특별시 송파구"))
                 .thenReturn(List.of(hospital));
 
-        List<AnimalShelterResponse> result = animalShelterService.getShelters(1L, 0L, "hospital", "서울특별시", "송파구", null, null);
+        List<AnimalShelterResponse> result = animalShelterService.getShelters(0L, "hospital", "서울특별시", "송파구", null, null);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).centerName()).isEqualTo("OO병원");
@@ -53,7 +53,7 @@ public class AnimalShelterServiceImplTest {
     @Test
     @DisplayName("getShelters 예외 발생 (lastId 또는 type null)")
     void getShelters_invalidParams_throwException() {
-        assertThatThrownBy(() -> animalShelterService.getShelters(1L, 0L, null, "서울특별시", "송파구", 20.00, 20.00))
+        assertThatThrownBy(() -> animalShelterService.getShelters(0L, null, "서울특별시", "송파구", 20.00, 20.00))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(BAD_REQUEST.getMessage());
     }
@@ -82,7 +82,7 @@ public class AnimalShelterServiceImplTest {
         when(animalShelterRepository.findAllWithLatLngAfterId(0L))
                 .thenReturn(List.of(s1, s2));
 
-        List<AnimalShelterResponse> result = animalShelterService.getNearbyCenters(1L, 0L, 37.5, 127.1);
+        List<AnimalShelterResponse> result = animalShelterService.getNearbyCenters(0L, 37.5, 127.1);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).centerName()).isEqualTo("가까운 병원");
