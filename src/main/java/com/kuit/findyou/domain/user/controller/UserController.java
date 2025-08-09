@@ -37,10 +37,10 @@ public class UserController {
     )
     @CustomExceptionDescription(DEFAULT)
     @GetMapping("/me/interest-animals")
-    public BaseResponse<RetrieveInterestAnimalsResponse> retrieveInterestAnimals(@Parameter(hidden = true) @LoginUserId Long userId,
+    public BaseResponse<CardResponseDTO> retrieveInterestAnimals(@Parameter(hidden = true) @LoginUserId Long userId,
                                                                                  @RequestParam(required = false) Long lastId){
         if(lastId == null) lastId = Long.MAX_VALUE;
-        RetrieveInterestAnimalsResponse result = userServiceFacade.retrieveInterestAnimals(userId, lastId);
+        CardResponseDTO result = userServiceFacade.retrieveInterestAnimals(userId, lastId);
         return BaseResponse.ok(result);
     }
 

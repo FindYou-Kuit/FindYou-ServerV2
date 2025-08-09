@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.user.service.interest_report;
 
-import com.kuit.findyou.domain.user.dto.RetrieveInterestAnimalsResponse;
+import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 
 public interface InterestReportService {
-    RetrieveInterestAnimalsResponse retrieveInterestAnimals(Long userId, Long lastId, int size);
+    CardResponseDTO retrieveInterestAnimals(Long userId, Long lastId, int size);
 }

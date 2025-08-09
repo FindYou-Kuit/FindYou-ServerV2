@@ -29,7 +29,7 @@ public class UserServiceFacade {
         return queryUserService.checkDuplicateNickname(request);
     }
 
-    public RetrieveInterestAnimalsResponse retrieveInterestAnimals(Long userId, Long lastId) {
+    public CardResponseDTO retrieveInterestAnimals(Long userId, Long lastId) {
         return interestReportService.retrieveInterestAnimals(userId, lastId, 20);
     }
 }
