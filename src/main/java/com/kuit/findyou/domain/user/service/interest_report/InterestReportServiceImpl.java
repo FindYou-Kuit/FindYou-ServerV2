@@ -33,7 +33,7 @@ public class InterestReportServiceImpl implements InterestReportService{
                 takenWithSize,
                 interestIds,
                 nextLastId,
-                interestReportProjections.size() > size
+                interestReportProjections.size() <= size
             );
     }
 
