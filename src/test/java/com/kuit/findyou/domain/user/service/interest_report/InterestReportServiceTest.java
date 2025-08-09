@@ -1,6 +1,5 @@
 package com.kuit.findyou.domain.user.service.interest_report;
 
-import com.kuit.findyou.domain.report.dto.response.Card;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.factory.CardFactory;
@@ -9,6 +8,8 @@ import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 class InterestReportServiceTest {
+
     @InjectMocks
     private InterestReportServiceImpl interestReportService;
 
@@ -38,79 +40,103 @@ class InterestReportServiceTest {
     @Mock
     private CardFactory cardFactory;
 
-    @DisplayName("페이지 사이즈보다 많은 관심글이 존재하면 첫 조회 시에 마지막 페이지가 반환하지 않는다")
+    @Captor
+    private ArgumentCaptor<List<ReportProjection>> projectionsCaptor;
+    @Captor
+    private ArgumentCaptor<Set<Long>> idsCaptor;
+    @Captor
+    private ArgumentCaptor<Long> nextLastIdCaptor;
+    @Captor
+    private ArgumentCaptor<Boolean> isLastCaptor;
+
+    @DisplayName("페이지 사이즈보다 많은 관심글이 존재하면 사이즈에 맞춰서 보여준다")
     @Test
-    void should_NotReturnLastPage_When_NumberOfInterestAnimalsExceedsPageSize(){
+    void should_TrimInterestAnimals_When_NumberOfThemExceedsPageSize() {
         // given
         final Long userId = 1L;
         final Long lastId = Long.MAX_VALUE;
         final int size = 20;
 
         List<ReportProjection> projections = getReportProjections(size + 1);
-        when(interestReportRepository.findInterestReportsByCursor(eq(userId), eq(lastId), eq(PageRequest.of(0, size + 1))))
-                .thenReturn(projections);
+        when(interestReportRepository.findInterestReportsByCursor(
+                eq(userId), eq(lastId), argThat(p -> p.getPageNumber() == 0 && p.getPageSize() == size + 1)
+        )).thenReturn(projections);
 
-        List<ReportProjection> takenWithSize = projections.subList(0, size);
-        Set<Long> interestIds = takenWithSize.stream().map(p -> p.getReportId()).collect(Collectors.toSet());
-        List<Card> cards = getCards(takenWithSize, interestIds);
-        Long nextLastId = cards.get(cards.size() - 1).reportId();
-        CardResponseDTO responseDTO = new CardResponseDTO(cards, nextLastId, true);
-        when(cardFactory.createCardResponse(takenWithSize, interestIds, nextLastId, true)).thenReturn(responseDTO);
+        CardResponseDTO expectedResponse = new CardResponseDTO(List.of(), -1L, false);
+        when(cardFactory.createCardResponse(anyList(), anySet(), anyLong(), anyBoolean()))
+                .thenReturn(expectedResponse);
 
         // when
-        CardResponseDTO response = interestReportService.retrieveInterestAnimals(userId, lastId, size);
+        CardResponseDTO actualResponse = interestReportService.retrieveInterestAnimals(userId, lastId, size);
 
         // then
-        assertThat(response).isEqualTo(responseDTO);
-        verify(interestReportRepository, times(1)).findInterestReportsByCursor(eq(userId), eq(lastId), eq(PageRequest.of(0, size + 1)));
-        verify(cardFactory, times(1)).createCardResponse(eq(takenWithSize), eq(interestIds), eq(nextLastId), eq(true));
+        verify(interestReportRepository).findInterestReportsByCursor(eq(userId), eq(lastId), any(PageRequest.class));
+
+        verify(cardFactory).createCardResponse(
+                projectionsCaptor.capture(),
+                idsCaptor.capture(),
+                nextLastIdCaptor.capture(),
+                isLastCaptor.capture()
+        );
+        assertThat(projectionsCaptor.getValue()).hasSize(size);
+        assertThat(idsCaptor.getValue()).containsAll(
+                projectionsCaptor.getValue().stream().map(ReportProjection::getReportId).toList()
+        );
+        assertThat(nextLastIdCaptor.getValue()).isEqualTo(projectionsCaptor.getValue().get(size - 1).getReportId());
+        assertThat(isLastCaptor.getValue()).isFalse();
+
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
-    private List<Card> getCards(List<ReportProjection> takenWithSize, Set<Long> interestIds) {
-        return takenWithSize.stream().map(p -> new Card(
-                        p.getReportId(),
-                        p.getThumbnailImageUrl(),
-                        p.getTitle(),
-                        p.getTag(),
-                        p.getDate().toString(),
-                        p.getAddress(),
-                        interestIds.contains(p.getReportId())))
-                .collect(Collectors.toList());
-    }
-
-    private List<ReportProjection> getReportProjections(int size) {
-        List<ReportProjection> projections = LongStream.iterate(size, n -> n - 1)
-                .limit(size)
-                .mapToObj(i -> new ReportProjectionImpl(i, "image" + i + ".png", "breed" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "city"))
-                .collect(Collectors.toList());
-        return projections;
-    }
-
-    @DisplayName("페이지 사이즈보다 적은 관심글이 존재하면 첫 조회 시에 마지막 페이지를 반환한다")
+    @DisplayName("페이지 사이즈보다 적은 관심글이 존재하면 그대로 반환한다")
     @Test
-    void should_ReturnLastPage_When_NumberOfInterestAnimalsIsSmallerThanPageSize(){
+    void should_ReturnAllOfInterestAnimals_When_NumberOfThemIsSmallerThanPageSize() {
         // given
         final Long userId = 1L;
         final Long lastId = Long.MAX_VALUE;
         final int size = 20;
 
         List<ReportProjection> projections = getReportProjections(size - 1);
-        when(interestReportRepository.findInterestReportsByCursor(userId, lastId, PageRequest.of(0, size + 1)))
-                .thenReturn(projections);
+        when(interestReportRepository.findInterestReportsByCursor(
+                eq(userId), eq(lastId), argThat(p -> p.getPageNumber() == 0 && p.getPageSize() == size + 1)
+        )).thenReturn(projections);
 
-        List<ReportProjection> takenWithSize = projections.subList(0, size);
-        Set<Long> interestIds = takenWithSize.stream().map(p -> p.getReportId()).collect(Collectors.toSet());
-        List<Card> cards = getCards(takenWithSize, interestIds);
-        Long nextLastId = cards.get(cards.size() - 1).reportId();
-        CardResponseDTO responseDTO = new CardResponseDTO(cards, nextLastId, true);
-        when(cardFactory.createCardResponse(takenWithSize, interestIds, nextLastId, true)).thenReturn(responseDTO);
+        CardResponseDTO expectedResponse = new CardResponseDTO(List.of(), -1L, true);
+        when(cardFactory.createCardResponse(anyList(), anySet(), anyLong(), anyBoolean()))
+                .thenReturn(expectedResponse);
 
         // when
-        CardResponseDTO response = interestReportService.retrieveInterestAnimals(userId, lastId, size);
+        CardResponseDTO actualResponse = interestReportService.retrieveInterestAnimals(userId, lastId, size);
 
         // then
-        assertThat(response).isEqualTo(responseDTO);
-        verify(interestReportRepository, times(1)).findInterestReportsByCursor(eq(userId), eq(lastId), eq(PageRequest.of(0, size + 1)));
-        verify(cardFactory, times(1)).createCardResponse(eq(takenWithSize), eq(interestIds), eq(nextLastId), eq(true));
+        verify(cardFactory).createCardResponse(
+                projectionsCaptor.capture(),
+                idsCaptor.capture(),
+                nextLastIdCaptor.capture(),
+                isLastCaptor.capture()
+        );
+
+        assertThat(projectionsCaptor.getValue()).hasSize(projections.size());
+        assertThat(idsCaptor.getValue()).containsAll(
+                projectionsCaptor.getValue().stream().map(ReportProjection::getReportId).toList()
+        );
+        assertThat(nextLastIdCaptor.getValue()).isEqualTo(projectionsCaptor.getValue().get(projectionsCaptor.getValue().size() - 1).getReportId());
+        assertThat(isLastCaptor.getValue()).isTrue();
+
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    private List<ReportProjection> getReportProjections(int size) {
+        return LongStream.iterate(size, n -> n - 1)
+                .limit(size)
+                .mapToObj(i -> new ReportProjectionImpl(
+                        i,
+                        "image" + i + ".png",
+                        "breed" + i,
+                        ReportTag.PROTECTING.getValue(),
+                        LocalDate.of(2025, 1, 1),
+                        "city"
+                ))
+                .collect(Collectors.toList());
     }
 }
