@@ -26,12 +26,9 @@ public class TestInitializer {
     private final InterestReportRepository interestReportRepository;
     private final ViewedReportRepository viewedReportRepository;
 
-    private User reportWriter;
-
     @Transactional
-    public void initializeControllerTestData() {
+    public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
-        reportWriter = testUser;
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -43,6 +40,8 @@ public class TestInitializer {
 
         createTestViewedReport(testUser, testProtectingReport);
         createTestViewedReport(testUser, testMissingReport);
+
+        return testUser;
     }
 
     public User createTestUser() {
@@ -55,11 +54,11 @@ public class TestInitializer {
         return userRepository.save(user);
     }
 
-    public ProtectingReport createTestProtectingReportWithImage(User user) {
+    private ProtectingReport createTestProtectingReportWithImage(User user) {
         ProtectingReport report = ProtectingReport.createProtectingReport(
                 "믹스견", "개", ReportTag.PROTECTING,
                 LocalDate.now(), "서울", user,
-                Sex.M, "2", "5",
+                Sex.M, "2살", "5kg",
                 "갈색", Neutering.Y,
                 "절뚝거림", "홍대",
                 "NOTICE123", LocalDate.now(),
@@ -79,8 +78,8 @@ public class TestInitializer {
     public MissingReport createTestMissingReportWithImage(User user) {
         MissingReport report = MissingReport.createMissingReport(
                 "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 10, 5),
-                "서울시 강남구", user, Sex.F, "RF12345", "3",
-                "3", "흰색", "눈 주변 갈색 털",
+                "서울시 강남구", user, Sex.F, "RF12345", "3살",
+                "3kg", "흰색", "눈 주변 갈색 털",
                 "이슬기", "010-1111-2222", "강남역 10번 출구",
                 BigDecimal.valueOf(37.501), BigDecimal.valueOf(127.025)
         );
@@ -109,17 +108,28 @@ public class TestInitializer {
         return report;
     }
 
-    private void createTestInterestReport(User user, Report report) {
+    public void createTestInterestReport(User user, Report report) {
         InterestReport interest = InterestReport.createInterestReport(user, report);
         interestReportRepository.save(interest);
     }
 
-    private void createTestViewedReport(User user, Report report) {
+    public void createTestViewedReport(User user, Report report) {
         ViewedReport viewedReport = ViewedReport.createViewedReport(user, report);
         viewedReportRepository.save(viewedReport);
     }
 
-    public User getReportWriter(){
-        return this.reportWriter;
+    public User userWith3InterestAnimals() {
+        User testUser = createTestUser();
+        User writer = createTestUser();
+
+        ProtectingReport testProtectingReport = createTestProtectingReportWithImage(writer);
+        MissingReport testMissingReport = createTestMissingReportWithImage(writer);
+        WitnessReport testWitnessReport = createTestWitnessReportWithImage(writer);
+
+        createTestInterestReport(testUser, testProtectingReport);
+        createTestInterestReport(testUser, testMissingReport);
+        createTestInterestReport(testUser, testWitnessReport);
+
+        return testUser;
     }
 }

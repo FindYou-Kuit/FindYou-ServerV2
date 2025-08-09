@@ -43,22 +43,18 @@ class UserControllerTest {
     @Autowired
     UserRepository userRepository;
 
-    User reportWriter;
-
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         databaseCleaner.execute();
-
         RestAssured.port = port;
-
-        testInitializer.initializeControllerTestData();
-        this.reportWriter = testInitializer.getReportWriter();
     }
 
     @Test
     @DisplayName("GET /api/v2/users/me/viewed-animals: 최근 본 글 조회 성공")
     void retrieveViewedAnimals() {
         // 작성자의 엑세스 토큰 생성
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         given()
@@ -88,7 +84,7 @@ class UserControllerTest {
                 .body("data.isLast", equalTo(true));
     }
 
-    @DisplayName("POST /api/v2/users : 처음 로그인한 사람이 회원가입 성공한다")
+    @DisplayName("POST /api/v2/users : 처음 로그인한 사람이 회원가입에 성공한다")
     @Test
     void should_Succeed_When_registerAnyoneWhoFirstLoggedIn(){
         // given
@@ -121,7 +117,9 @@ class UserControllerTest {
     @Test
     void should_ReturnInterestAnimals_When_UserHasInterestAnimals(){
         // given
-        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+        User user = testInitializer.userWith3InterestAnimals();
+
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
         // when
         CardResponseDTO response = given()
@@ -145,7 +143,8 @@ class UserControllerTest {
     @Test
     void should_ReturnEmptyList_When_UserHasNoInterestAnimal(){
         // given
-        User user = createUser();
+        User user = testInitializer.createTestUser();
+
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
         // when
@@ -165,16 +164,5 @@ class UserControllerTest {
         assertThat(response.cards()).hasSize(0);
         assertThat(response.lastId()).isEqualTo(-1L);
         assertThat(response.isLast()).isTrue();
-    }
-
-    private User createUser() {
-        User user = User.builder()
-                .name("유저")
-                .kakaoId(1234L)
-                .role(Role.USER)
-                .deviceId("asdf1234asdf")
-                .profileImageUrl("image.png")
-                .build();
-        return userRepository.save(user);
     }
 }

@@ -35,21 +35,19 @@ class ReportControllerTest {
     @Autowired
     JwtUtil jwtUtil;
 
-    User reportWriter;
-
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         databaseCleaner.execute();
-
         RestAssured.port = port;
-        testInitializer.initializeControllerTestData();
-        this.reportWriter = testInitializer.getReportWriter();
     }
 
     @Test
     @DisplayName("GET /api/v2/reports/protecting-reports/{id}: ProtectingReport 상세 조회 성공")
     void getProtectingReportDetail() {
         // 작성자의 엑세스 토큰 생성
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+
+
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         given()
@@ -86,6 +84,8 @@ class ReportControllerTest {
     @DisplayName("GET /api/v2/reports/missing-reports/{id}: MissingReport 상세 조회 성공")
     void getMissingReportDetail() {
         // 작성자의 엑세스 토큰 생성
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         given()
@@ -117,6 +117,8 @@ class ReportControllerTest {
     @DisplayName("GET /api/v2/reports/witness-reports/{id}: WitnessReport 상세 조회 성공")
     void getWitnessReportDetail() {
         // 작성자의 엑세스 토큰 생성
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         given()
@@ -145,6 +147,8 @@ class ReportControllerTest {
     @Test
     void retrieveAllReports() {
         // 작성자의 엑세스 토큰 생성
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         given()
@@ -186,6 +190,8 @@ class ReportControllerTest {
     @Test
     void retrieveProtectingReports() {
         // 작성자의 엑세스 토큰 생성
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         given()
@@ -213,6 +219,8 @@ class ReportControllerTest {
     @Test
     void retrieveReportingReports() {
         // 작성자의 엑세스 토큰 생성
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+
         String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
 
         given()
