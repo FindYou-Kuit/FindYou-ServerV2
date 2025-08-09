@@ -1,8 +1,8 @@
-package com.kuit.findyou.domain.animalProtection.controller;
+package com.kuit.findyou.domain.information.controller;
 
 
-import com.kuit.findyou.domain.animalProtection.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.animalProtection.service.AnimalShelterService;
+import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
+import com.kuit.findyou.domain.information.service.AnimalShelterService;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.security.CustomUserDetails;

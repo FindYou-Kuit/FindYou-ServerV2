@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.animalProtection.dto;
+package com.kuit.findyou.domain.information.dto;
 
 import com.kuit.findyou.domain.animalProtection.model.AnimalShelter;
 import io.swagger.v3.oas.annotations.media.Schema;

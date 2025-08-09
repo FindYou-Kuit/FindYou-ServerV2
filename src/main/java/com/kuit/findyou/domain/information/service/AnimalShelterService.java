@@ -1,6 +1,6 @@
-package com.kuit.findyou.domain.animalProtection.service;
+package com.kuit.findyou.domain.information.service;
 
-import com.kuit.findyou.domain.animalProtection.dto.AnimalShelterResponse;
+import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 
 import java.util.List;
 

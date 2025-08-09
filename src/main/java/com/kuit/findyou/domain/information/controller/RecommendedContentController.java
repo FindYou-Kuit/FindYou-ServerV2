@@ -1,8 +1,8 @@
-package com.kuit.findyou.domain.recommendation.controller;
+package com.kuit.findyou.domain.information.controller;
 
-import com.kuit.findyou.domain.recommendation.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.recommendation.dto.ContentType;
-import com.kuit.findyou.domain.recommendation.service.facade.RecommendedContentFacade;
+import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.ContentType;
+import com.kuit.findyou.domain.information.service.facade.RecommendedContentFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;

@@ -1,6 +1,6 @@
-package com.kuit.findyou.domain.recommendation.repository;
+package com.kuit.findyou.domain.information.repository;
 
-import com.kuit.findyou.domain.recommendation.model.RecommendedVideo;
+import com.kuit.findyou.domain.information.model.RecommendedVideo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecommendedVideoRepository extends JpaRepository<RecommendedVideo,Long> {

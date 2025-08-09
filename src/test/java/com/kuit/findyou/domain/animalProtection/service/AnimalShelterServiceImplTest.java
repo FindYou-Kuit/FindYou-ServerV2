@@ -1,8 +1,9 @@
 package com.kuit.findyou.domain.animalProtection.service;
 
-import com.kuit.findyou.domain.animalProtection.dto.AnimalShelterResponse;
+import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.animalProtection.model.AnimalShelter;
 import com.kuit.findyou.domain.animalProtection.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.service.AnimalShelterServiceImpl;
 import com.kuit.findyou.global.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,8 @@
-package com.kuit.findyou.domain.recommendation.service.facade;
+package com.kuit.findyou.domain.information.service.facade;
 
-import com.kuit.findyou.domain.recommendation.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.recommendation.dto.ContentType;
-import com.kuit.findyou.domain.recommendation.service.RecommendedContentService;
+import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.ContentType;
+import com.kuit.findyou.domain.information.service.RecommendedContentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
