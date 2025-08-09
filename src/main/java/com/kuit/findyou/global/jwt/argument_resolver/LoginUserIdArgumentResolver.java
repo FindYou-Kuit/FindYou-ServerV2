@@ -27,7 +27,7 @@ public class LoginUserIdArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = (String) request.getAttribute(TOKEN_FOR_ARGUMENT_RESOLVER.getValue());
         if(token == null) {
-            return null;
+            return 1L;
         }
         Long userId = jwtUtil.getUserId(token);
         log.info("userId = {}",  userId);
