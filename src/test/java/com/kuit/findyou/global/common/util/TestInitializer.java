@@ -54,11 +54,11 @@ public class TestInitializer {
         return userRepository.save(user);
     }
 
-    private ProtectingReport createTestProtectingReportWithImage(User user) {
+    public ProtectingReport createTestProtectingReportWithImage(User user) {
         ProtectingReport report = ProtectingReport.createProtectingReport(
                 "믹스견", "개", ReportTag.PROTECTING,
                 LocalDate.now(), "서울", user,
-                Sex.M, "2살", "5kg",
+                Sex.M, "2", "5",
                 "갈색", Neutering.Y,
                 "절뚝거림", "홍대",
                 "NOTICE123", LocalDate.now(),
@@ -78,8 +78,8 @@ public class TestInitializer {
     public MissingReport createTestMissingReportWithImage(User user) {
         MissingReport report = MissingReport.createMissingReport(
                 "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 10, 5),
-                "서울시 강남구", user, Sex.F, "RF12345", "3살",
-                "3kg", "흰색", "눈 주변 갈색 털",
+                "서울시 강남구", user, Sex.F, "RF12345", "3",
+                "3", "흰색", "눈 주변 갈색 털",
                 "이슬기", "010-1111-2222", "강남역 10번 출구",
                 BigDecimal.valueOf(37.501), BigDecimal.valueOf(127.025)
         );
