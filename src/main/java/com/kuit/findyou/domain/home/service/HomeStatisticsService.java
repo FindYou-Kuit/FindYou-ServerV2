@@ -8,7 +8,7 @@ import com.kuit.findyou.domain.home.dto.ProtectingAndAdoptedAnimalCount;
 import com.kuit.findyou.domain.home.dto.RescueAnimalStatsServiceApiResponse;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
 import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.common.external.dto.ProtectingAnimalApiFullResponse;
+import com.kuit.findyou.global.external.dto.ProtectingAnimalApiFullResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
