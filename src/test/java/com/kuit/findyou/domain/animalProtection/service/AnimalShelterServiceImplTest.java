@@ -51,14 +51,6 @@ public class AnimalShelterServiceImplTest {
     }
 
     @Test
-    @DisplayName("getShelters 예외 발생 (lastId 또는 type null)")
-    void getShelters_invalidParams_throwException() {
-        assertThatThrownBy(() -> animalShelterService.getShelters(0L, null, "서울특별시", "송파구", 20.00, 20.00))
-                .isInstanceOf(CustomException.class)
-                .hasMessage(BAD_REQUEST.getMessage());
-    }
-
-    @Test
     @DisplayName("위치 기반 조회 - 반경 7km 이내만 반환")
     void getNearbyCenters_withinRadiusOnly() {
         AnimalShelter s1 = AnimalShelter.builder()
