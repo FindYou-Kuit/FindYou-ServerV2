@@ -26,12 +26,9 @@ public class TestInitializer {
     private final InterestReportRepository interestReportRepository;
     private final ViewedReportRepository viewedReportRepository;
 
-    private User reportWriter;
-
     @Transactional
-    public void initializeControllerTestData() {
+    public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
-        reportWriter = testUser;
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -43,6 +40,8 @@ public class TestInitializer {
 
         createTestViewedReport(testUser, testProtectingReport);
         createTestViewedReport(testUser, testMissingReport);
+
+        return testUser;
     }
 
     public User createTestUser() {
@@ -109,17 +108,28 @@ public class TestInitializer {
         return report;
     }
 
-    private void createTestInterestReport(User user, Report report) {
+    public void createTestInterestReport(User user, Report report) {
         InterestReport interest = InterestReport.createInterestReport(user, report);
         interestReportRepository.save(interest);
     }
 
-    private void createTestViewedReport(User user, Report report) {
+    public void createTestViewedReport(User user, Report report) {
         ViewedReport viewedReport = ViewedReport.createViewedReport(user, report);
         viewedReportRepository.save(viewedReport);
     }
 
-    public User getReportWriter(){
-        return this.reportWriter;
+    public User userWith3InterestAnimals() {
+        User testUser = createTestUser();
+        User writer = createTestUser();
+
+        ProtectingReport testProtectingReport = createTestProtectingReportWithImage(writer);
+        MissingReport testMissingReport = createTestMissingReportWithImage(writer);
+        WitnessReport testWitnessReport = createTestWitnessReportWithImage(writer);
+
+        createTestInterestReport(testUser, testProtectingReport);
+        createTestInterestReport(testUser, testMissingReport);
+        createTestInterestReport(testUser, testWitnessReport);
+
+        return testUser;
     }
 }

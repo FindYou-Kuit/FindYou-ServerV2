@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.user.dto.*;
 import com.kuit.findyou.domain.user.service.facade.UserServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
-import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
-import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.CHECK_DUPLICATE_NICKNAME;
@@ -29,6 +27,22 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RequiredArgsConstructor
 public class UserController {
     private final UserServiceFacade userServiceFacade;
+
+    @Operation(
+            summary = "관심 동물 목록 조회 API",
+            description = """
+                유저가 등록한 관심동물 목록을 조회하기 위한 API.
+                커서페이징을 지원합니다. 직전 응답의 lastId를 요청에 포함해야 합니다. 처음에는 Long 타입의 MAX_VALUE를 전달합니다.
+            """
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @GetMapping("/me/interest-animals")
+    public BaseResponse<CardResponseDTO> retrieveInterestAnimals(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                                                 @RequestParam(required = false) Long lastId){
+        if(lastId == null) lastId = Long.MAX_VALUE;
+        CardResponseDTO result = userServiceFacade.retrieveInterestAnimals(userId, lastId);
+        return BaseResponse.ok(result);
+    }
 
     @Operation(summary = "최근 본 동물 조회 API", description = "최근 본 동물을 조회하기 위한 API")
     @GetMapping("/me/viewed-animals")

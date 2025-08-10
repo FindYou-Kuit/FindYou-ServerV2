@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.factory.CardFactory;
 import com.kuit.findyou.domain.report.model.ViewedReport;
+import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
 import com.kuit.findyou.domain.report.repository.ViewedReportRepository;
 import com.kuit.findyou.domain.user.repository.UserRepository;
@@ -13,9 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +23,7 @@ public class ViewedReportsRetrieveServiceImpl implements ViewedReportsRetrieveSe
 
     private final ViewedReportRepository viewedReportRepository;
     private final ReportRepository reportRepository;
+    private final InterestReportRepository interestReportRepository;
     private final CardFactory cardFactory;
 
     @Override
@@ -44,11 +44,21 @@ public class ViewedReportsRetrieveServiceImpl implements ViewedReportsRetrieveSe
         // 4. 마지막 최근 본 글 의 ID 계산
         Long lastViewedReportId = findLastId(content);
 
+        Set<Long> interestIds = findInterestIds(userId, sortedProjections);
+
         return cardFactory.createCardResponse(
                 sortedProjections,
-                userId,
+                interestIds,
                 lastViewedReportId,
                 !viewedReportSlice.hasNext());
+    }
+
+    private Set<Long> findInterestIds(Long userId, List<ReportProjection> projections) {
+        List<Long> interestIds = interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(userId,
+                projections.stream()
+                        .map(ReportProjection::getReportId)
+                        .toList());
+        return new HashSet<>(interestIds);
     }
 
     private List<Long> getReportIds(List<ViewedReport> content) {

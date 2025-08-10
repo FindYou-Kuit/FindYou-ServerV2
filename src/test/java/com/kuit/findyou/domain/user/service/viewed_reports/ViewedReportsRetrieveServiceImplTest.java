@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.factory.CardFactory;
 import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ViewedReport;
+import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
 import com.kuit.findyou.domain.report.repository.ViewedReportRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -36,14 +38,18 @@ class ViewedReportsRetrieveServiceImplTest {
     private ReportRepository reportRepository;
 
     @Mock
+    private InterestReportRepository interestReportRepository;
+
+    @Mock
     private CardFactory cardFactory;
+
 
     @InjectMocks
     private ViewedReportsRetrieveServiceImpl viewedReportsRetrieveService;
 
     @BeforeEach
     void setUp() {
-        viewedReportsRetrieveService = new ViewedReportsRetrieveServiceImpl(viewedReportRepository, reportRepository, cardFactory);
+        viewedReportsRetrieveService = new ViewedReportsRetrieveServiceImpl(viewedReportRepository, reportRepository, interestReportRepository, cardFactory);
     }
 
     @Test
@@ -85,8 +91,10 @@ class ViewedReportsRetrieveServiceImplTest {
 
         CardResponseDTO dummyResponse = mock(CardResponseDTO.class);
 
-        when(cardFactory.createCardResponse(anyList(), eq(userId), eq(9L), eq(true)))
+        when(cardFactory.createCardResponse(anyList(), anySet(), eq(9L), eq(true)))
                 .thenReturn(dummyResponse);
+
+        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(eq(userId), anyList())).thenReturn(List.of(101L));
 
         // when
         CardResponseDTO result = viewedReportsRetrieveService.retrieveViewedAnimals(lastId, userId);
@@ -96,7 +104,7 @@ class ViewedReportsRetrieveServiceImplTest {
 
         verify(viewedReportRepository).findByUserIdAndIdLessThanOrderByIdDesc(userId, lastId, PageRequest.of(0, 20));
         verify(reportRepository).findReportProjectionsByIdIn(List.of(101L, 102L));
-        verify(cardFactory).createCardResponse(anyList(), eq(userId), eq(9L), eq(true));
+        verify(cardFactory).createCardResponse(anyList(), anySet(), eq(9L), eq(true));
 
     }
 }

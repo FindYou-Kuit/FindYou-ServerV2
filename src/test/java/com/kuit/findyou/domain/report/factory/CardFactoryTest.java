@@ -15,8 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -26,10 +28,6 @@ import static org.mockito.Mockito.when;
 @Transactional
 @ActiveProfiles("test")
 class CardFactoryTest {
-
-    @Mock
-    private InterestReportRepository interestReportRepository;
-
     @InjectMocks
     CardFactory cardFactory;
 
@@ -48,11 +46,10 @@ class CardFactoryTest {
         List<ReportProjection> projections = List.of(projection1, projection2);
 
         // 관심글은 102번만 포함
-        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(eq(userId), anyList()))
-                .thenReturn(List.of(102L));
+        Set<Long> interestIds = Set.of(102L);
 
         // when
-        CardResponseDTO result = cardFactory.createCardResponse(projections, userId, lastId, isLast);
+        CardResponseDTO result = cardFactory.createCardResponse(projections, interestIds, lastId, isLast);
 
         // then
         assertThat(result.cards()).hasSize(2);
