@@ -29,6 +29,9 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     // 인프라
     IMAGE_UPLOAD_FAILED(502, "외부 서버 문제로 인해 이미지 업로드에 실패했습니다"),
 
+    // 홈
+    HOME_STATISTICS_UPDATE_FAILED(502, "홈화면 통계 업데이트에 실패했습니다."),
+
     // 유저 - User
     USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
 

@@ -99,10 +99,21 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       connection-timeout: 30000
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+
 
 openapi:
   protecting-animal:
     api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2
+    api-key: ${PROTECTING_ANIMAL_API_KEY}
+  rescue-animal-stats:
+    api-url: https://apis.data.go.kr/1543061/rescueAnimalStatsService/rescueAnimalStats
+    api-key: ${PROTECTING_ANIMAL_API_KEY}
+  loss-animal-info:
+    api-url: https://apis.data.go.kr/1543061/lossInfoService/lossInfo
     api-key: ${PROTECTING_ANIMAL_API_KEY}
   kakao:
     api-url: "https://dapi.kakao.com/v2/local/search/address.json"

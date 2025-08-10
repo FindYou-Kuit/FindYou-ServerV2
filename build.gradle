@@ -78,6 +78,15 @@ dependencies {
 	// Resilience4J
 	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
 
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Testcontainer
+	testImplementation 'org.testcontainers:testcontainers:1.19.3'
+	testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+
+	// Wiremock
+	testImplementation("org.wiremock:wiremock-standalone:3.2.0")
 }
 
 tasks.named('test') {
