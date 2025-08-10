@@ -77,7 +77,7 @@ public class AnimalShelterControllerTest {
                 .accept(ContentType.JSON)
                 .param("lastId", 0L)
                 .param("lat", 37.5)
-                .param("lng", 127.1)
+                .param("long", 127.1)
         .when()
                 .get("/api/v2/informations/shelters-and-hospitals")
         .then()
