@@ -130,6 +130,7 @@ class UserControllerTest {
                 .when()
                 .get("/api/v2/users/me/interest-animals")
                 .then()
+                .statusCode(200)
                 .extract()
                 .jsonPath()
                 .getObject("data", CardResponseDTO.class);
@@ -137,6 +138,9 @@ class UserControllerTest {
         // then
         assertThat(response.cards()).hasSize(3);
         assertThat(response.isLast()).isTrue();
+        assertThat(response.cards()).allSatisfy(card -> {
+             assertThat(card.interest()).isTrue();
+        });
     }
 
     @DisplayName("GET /api/v2/users/me/interest-animals : 유저가 관심동물을 가지고 있지 않으면 빈 리스트를 반환한다")
@@ -156,6 +160,7 @@ class UserControllerTest {
                 .when()
                 .get("/api/v2/users/me/interest-animals")
                 .then()
+                .statusCode(200)
                 .extract()
                 .jsonPath()
                 .getObject("data", CardResponseDTO.class);
