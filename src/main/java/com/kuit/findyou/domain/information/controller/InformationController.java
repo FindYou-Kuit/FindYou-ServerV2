@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.information.dto.ContentType;
 import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
 import com.kuit.findyou.domain.information.service.facade.InformationServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 
 @RestController
@@ -48,21 +50,59 @@ public class InformationController {
             @Parameter(description = "구/리/시/읍", example = "강남구")
             @RequestParam(defaultValue = "") String sigungu,
 
+            //TODO #28 머지 후 validator 적용하기
             @Parameter(description = "위도", example = "37.4967")
             @RequestParam(defaultValue = "") String lat,
 
             @Parameter(description = "경도", example = "127.0623")
-            @RequestParam(defaultValue = "") String lng
+            @RequestParam(name = "long", defaultValue = "") String lng
     ) {
-        // 이 뷰에 최초에 접근할 때 사용자 위치 기반 조회 (반경 3km)
-        if (!lat.isBlank() && !lng.isBlank()) {
-            Double latitude = Double.parseDouble(lat);
-            Double longitude = Double.parseDouble(lng);
-            List<AnimalShelterResponse> results = informationServiceFacade.getNearbyCenters(lastId, latitude, longitude);
-            return BaseResponse.ok(Map.of("centers", results));
+        String typeNorm = normalizeType(type);
+        String sidoNorm = nullIfBlank(sido);
+        String sigunguNorm = nullIfBlank(sigungu);
+        Double latVal = parseDoubleOrNull(lat);
+        Double lonVal = parseDoubleOrNull(lng);
+
+        Long cursor = (lastId == null || lastId == 0L) ? null : lastId;
+        if (cursor != null && cursor < 0) {
+            throw new CustomException(INVALID_CURSOR);
         }
-        List<AnimalShelterResponse> results = informationServiceFacade.getShelters(lastId, type, sido, sigungu, null, null);
+
+        boolean hasGeo    = (latVal != null && lonVal != null);
+        boolean hasFilter = (sidoNorm != null || sigunguNorm != null);
+        if (!hasGeo && !hasFilter) {
+            throw new CustomException(GEO_OR_FILTER_REQUIRED);
+        }
+        //validator로 수정 여지 있음.
+        if ((latVal == null) ^ (lonVal == null)) {
+            throw new CustomException(LAT_LONG_PAIR_REQUIRED);
+        }
+        //위경도가 있으면 반경 조회, 없으면
+        List<AnimalShelterResponse> results = (hasGeo) ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal):informationServiceFacade.getShelters(cursor, typeNorm, sidoNorm, sigunguNorm, null, null);
         return BaseResponse.ok(Map.of("centers", results));
+    }
+
+    private static String nullIfBlank(String raw) {
+        if (raw == null) return null;
+        String t = raw.trim();
+        return t.isEmpty() ? null : t;
+    }
+    private static Double parseDoubleOrNull(String raw) {
+        String t = nullIfBlank(raw);
+        if (t == null) return null;
+        try { return Double.parseDouble(t); }
+        catch (NumberFormatException e) {
+            throw new CustomException(INVALID_COORDINATE);
+        }
+    }
+    private static String normalizeType(String raw) {
+        String t = (raw == null) ? "" : raw.trim().toLowerCase();
+        return switch (t) {
+            case "", "all" -> "all";
+            case "shelters", "shelter" -> "shelter";
+            case "hospitals", "hospital" -> "hospital";
+            default -> throw new CustomException(INVALID_TYPE);
+        };
     }
 
 
