@@ -23,6 +23,9 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     EXPIRED_JWT(401, "만료된 토큰입니다"),
     JWT_NOT_FOUND(400, "토큰을 찾을 수 없습니다"),
 
+    // 로그인
+    GUEST_LOGIN_FAILED(404, "일치하는 게스트가 없습니다."),
+
     // 회원가입
     ALREADY_REGISTERED_USER(400, "이미 회원가입한 유저입니다."),
 

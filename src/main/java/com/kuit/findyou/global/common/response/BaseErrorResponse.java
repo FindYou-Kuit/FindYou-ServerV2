@@ -1,5 +1,7 @@
 package com.kuit.findyou.global.common.response;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.kuit.findyou.global.common.response.status.ResponseStatus;
 import lombok.Getter;
@@ -13,6 +15,19 @@ public class BaseErrorResponse implements ResponseStatus {
     private final int code;
     private final String message;
     private final LocalDateTime timestamp;
+
+    @JsonCreator
+    public BaseErrorResponse(
+            @JsonProperty("success") boolean success,
+            @JsonProperty("code") int code,
+            @JsonProperty("message") String message,
+            @JsonProperty("timestamp") LocalDateTime timestamp
+    ) {
+        this.success = success;
+        this.code = code;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
 
     public BaseErrorResponse(ResponseStatus status) {
         this.success = false;

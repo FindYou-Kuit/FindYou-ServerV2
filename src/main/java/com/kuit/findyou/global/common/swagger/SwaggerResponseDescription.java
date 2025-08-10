@@ -21,6 +21,10 @@ public enum SwaggerResponseDescription {
 
     CHECK_DUPLICATE_NICKNAME(new LinkedHashSet<>(Set.of())),
 
+    GUEST_LOGIN(new LinkedHashSet<>(Set.of(
+            GUEST_LOGIN_FAILED
+    ))),
+
     KAKAO_LOGIN(new LinkedHashSet<>(Set.of())),
 
     TEST(new LinkedHashSet<>(Set.of(

@@ -1,5 +1,7 @@
 package com.kuit.findyou.domain.auth.controller;
 
+import com.kuit.findyou.domain.auth.dto.GuestLoginRequest;
+import com.kuit.findyou.domain.auth.dto.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.KakaoLoginResponse;
 import com.kuit.findyou.domain.auth.service.AuthService;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.GUEST_LOGIN;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.KAKAO_LOGIN;
 
 @Tag(name = "Login", description = "로그인 관련 API")
@@ -33,5 +36,16 @@ public class AuthController {
     public BaseResponse<KakaoLoginResponse> kakaoLogin(@RequestBody KakaoLoginRequest request){
         log.info("[kakaoLogin]");
         return BaseResponse.ok(authService.kakaoLogin(request));
+    }
+
+    @Operation(
+            summary = "게스트 로그인 API",
+            description = "디바이스id 식별자를 이용해서 유저 정보와 엑세스 토큰을 얻을 수 있습니다. 기존 게스트가 아니면 별도의 가입 API 호출 없이 정보가 자동으로 저장됩니다."
+    )
+    @PostMapping("/login/guest")
+    @CustomExceptionDescription(GUEST_LOGIN)
+    public BaseResponse<GuestLoginResponse> guestLogin(@RequestBody GuestLoginRequest request){
+        log.info("[guestLogin] deviceId = {}", request.deviceId());
+        return BaseResponse.ok(authService.guestLogin(request));
     }
 }
