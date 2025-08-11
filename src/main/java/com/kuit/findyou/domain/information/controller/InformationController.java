@@ -55,7 +55,10 @@ public class InformationController {
             @RequestParam(defaultValue = "") String lat,
 
             @Parameter(description = "경도", example = "127.0623")
-            @RequestParam(name = "long", defaultValue = "") String lng
+            @RequestParam(name = "long", defaultValue = "") String lng,
+
+            @Parameter(description = "페이지 크기", example = "20")
+            @RequestParam(defaultValue = "20") int size
     ) {
         String typeNorm = normalizeType(type);
         String sidoNorm = nullIfBlank(sido);
@@ -78,7 +81,7 @@ public class InformationController {
             throw new CustomException(LAT_LONG_PAIR_REQUIRED);
         }
         //위경도가 있으면 반경 조회, 없으면
-        List<AnimalShelterResponse> results = (hasGeo) ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal):informationServiceFacade.getShelters(cursor, typeNorm, sidoNorm, sigunguNorm, null, null);
+        List<AnimalShelterResponse> results = (hasGeo) ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal, size):informationServiceFacade.getShelters(cursor, typeNorm, sidoNorm, sigunguNorm, null, null, size);
         return BaseResponse.ok(Map.of("centers", results));
     }
 

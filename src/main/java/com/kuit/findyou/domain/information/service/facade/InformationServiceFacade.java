@@ -17,12 +17,12 @@ public class InformationServiceFacade {
     private final AnimalShelterService animalShelterService;
     private final RecommendedContentService contentService;
 
-    public List<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng) {
-        return animalShelterService.getShelters(lastId, type, sido, sigungu, lat, lng);
+    public List<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
+        return animalShelterService.getShelters(lastId, type, sido, sigungu, lat, lng, size);
     }
 
-    public List<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng) {
-        return animalShelterService.getNearbyCenters(lastId, lat, lng);
+    public List<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
+        return animalShelterService.getNearbyCenters(lastId, lat, lng, size);
     }
 
     public List<RecommendedContentResponse> getRecommendedContents(ContentType type) {
