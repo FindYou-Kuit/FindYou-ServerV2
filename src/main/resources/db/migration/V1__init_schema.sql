@@ -236,7 +236,7 @@ CREATE TABLE subscribes
 CREATE TABLE fcm_tokens
 (
     token_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    fcm_token  VARCHAR(100) NOT NULL,
+    fcm_token  VARCHAR(300) NOT NULL,
     user_id    BIGINT       NOT NULL,
     status     CHAR(1)      NOT NULL DEFAULT 'Y',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
