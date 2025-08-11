@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -40,11 +41,12 @@ public class AnimalShelterServiceImplTest {
                 .latitude(37.5)
                 .longitude(127.1)
                 .build();
+        int size = 10;
 
-        when(animalShelterRepository.findWithFilter(0L, "hospital", "병원", "서울특별시 송파구"))
+        when(animalShelterRepository.findWithFilter(0L, "hospital", "병원", "서울특별시 송파구", PageRequest.of(0, size+1)))
                 .thenReturn(List.of(hospital));
 
-        List<AnimalShelterResponse> result = animalShelterService.getShelters(0L, "hospital", "서울특별시", "송파구", null, null);
+        List<AnimalShelterResponse> result = animalShelterService.getShelters(0L, "hospital", "서울특별시", "송파구", null, null, size);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).centerName()).isEqualTo("OO병원");
@@ -71,10 +73,12 @@ public class AnimalShelterServiceImplTest {
                 .longitude(128.0)
                 .build();
 
-        when(animalShelterRepository.findAllWithLatLngAfterId(0L))
+        int size = 10;
+
+        when(animalShelterRepository.findAllWithLatLngAfterId(0L, PageRequest.of(0, size+1)))
                 .thenReturn(List.of(s1, s2));
 
-        List<AnimalShelterResponse> result = animalShelterService.getNearbyCenters(0L, 37.5, 127.1);
+        List<AnimalShelterResponse> result = animalShelterService.getNearbyCenters(0L, 37.5, 127.1, size);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).centerName()).isEqualTo("가까운 병원");
