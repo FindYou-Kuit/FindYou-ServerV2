@@ -132,10 +132,10 @@ CREATE TABLE missing_reports
     age           VARCHAR(10) NOT NULL,
     weight        VARCHAR(20) NOT NULL,
     fur_color     VARCHAR(50) NOT NULL,
-    significant   TEXT        NOT NULL,
+    significant   VARCHAR(255)        NOT NULL,
     reporter_name VARCHAR(20),
     reporter_tel  VARCHAR(20),
-    landmark      TEXT        NOT NULL,
+    landmark      VARCHAR(255)        NOT NULL,
     FOREIGN KEY (id) REFERENCES reports (id)
 );
 
@@ -163,8 +163,8 @@ CREATE TABLE protecting_reports
 CREATE TABLE witness_reports
 (
     id            BIGINT PRIMARY KEY,
-    fur_color     TEXT         NOT NULL,
-    significant   TEXT         NOT NULL,
+    fur_color     VARCHAR(255)         NOT NULL,
+    significant   VARCHAR(255)         NOT NULL,
     reporter_name VARCHAR(50),
     landmark      VARCHAR(100) NOT NULL,
     FOREIGN KEY (id) REFERENCES reports (id)
@@ -212,7 +212,7 @@ CREATE TABLE viewed_reports
 -- 16. 키워드 테이블
 CREATE TABLE keywords
 (
-    keyword_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(30) NOT NULL,
     status     CHAR(1)     NOT NULL DEFAULT 'Y',
     created_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -222,20 +222,20 @@ CREATE TABLE keywords
 -- 17. 구독 테이블
 CREATE TABLE subscribes
 (
-    subscribe_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    keyword_id   BIGINT   NOT NULL,
-    user_id      BIGINT   NOT NULL,
-    status       CHAR(1)  NOT NULL DEFAULT 'Y',
-    created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (keyword_id) REFERENCES keywords (keyword_id),
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    keyword_id BIGINT   NOT NULL,
+    user_id    BIGINT   NOT NULL,
+    status     CHAR(1)  NOT NULL DEFAULT 'Y',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (keyword_id) REFERENCES keywords (id),
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 -- 18. FCM 토큰 테이블
 CREATE TABLE fcm_tokens
 (
-    token_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     fcm_token  VARCHAR(300) NOT NULL,
     user_id    BIGINT       NOT NULL,
     status     CHAR(1)      NOT NULL DEFAULT 'Y',
@@ -247,7 +247,7 @@ CREATE TABLE fcm_tokens
 -- 19. 알림 내역 테이블
 CREATE TABLE notification_histories
 (
-    notification_history_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     is_viewed               CHAR(1)  NOT NULL,
     user_id                 BIGINT   NOT NULL,
     report_id               BIGINT   NOT NULL,
@@ -275,7 +275,7 @@ CREATE TABLE recommended_videos
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     title      VARCHAR(255) NOT NULL,
-    url        VARCHAR(255) NOT NULL,
+    url        VARCHAR(2083) NOT NULL,
     uploader   VARCHAR(100) NOT NULL,
     status     CHAR(1)      NOT NULL DEFAULT 'Y',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,

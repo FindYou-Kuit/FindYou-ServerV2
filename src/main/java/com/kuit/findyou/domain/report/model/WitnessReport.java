@@ -18,10 +18,10 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WitnessReport extends Report {
 
-    @Column(name = "fur_color", nullable = false)
+    @Column(name = "fur_color", length = 255, nullable = false)
     private String furColor;
 
-    @Column(name = "significant", nullable = false)
+    @Column(name = "significant", length = 255, nullable = false)
     private String significant;
 
     @Column(name = "reporter_name", length = 50)

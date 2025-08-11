@@ -31,7 +31,7 @@ public class MissingReport extends Report {
     @Column(name = "fur_color", length = 50, nullable = false)
     private String furColor;
 
-    @Column(name = "significant", nullable = false)
+    @Column(name = "significant", length = 255, nullable = false)
     private String significant;
 
     @Column(name = "reporter_name", length = 20)
@@ -40,7 +40,7 @@ public class MissingReport extends Report {
     @Column(name = "reporter_tel", length = 20)
     private String reporterTel;
 
-    @Column(name = "landmark", nullable = false)
+    @Column(name = "landmark", length = 255, nullable = false)
     private String landmark;
 
     @Builder
