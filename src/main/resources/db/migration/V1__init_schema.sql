@@ -6,7 +6,7 @@ CREATE TABLE users
 (
     id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
     name                 VARCHAR(50),
-    profile_image_url    VARCHAR(500),
+    profile_image_url    VARCHAR(2083),
     kakao_id             BIGINT,
     role                 VARCHAR(20) NOT NULL,
     receive_notification CHAR(1)     NOT NULL DEFAULT 'N',
@@ -127,15 +127,15 @@ CREATE TABLE reports
 CREATE TABLE missing_reports
 (
     id            BIGINT PRIMARY KEY,
-    sex           VARCHAR(10) NOT NULL,
+    sex           VARCHAR(10)  NOT NULL,
     rfid          VARCHAR(30),
-    age           VARCHAR(10) NOT NULL,
-    weight        VARCHAR(20) NOT NULL,
-    fur_color     VARCHAR(50) NOT NULL,
-    significant   VARCHAR(255)        NOT NULL,
+    age           VARCHAR(10)  NOT NULL,
+    weight        VARCHAR(20)  NOT NULL,
+    fur_color     VARCHAR(50)  NOT NULL,
+    significant   VARCHAR(255) NOT NULL,
     reporter_name VARCHAR(20),
     reporter_tel  VARCHAR(20),
-    landmark      VARCHAR(255)        NOT NULL,
+    landmark      VARCHAR(255) NOT NULL,
     FOREIGN KEY (id) REFERENCES reports (id)
 );
 
@@ -163,8 +163,8 @@ CREATE TABLE protecting_reports
 CREATE TABLE witness_reports
 (
     id            BIGINT PRIMARY KEY,
-    fur_color     VARCHAR(255)         NOT NULL,
-    significant   VARCHAR(255)         NOT NULL,
+    fur_color     VARCHAR(255) NOT NULL,
+    significant   VARCHAR(255) NOT NULL,
     reporter_name VARCHAR(50),
     landmark      VARCHAR(100) NOT NULL,
     FOREIGN KEY (id) REFERENCES reports (id)
@@ -174,7 +174,7 @@ CREATE TABLE witness_reports
 CREATE TABLE report_images
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    image_url  TEXT         NOT NULL,
+    image_url  VARCHAR(2083)         NOT NULL,
     uuid       VARCHAR(255) NOT NULL,
     report_id  BIGINT,
     status     CHAR(1)      NOT NULL DEFAULT 'Y',
@@ -247,13 +247,13 @@ CREATE TABLE fcm_tokens
 -- 19. 알림 내역 테이블
 CREATE TABLE notification_histories
 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    is_viewed               CHAR(1)  NOT NULL,
-    user_id                 BIGINT   NOT NULL,
-    report_id               BIGINT   NOT NULL,
-    status                  CHAR(1)  NOT NULL DEFAULT 'Y',
-    created_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    is_viewed  CHAR(1)  NOT NULL,
+    user_id    BIGINT   NOT NULL,
+    report_id  BIGINT   NOT NULL,
+    status     CHAR(1)  NOT NULL DEFAULT 'Y',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (report_id) REFERENCES reports (id)
 );
@@ -274,12 +274,12 @@ CREATE TABLE recommended_news
 CREATE TABLE recommended_videos
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    title      VARCHAR(255) NOT NULL,
+    title      VARCHAR(255)  NOT NULL,
     url        VARCHAR(2083) NOT NULL,
-    uploader   VARCHAR(100) NOT NULL,
-    status     CHAR(1)      NOT NULL DEFAULT 'Y',
-    created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    uploader   VARCHAR(100)  NOT NULL,
+    status     CHAR(1)       NOT NULL DEFAULT 'Y',
+    created_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- 성능 최적화를 위한 추가 인덱스 (Hibernate가 자동 생성하지 않는 것들)

@@ -37,7 +37,7 @@ public class User extends BaseEntity {
     @Column(name = "name", length = 50)
     private String name;
 
-    @Column(name = "profile_image_url", length = 500)
+    @Column(name = "profile_image_url", length = 2083)
     private String profileImageUrl;
 
     @Column(name = "kakao_id")
