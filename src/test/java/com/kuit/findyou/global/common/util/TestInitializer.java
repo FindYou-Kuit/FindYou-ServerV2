@@ -30,13 +30,11 @@ public class TestInitializer {
     private final ViewedReportRepository viewedReportRepository;
     private final AnimalShelterRepository animalShelterRepository;
 
-    private User reportWriter;
     private User defaultUser;
 
     @Transactional
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
-        reportWriter = testUser;
 
         User shelterUser = createTestUser();
         defaultUser = shelterUser;

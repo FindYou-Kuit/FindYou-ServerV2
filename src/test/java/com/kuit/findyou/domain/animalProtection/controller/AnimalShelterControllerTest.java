@@ -40,7 +40,7 @@ public class AnimalShelterControllerTest {
     void setUp() {
         databaseCleaner.execute();
         RestAssured.port = port;
-        testInitializer.initializeControllerTestData();
+        testInitializer.userWith3InterestReportsAnd2ViewedReports();
         this.user = testInitializer.getDefaultUser();
     }
 
