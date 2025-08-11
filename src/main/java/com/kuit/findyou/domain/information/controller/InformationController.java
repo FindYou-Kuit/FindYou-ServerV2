@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+import static com.kuit.findyou.domain.information.validation.InformationRequestValidator.*;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 
@@ -66,47 +67,18 @@ public class InformationController {
         Double latVal = parseDoubleOrNull(lat);
         Double lonVal = parseDoubleOrNull(lng);
 
-        Long cursor = (lastId == null || lastId == 0L) ? null : lastId;
-        if (cursor != null && cursor < 0) {
-            throw new CustomException(INVALID_CURSOR);
-        }
+        Long cursor = validateCursor(lastId);
+        validateGeoOrFilter(latVal, lonVal, sidoNorm, sigunguNorm);
+        validateLatLngPair(latVal, lonVal);
+        boolean hasGeo = (latVal != null && lonVal != null);
 
-        boolean hasGeo    = (latVal != null && lonVal != null);
-        boolean hasFilter = (sidoNorm != null || sigunguNorm != null);
-        if (!hasGeo && !hasFilter) {
-            throw new CustomException(GEO_OR_FILTER_REQUIRED);
-        }
-        //validator로 수정 여지 있음.
-        if ((latVal == null) ^ (lonVal == null)) {
-            throw new CustomException(LAT_LONG_PAIR_REQUIRED);
-        }
-        //위경도가 있으면 반경 조회, 없으면
+
+        //위경도가 있으면 반경 조회, 없으면 일반 조회
         List<AnimalShelterResponse> results = (hasGeo) ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal, size):informationServiceFacade.getShelters(cursor, typeNorm, sidoNorm, sigunguNorm, null, null, size);
         return BaseResponse.ok(Map.of("centers", results));
     }
 
-    private static String nullIfBlank(String raw) {
-        if (raw == null) return null;
-        String t = raw.trim();
-        return t.isEmpty() ? null : t;
-    }
-    private static Double parseDoubleOrNull(String raw) {
-        String t = nullIfBlank(raw);
-        if (t == null) return null;
-        try { return Double.parseDouble(t); }
-        catch (NumberFormatException e) {
-            throw new CustomException(INVALID_COORDINATE);
-        }
-    }
-    private static String normalizeType(String raw) {
-        String t = (raw == null) ? "" : raw.trim().toLowerCase();
-        return switch (t) {
-            case "", "all" -> "all";
-            case "shelters", "shelter" -> "shelter";
-            case "hospitals", "hospital" -> "hospital";
-            default -> throw new CustomException(INVALID_TYPE);
-        };
-    }
+
 
 
     @Operation(summary = "추천 영상 조회 API", description = "추천 영상 목록을 조회합니다.")
