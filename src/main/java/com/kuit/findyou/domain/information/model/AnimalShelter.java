@@ -19,9 +19,21 @@ public class AnimalShelter extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "location", length = 100, nullable = false)
-    private String location;
+    @Column(name = "address", length = 100, nullable = false)
+    private String address;
+
+    @Column(name = "jurisdiction", length = 2000, nullable = false)
+    private String jurisdiction;
+
+    @Column(name = "phone_number", length = 20, nullable = false)
+    private String phoneNumber;
 
     @Column(name = "shelter_name", length = 70, nullable = false)
     private String shelterName;
+
+    @Column(name = "latitude", nullable = false)
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = false)
+    private Double longitude;
 }

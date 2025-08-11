@@ -1,17 +1,14 @@
-package com.kuit.findyou.domain.recommendation.service;
+package com.kuit.findyou.domain.information.service;
 
-import com.kuit.findyou.domain.recommendation.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.recommendation.dto.ContentType;
-import com.kuit.findyou.domain.recommendation.service.strategy.RecommendedContentStrategy;
-import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.ContentType;
+import com.kuit.findyou.domain.information.service.strategy.RecommendedContentStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
 @RequiredArgsConstructor
 @Service

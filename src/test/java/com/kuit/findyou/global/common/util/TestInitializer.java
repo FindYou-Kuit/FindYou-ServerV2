@@ -2,6 +2,8 @@ package com.kuit.findyou.global.common.util;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
+import com.kuit.findyou.domain.information.model.AnimalShelter;
+import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.model.Role;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -25,10 +28,16 @@ public class TestInitializer {
     private final ReportImageRepository reportImageRepository;
     private final InterestReportRepository interestReportRepository;
     private final ViewedReportRepository viewedReportRepository;
+    private final AnimalShelterRepository animalShelterRepository;
+
+    private User defaultUser;
 
     @Transactional
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
+
+        User shelterUser = createTestUser();
+        defaultUser = shelterUser;
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -40,7 +49,7 @@ public class TestInitializer {
 
         createTestViewedReport(testUser, testProtectingReport);
         createTestViewedReport(testUser, testMissingReport);
-
+        createTestAnimalShelters();
         return testUser;
     }
 
@@ -132,4 +141,18 @@ public class TestInitializer {
 
         return testUser;
     }
+
+    private void createTestAnimalShelters() {
+        AnimalShelter shelter1 = AnimalShelter.builder().shelterName("서울시보호소").jurisdiction("서울특별시 강남구").phoneNumber("02-123-4567")
+                .address("서울시 강남구 테헤란로 1길").latitude(37.5).longitude(127.1).build();
+
+        AnimalShelter hospital1 = AnimalShelter.builder().shelterName("행복동물병원").jurisdiction("서울특별시 강남구,서울특별시 서초구").phoneNumber("02-999-9999")
+                .address("서울시 강남구 봉은사로 3길").latitude(37.51).longitude(127.11).build();
+
+        AnimalShelter shelter2 = AnimalShelter.builder().shelterName("부산동물보호소").jurisdiction("부산광역시 해운대구").phoneNumber("051-123-4567")
+                .address("부산시 해운대구 해운대로 55").latitude(35.1).longitude(129.1).build();
+
+        animalShelterRepository.saveAll(List.of(shelter1, hospital1, shelter2));
+    }
+    public User getDefaultUser() {return this.defaultUser;}
 }
