@@ -26,14 +26,14 @@ public class ProtectingReport extends Report {
     @Column(name = "weight", length = 10, nullable = false)
     private String weight;
 
-    @Column(name = "fur_color", length = 30, nullable = false)
+    @Column(name = "fur_color", length = 100, nullable = false)
     private String furColor;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "CHAR(1)", nullable = false)
     private Neutering neutering;
 
-    @Column(name = "significant", length = 200, nullable = false)
+    @Column(name = "significant", length = 255, nullable = false)
     private String significant;
 
     @Column(name = "found_location", length = 100, nullable = false)

@@ -28,7 +28,7 @@ public class MissingReport extends Report {
     @Column(name = "weight", length = 20, nullable = false)
     private String weight;
 
-    @Column(name = "fur_color", length = 50, nullable = false)
+    @Column(name = "fur_color", length = 100, nullable = false)
     private String furColor;
 
     @Column(name = "significant", length = 255, nullable = false)

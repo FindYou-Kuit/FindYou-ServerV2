@@ -131,7 +131,7 @@ CREATE TABLE missing_reports
     rfid          VARCHAR(30),
     age           VARCHAR(10)  NOT NULL,
     weight        VARCHAR(20)  NOT NULL,
-    fur_color     VARCHAR(50)  NOT NULL,
+    fur_color     VARCHAR(100)  NOT NULL,
     significant   VARCHAR(255) NOT NULL,
     reporter_name VARCHAR(20),
     reporter_tel  VARCHAR(20),
@@ -146,9 +146,9 @@ CREATE TABLE protecting_reports
     sex               CHAR(1)      NOT NULL,
     age               VARCHAR(10)  NOT NULL,
     weight            VARCHAR(10)  NOT NULL,
-    fur_color         VARCHAR(30)  NOT NULL,
+    fur_color         VARCHAR(100)  NOT NULL,
     neutering         CHAR(1)      NOT NULL,
-    significant       VARCHAR(200) NOT NULL,
+    significant       VARCHAR(255) NOT NULL,
     found_location    VARCHAR(100) NOT NULL,
     notice_number     VARCHAR(30)  NOT NULL,
     notice_start_date DATE         NOT NULL,
@@ -163,10 +163,10 @@ CREATE TABLE protecting_reports
 CREATE TABLE witness_reports
 (
     id            BIGINT PRIMARY KEY,
-    fur_color     VARCHAR(255) NOT NULL,
+    fur_color     VARCHAR(100) NOT NULL,
     significant   VARCHAR(255) NOT NULL,
     reporter_name VARCHAR(50),
-    landmark      VARCHAR(100) NOT NULL,
+    landmark      VARCHAR(255) NOT NULL,
     FOREIGN KEY (id) REFERENCES reports (id)
 );
 
@@ -276,7 +276,7 @@ CREATE TABLE recommended_videos
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     title      VARCHAR(255)  NOT NULL,
     url        VARCHAR(2083) NOT NULL,
-    uploader   VARCHAR(100)  NOT NULL,
+    uploader   VARCHAR(255)  NOT NULL,
     status     CHAR(1)       NOT NULL DEFAULT 'Y',
     created_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
