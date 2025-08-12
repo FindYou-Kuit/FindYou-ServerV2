@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.information.service;
 
+import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.model.AnimalShelter;
 import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
@@ -16,7 +17,7 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
     private final AnimalShelterRepository animalShelterRepository;
 
     @Override
-    public List<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
 
         String hospital = "병원"; //유형 필터에 사용되는 키워드
 
@@ -25,15 +26,19 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
                 ? sido + " " + sigungu
                 : null;
         List<AnimalShelter> results = animalShelterRepository.findWithFilter(lastId, type, hospital, jurisdiction, PageRequest.of(0, size + 1));
-        List<AnimalShelter> takenWithSize = results.size() > size ? results.subList(0, size) : results;
+        boolean isLast = results.size() <= size;
+        List<AnimalShelter> page = isLast ? results : results.subList(0, size);
+        Long nextLastId = page.isEmpty() ? null : page.get(page.size() - 1).getId();
 
-        return takenWithSize.stream()
+        List<AnimalShelterResponse> centers = page.stream()
                 .map(AnimalShelterResponse::from)
                 .toList();
+
+        return new AnimalShelterPagingResponse<>(centers, nextLastId, isLast);
     }
 
     @Override
-    public List<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
         final double MAX_DISTANCE_KM = 3.0;
 
         List<AnimalShelter> nearby = animalShelterRepository.findAllWithLatLngAfterId(lastId, PageRequest.of(0, size + 1));
@@ -43,11 +48,15 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
                         shelter.getLatitude() != null && shelter.getLongitude() != null &&
                                 calculateDistance(lat, lng, shelter.getLatitude(), shelter.getLongitude()) <= MAX_DISTANCE_KM)
                 .toList();
+        boolean isLast = filtered.size() <= size;
+        List<AnimalShelter> page = isLast ? filtered : filtered.subList(0, size);
+        Long nextLastId = page.isEmpty() ? null : page.get(page.size() - 1).getId();
 
-        List<AnimalShelter> takenWithSize = filtered.size() > size ? filtered.subList(0, size) : filtered;
-
-        return takenWithSize.stream()
+        List<AnimalShelterResponse> centers = page.stream()
                 .map(AnimalShelterResponse::from)
                 .toList();
+
+        return new AnimalShelterPagingResponse<>(centers, nextLastId, isLast);
+
     }
 }

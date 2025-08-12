@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.information.service.facade;
 
+import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.dto.ContentType;
 import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
@@ -20,11 +21,11 @@ public class InformationServiceFacade {
     private final RecommendedContentService contentService;
     private final VolunteerWorkService volunteerWorkService;
 
-    public List<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
         return animalShelterService.getShelters(lastId, type, sido, sigungu, lat, lng, size);
     }
 
-    public List<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
         return animalShelterService.getNearbyCenters(lastId, lat, lng, size);
     }
 

@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.information.controller;
 
+import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.dto.ContentType;
 import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
@@ -17,9 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.kuit.findyou.domain.information.validation.InformationRequestValidator.*;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
@@ -35,7 +36,7 @@ public class InformationController {
     @Operation(summary = "보호소/병원 조회", description = "사용자 위치 또는 관할구역/유형으로 보호소/병원을 조회합니다.")
     @GetMapping("/shelters-and-hospitals")
     @CustomExceptionDescription(DEFAULT)
-    public BaseResponse<Map<String, List<AnimalShelterResponse>>> getSheltersAndHospitals(
+    public BaseResponse<AnimalShelterPagingResponse<AnimalShelterResponse>> getSheltersAndHospitals(
             @Parameter(hidden = true) @LoginUserId Long userId, // @LoginUserId로 통일
 
             @Parameter(description = "커서 페이징용 마지막 ID", example = "10")
@@ -73,8 +74,11 @@ public class InformationController {
 
 
         //위경도가 있으면 반경 조회, 없으면 일반 조회
-        List<AnimalShelterResponse> results = (hasGeo) ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal, size):informationServiceFacade.getShelters(cursor, typeNorm, sidoNorm, sigunguNorm, null, null, size);
-        return BaseResponse.ok(Map.of("centers", results));
+        return BaseResponse.ok(
+                hasGeo
+                        ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal, size)
+                        : informationServiceFacade.getShelters(cursor, typeNorm, sidoNorm, sigunguNorm, null, null, size)
+        );
     }
 
     @Operation(summary = "추천 영상 조회 API", description = "추천 영상 목록을 조회합니다.")
