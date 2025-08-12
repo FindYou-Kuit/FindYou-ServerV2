@@ -18,7 +18,7 @@ public class VolunteerWorkServiceImpl implements VolunteerWorkService {
     @Override
     public GetVolunteerWorksResponse getVolunteerWorksByCursor(Long lastId, int size) {
         log.info("[getVolunteerWorks] lastId = {}", lastId);
-        List<VolunteerWork> volunteerWorks = volunteerWorkRepository.findAllByIdLessThan(lastId, PageRequest.of(0, size + 1));
+        List<VolunteerWork> volunteerWorks = volunteerWorkRepository.findAllByIdLessThanOrderByIdDesc(lastId, PageRequest.of(0, size + 1));
         boolean isLast = volunteerWorks.size() <= size;
         List<VolunteerWork> takenWithSize = takeWithSize(size, volunteerWorks);
         Long newLastId = getNewLastId(takenWithSize);
