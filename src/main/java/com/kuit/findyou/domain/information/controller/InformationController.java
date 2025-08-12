@@ -97,8 +97,16 @@ public class InformationController {
         return BaseResponse.ok(response);
     }
 
+    @Operation(summary = "봉사활동 조회 API", description = """
+봉사활동 목록을 조회합니다.
+
+**[주의]** 커서 페이징을 지원합니다.
+- 첫 요청에서는 lastId를 Long타입의 MAX 값으로 세팅해서 전달해주세요 
+- 다음 요청에는 이전 요청의 lastId를 세팅해서 전달해주세요. 
+""")
+    @CustomExceptionDescription(DEFAULT)
     @GetMapping("volunteer-works")
-    public BaseResponse<GetVolunteerWorksResponse> getVolunteerWorks(@RequestParam Long lastId){
+    public BaseResponse<GetVolunteerWorksResponse> getVolunteerWorks(@Parameter @RequestParam Long lastId){
         return BaseResponse.ok(informationServiceFacade.getVolunteerWorks(lastId));
     }
 }
