@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.animalProtection.service;
 
+import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.model.AnimalShelter;
 import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
@@ -34,6 +35,7 @@ public class AnimalShelterServiceImplTest {
     @DisplayName("관할구역 필터 + 유형(hospital) 필터 성공")
     void getShelters_validFilter() {
         AnimalShelter hospital = AnimalShelter.builder()
+                .id(10L)
                 .shelterName("OO병원")
                 .jurisdiction("서울특별시 송파구")
                 .phoneNumber("02-123-4567")
@@ -46,16 +48,19 @@ public class AnimalShelterServiceImplTest {
         when(animalShelterRepository.findWithFilter(0L, "hospital", "병원", "서울특별시 송파구", PageRequest.of(0, size+1)))
                 .thenReturn(List.of(hospital));
 
-        List<AnimalShelterResponse> result = animalShelterService.getShelters(0L, "hospital", "서울특별시", "송파구", null, null, size);
+        AnimalShelterPagingResponse<AnimalShelterResponse> result = animalShelterService.getShelters(0L, "hospital", "서울특별시", "송파구", null, null, size);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).centerName()).isEqualTo("OO병원");
+        assertThat(result.centers()).hasSize(1);
+        assertThat(result.centers().get(0).centerName()).isEqualTo("OO병원");
+        assertThat(result.isLast()).isTrue();
+        assertThat(result.lastId()).isEqualTo(10L);
     }
 
     @Test
     @DisplayName("위치 기반 조회 - 반경 7km 이내만 반환")
     void getNearbyCenters_withinRadiusOnly() {
         AnimalShelter s1 = AnimalShelter.builder()
+                .id(1L)
                 .shelterName("가까운 병원")
                 .jurisdiction("서울특별시 송파구")
                 .phoneNumber("02-123-4567")
@@ -65,6 +70,7 @@ public class AnimalShelterServiceImplTest {
                 .build();
 
         AnimalShelter s2 = AnimalShelter.builder()
+                .id(2L)
                 .shelterName("멀리 있는 보호소")
                 .jurisdiction("서울특별시 송파구")
                 .phoneNumber("02-123-4567")
@@ -78,10 +84,12 @@ public class AnimalShelterServiceImplTest {
         when(animalShelterRepository.findAllWithLatLngAfterId(0L, PageRequest.of(0, size+1)))
                 .thenReturn(List.of(s1, s2));
 
-        List<AnimalShelterResponse> result = animalShelterService.getNearbyCenters(0L, 37.5, 127.1, size);
+        AnimalShelterPagingResponse<AnimalShelterResponse> result = animalShelterService.getNearbyCenters(0L, 37.5, 127.1, size);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).centerName()).isEqualTo("가까운 병원");
+        assertThat(result.centers()).hasSize(1);
+        assertThat(result.centers().get(0).centerName()).isEqualTo("가까운 병원");
+        assertThat(result.isLast()).isTrue();
+        assertThat(result.lastId()).isEqualTo(1L);
     }
 
 }
