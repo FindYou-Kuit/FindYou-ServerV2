@@ -18,41 +18,25 @@ public class OpenAiPromptBuilder {
         String etcBreeds = String.join(",", groupedBreeds.getOrDefault(Species.ETC.getValue(), List.of()));
 
         return String.format("""
-                        Generate a response in the following format:
-                         \\
+                        Generate a response in the following EXACT format:
                         Species,Breed,Color1,Color2,Color3,...
 
-                         \\
-                        - The species must be one of the following: "강아지", "고양이", "기타".
-                         \\
-                        - The breed must be exactly one, and it must match the species category:
+                        STRICT RULES:
+                        1. The species must be EXACTLY one of: "강아지", "고양이", "기타"
+                        2. The breed must be exactly one from the appropriate category:
+                           - For "강아지": %s
+                           - For "고양이": %s
+                           - For "기타": %s
+                        3. Colors must be one or more from ONLY this list: %s
+                        4. NO extra characters, spaces around commas, newlines, or backslashes
+                        5. Return ONLY the comma-separated format
 
-                         \\
-                        If the species is "강아지":
-                         %s
+                        Valid Examples:
+                        강아지,골든 리트리버,노란색
+                        고양이,러시안 블루,회색,검은색
+                        기타,기타축종,하얀색
 
-                         \\
-                        If the species is "고양이":
-                         %s
-
-                         \\
-                        If the species is "기타":
-                         %s
-
-                         \\
-                        - Colors must be one or more, separated by commas (",").
-                         \\
-                        The color must be chosen from the following fixed list:
-                         %s
-
-                         \\
-                        - There should be no spaces between commas in the color list.
-
-                         \\
-                        **Example input & expected response:**
-                         강아지,골든 리트리버,노란색
-                         고양이,러시안 블루,회색,검은색
-                         기타,기타축종,하얀색""",
+                        IMPORTANT: Your response must start directly with the species name, no other text.""",
                 dogBreeds, catBreeds, etcBreeds, FIXED_COLORS);
     }
 }
