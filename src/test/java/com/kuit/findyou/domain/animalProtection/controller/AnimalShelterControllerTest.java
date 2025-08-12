@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.data.redis.connection.ReactiveStreamCommands.AddStreamRecord.body;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -63,7 +64,9 @@ public class AnimalShelterControllerTest {
                 .statusCode(200)
                 .body("data.centers[0].jurisdiction.size()", equalTo(2))
                 .body("data.centers[0].jurisdiction", hasItems("서울특별시 강남구", "서울특별시 서초구"))
-                .body("data.centers[0].centerName", containsString("병원"));
+                .body("data.centers[0].centerName", containsString("병원"))
+                .body("data.lastId", anyOf(nullValue(), instanceOf(Number.class)))
+                .body("data.isLast", anyOf(is(true), is(false)));
     }
 
     @Test
@@ -83,6 +86,8 @@ public class AnimalShelterControllerTest {
         .then()
                 .statusCode(200)
                 .body("data.centers.size()", greaterThan(0))
-                .body("data.centers[0].centerName", notNullValue());
+                .body("data.centers[0].centerName", notNullValue())
+                .body("data.lastId", anyOf(nullValue(), instanceOf(Number.class)))
+                .body("data.isLast", anyOf(is(true), is(false)));
     }
 }
