@@ -18,14 +18,17 @@ public class VolunteerWork extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "institution", length = 70)
+    private String institution;
+
     @Column(name = "recruitment_start_at")
     private LocalDate recruitmentStartAt;
 
     @Column(name = "recruitment_end_at")
     private LocalDate recruitmentEndAt;
 
-    @Column(name = "place", length = 255)
-    private String place;
+    @Column(name = "address", length = 255)
+    private String address;
 
     @Column(name = "volunteer_start_at")
     private LocalDate volunteerStartAt;
@@ -35,4 +38,7 @@ public class VolunteerWork extends BaseEntity {
 
     @Column(name = "volunteer_time", length = 50)
     private String volunteerTime;
+
+    @Column(name = "web_link", length = 2083)
+    private String webLink;
 }
