@@ -2,10 +2,10 @@ package com.kuit.findyou.domain.information.controller;
 
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.dto.ContentType;
+import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
 import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
 import com.kuit.findyou.domain.information.service.facade.InformationServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
-import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.kuit.findyou.domain.information.validation.InformationRequestValidator.*;
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 
 @RestController
@@ -78,9 +77,6 @@ public class InformationController {
         return BaseResponse.ok(Map.of("centers", results));
     }
 
-
-
-
     @Operation(summary = "추천 영상 조회 API", description = "추천 영상 목록을 조회합니다.")
     @GetMapping("/videos")
     @CustomExceptionDescription(RECOMMENDED_VIDEO)
@@ -99,5 +95,10 @@ public class InformationController {
     ) {
         List<RecommendedContentResponse> response = informationServiceFacade.getRecommendedContents(ContentType.NEWS);
         return BaseResponse.ok(response);
+    }
+
+    @GetMapping("volunteer-works")
+    public BaseResponse<GetVolunteerWorksResponse> getVolunteerWorks(@RequestParam Long lastId){
+        return BaseResponse.ok(informationServiceFacade.getVolunteerWorks(lastId));
     }
 }
