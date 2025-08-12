@@ -17,7 +17,7 @@ import org.hibernate.annotations.SQLRestriction;
 public class NotificationHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notification_history_id")
+    @Column(name = "id")
     private Long id;
 
     @Enumerated(EnumType.STRING)

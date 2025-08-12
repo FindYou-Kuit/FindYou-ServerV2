@@ -17,7 +17,7 @@ public class Keyword extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "keyword_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false, length = 30)

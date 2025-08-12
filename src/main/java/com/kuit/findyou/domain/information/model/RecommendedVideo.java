@@ -21,9 +21,9 @@ public class RecommendedVideo extends BaseEntity{
     @Column(name = "title", length = 255, nullable = false)
     private String title;
 
-    @Column(name = "url", length = 255, nullable = false)
+    @Column(name = "url", length = 2083, nullable = false)
     private String url;
 
-    @Column(name = "uploader", length = 100, nullable = false)
+    @Column(name = "uploader", length = 255, nullable = false)
     private String uploader;
 }

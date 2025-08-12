@@ -19,7 +19,7 @@ public class ReportImage extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url", length = 2083, nullable = false)
     private String imageUrl;
 
     @Column(name = "uuid", nullable = false)
