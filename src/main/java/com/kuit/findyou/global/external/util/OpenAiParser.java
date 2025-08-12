@@ -4,6 +4,7 @@ import com.kuit.findyou.global.external.exception.OpenAiParsingException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class OpenAiParser {
@@ -33,9 +34,29 @@ public class OpenAiParser {
     /**
      * 응답 문자열에서 품종(Breed)을 추출하고 정제
      */
-    public static String parseBreed(String input) {
+    public static String parseBreed(String input, String species, Map<String, List<String>> breedGroup) {
         List<String> parts = parseParts(input);
-        return cleanString(parts.get(1));
+        String breed = cleanString(parts.get(1));
+
+        return validateBreed(breed, species, breedGroup);
+    }
+
+    /**
+     * 품종이 해당 축종의 유효한 품종인지 검증
+     */
+    private static String validateBreed(String breed, String species, Map<String, List<String>> breedGroup) {
+        List<String> validBreeds = breedGroup.get(species);
+
+        if (validBreeds == null || validBreeds.isEmpty()) {
+            throw new OpenAiParsingException("해당 축종에 대한 품종 정보가 없습니다");
+        }
+
+        // 유효하지 않은 품종인 경우
+        if (!validBreeds.contains(breed)) {
+            throw new OpenAiParsingException("유효하지 않은 품종입니다.");
+        }
+
+        return breed;
     }
 
     /**
