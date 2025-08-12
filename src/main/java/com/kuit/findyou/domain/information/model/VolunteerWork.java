@@ -21,23 +21,26 @@ public class VolunteerWork extends BaseEntity {
     @Column(name = "institution", length = 70)
     private String institution;
 
-    @Column(name = "recruitment_start_at")
-    private LocalDate recruitmentStartAt;
+    @Column(name = "recruitment_start_date")
+    private LocalDate recruitmentStartDate;
 
-    @Column(name = "recruitment_end_at")
-    private LocalDate recruitmentEndAt;
+    @Column(name = "recruitment_end_date")
+    private LocalDate recruitmentEndDate;
 
     @Column(name = "address", length = 255)
     private String address;
 
-    @Column(name = "volunteer_start_at")
-    private LocalDate volunteerStartAt;
+    @Column(name = "volunteer_start_date")
+    private LocalDate volunteerStartDate;
 
-    @Column(name = "volunteer_end_at")
-    private LocalDate volunteerEndAt;
+    @Column(name = "volunteer_end_date")
+    private LocalDate volunteerEndDate;
 
-    @Column(name = "volunteer_time", length = 50)
-    private String volunteerTime;
+    @Column(name = "volunteer_start_time", length = 10)
+    private String volunteerStartTime;
+
+    @Column(name = "volunteer_end_time", length = 10)
+    private String volunteerEndTime;
 
     @Column(name = "web_link", length = 2083)
     private String webLink;
