@@ -1,10 +1,12 @@
 package com.kuit.findyou.domain.information.model;
 
+import com.kuit.findyou.domain.information.dto.SyncVolunteerWorkContentRequest;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "volunteer_works")
@@ -30,18 +32,15 @@ public class VolunteerWork extends BaseEntity {
     @Column(name = "address", length = 255)
     private String address;
 
-    @Column(name = "volunteer_start_date")
-    private LocalDate volunteerStartDate;
+    @Column(name = "volunteer_start_at")
+    private LocalDateTime volunteerStartAt;
 
-    @Column(name = "volunteer_end_date")
-    private LocalDate volunteerEndDate;
-
-    @Column(name = "volunteer_start_time", length = 10)
-    private String volunteerStartTime;
-
-    @Column(name = "volunteer_end_time", length = 10)
-    private String volunteerEndTime;
+    @Column(name = "volunteer_end_at")
+    private LocalDateTime volunteerEndAt;
 
     @Column(name = "web_link", length = 2083)
     private String webLink;
+
+    @Column(name = "register_number", length = 20)
+    private String registerNumber;
 }
