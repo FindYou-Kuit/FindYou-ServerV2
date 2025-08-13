@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -62,10 +63,8 @@ class VolunteerWorkServiceTest {
                 .recruitmentStartDate(LocalDate.of(2025, 1, 1))
                 .recruitmentEndDate(LocalDate.of(2025, 1, 2))
                 .address("서울시")
-                .volunteerStartDate(LocalDate.of(2025, 1, 3))
-                .volunteerEndDate(LocalDate.of(2025, 1, 4))
-                .volunteerStartTime("05:00")
-                .volunteerEndTime("06:00")
+                .volunteerStartAt(LocalDateTime.of(2025, 1, 3, 5, 0))
+                .volunteerEndAt(LocalDateTime.of(2025, 1, 4, 6, 0))
                 .webLink("www.web.link")
                 .build();
     }
