@@ -17,11 +17,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static com.kuit.findyou.global.common.util.RestAssuredUtils.multipartText;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -169,5 +171,93 @@ class UserControllerTest {
         assertThat(response.cards()).hasSize(0);
         assertThat(response.lastId()).isEqualTo(-1L);
         assertThat(response.isLast()).isTrue();
+    }
+
+    @DisplayName("PATCH /api/v2/users/me/nickname : 유저의 닉네임을 수정한다")
+    @Test
+    void shouldChangeNickname_whenValidNicknameProvided() {
+        // given
+        User user = testInitializer.createTestUser();
+
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of("newNickname", "찾아유"))
+                .when()
+                .patch("/api/v2/users/me/nickname")
+                .then()
+                .statusCode(200)
+                .body("data", nullValue());
+    }
+
+    @Test
+    @DisplayName("닉네임 필드가 누락되면 400과 에러 메시지를 반환한다")
+    void shouldReturn400_whenNewNicknameFieldMissing() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of()) // {} : 본문은 있지만 newNickname 필드 누락
+                .when()
+                .patch("/api/v2/users/me/nickname")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("success", equalTo(false))
+                .body("code", equalTo(400))
+                .body("message", equalTo("새로운 닉네임을 반드시 입력해야 합니다."));
+    }
+
+    @Test
+    @DisplayName("닉네임이 빈 문자열이면 400과 에러 메시지를 반환한다")
+    void shouldReturn400_whenNewNicknameIsEmpty() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of("newNickname", "")) // 빈 문자열
+                .when()
+                .patch("/api/v2/users/me/nickname")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("success", equalTo(false))
+                .body("code", equalTo(400))
+                .body("message", equalTo("새로운 닉네임을 반드시 입력해야 합니다."));
+    }
+
+    @Test
+    @DisplayName("닉네임이 공백만으로 이루어지면 400과 에러 메시지를 반환한다")
+    void shouldReturn400_whenNewNicknameIsBlank() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of("newNickname", "   ")) // 공백만
+                .when()
+                .patch("/api/v2/users/me/nickname")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("code", equalTo(400))
+                .body("message", equalTo("새로운 닉네임을 반드시 입력해야 합니다."));
     }
 }
