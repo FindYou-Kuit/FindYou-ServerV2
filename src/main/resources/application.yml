@@ -129,6 +129,9 @@ openapi:
   openai:
     api-url: "https://api.openai.com/v1/chat/completions"
     api-key: ${OPENAI_API_KEY}
+  volunteer-work:
+    api-url: http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrSearchWordList
+
 
 
 logging:
