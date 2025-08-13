@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.user.service;
 
-import com.kuit.findyou.domain.user.dto.RegisterUserRequest;
-import com.kuit.findyou.domain.user.dto.RegisterUserResponse;
+import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
+import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.domain.user.service.register.RegisterUserServiceImpl;

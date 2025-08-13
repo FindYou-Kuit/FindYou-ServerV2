@@ -1,7 +1,10 @@
 package com.kuit.findyou.domain.user.service.facade;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
-import com.kuit.findyou.domain.user.dto.*;
+import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
+import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
+import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.service.change_nickname.ChangeNicknameService;
 import com.kuit.findyou.domain.user.service.interest_report.InterestReportService;
 import com.kuit.findyou.domain.user.service.query.QueryUserService;
