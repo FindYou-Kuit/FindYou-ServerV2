@@ -39,6 +39,6 @@ public class UserServiceFacade {
     }
 
     public void changeNickname(Long userId, String newNickname) {
-        changeNicknameService.changeNickName(userId, newNickname);
+        changeNicknameService.changeNickname(userId, newNickname);
     }
 }

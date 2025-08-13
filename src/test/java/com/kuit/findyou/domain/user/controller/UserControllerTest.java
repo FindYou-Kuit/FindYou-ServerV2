@@ -191,6 +191,9 @@ class UserControllerTest {
                 .then()
                 .statusCode(200)
                 .body("data", nullValue());
+
+        User updated = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(updated.getName()).isEqualTo("찾아유");
     }
 
     @Test

@@ -16,7 +16,7 @@ public class ChangeNicknameServiceImpl implements ChangeNicknameService{
 
     @Override
     @Transactional
-    public void changeNickName(Long userId, String newNickName) {
+    public void changeNickname(Long userId, String newNickName) {
         User loginedUser = userRepository.getReferenceById(userId);
 
         loginedUser.changeNickname(newNickName);
