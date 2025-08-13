@@ -30,7 +30,6 @@ class WitnessReportDetailStrategyTest {
     private WitnessReportRepository witnessReportRepository;
     @Autowired private EntityManager em;
 
-    @InjectMocks
     private WitnessReportDetailStrategy strategy;
 
     @BeforeEach

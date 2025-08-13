@@ -45,11 +45,6 @@ class ReportRetrieveServiceImplTest {
     @InjectMocks
     private ReportRetrieveServiceImpl reportRetrieveService;
 
-    @BeforeEach
-    void setUp() {
-        reportRetrieveService = new ReportRetrieveServiceImpl(reportRepository, interestReportRepository, cardFactory);
-    }
-
     @Test
     @DisplayName("필터 조건에 따라 보고서 리스트를 조회하고 관심 여부를 포함한 결과 반환")
     void retrieveReportsWithFilters_success() {

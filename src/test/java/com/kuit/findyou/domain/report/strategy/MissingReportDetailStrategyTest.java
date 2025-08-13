@@ -33,7 +33,6 @@ class MissingReportDetailStrategyTest {
 
     @Autowired private EntityManager em;
 
-    @InjectMocks
     private MissingReportDetailStrategy strategy;
 
     @BeforeEach
