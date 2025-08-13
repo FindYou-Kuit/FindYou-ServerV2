@@ -91,6 +91,9 @@ dependencies {
 	// Flyway
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'
+
+	// Jackson xml parsing
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 }
 
 tasks.named('test') {
