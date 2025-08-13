@@ -9,6 +9,8 @@ import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,5 +82,20 @@ public class UserController {
     public BaseResponse<CheckDuplicateNicknameResponse> checkDuplicateNickname(CheckDuplicateNicknameRequest request){
         log.info("[checkDuplicateNickname] nickname = {}", request.nickname());
         return new BaseResponse<>(userServiceFacade.checkDuplicateNickname(request));
+    }
+
+    @Operation(
+            summary = "닉네임 수정 API",
+            description = "닉네임을 수정합니다."
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @PatchMapping("/me/nickname")
+    public BaseResponse<Void> changeNickname(
+            @Parameter(hidden = true) @LoginUserId Long userId,
+            @Valid @RequestBody ChangeNicknameRequestDTO request
+    ){
+        log.info("[changeNickname] newNickname = {}", request.newNickname());
+        userServiceFacade.changeNickname(userId, request.newNickname());
+        return new BaseResponse<>(null);
     }
 }
