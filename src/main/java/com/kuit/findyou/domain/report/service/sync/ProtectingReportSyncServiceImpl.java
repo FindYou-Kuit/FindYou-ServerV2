@@ -54,7 +54,8 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .map(ProtectingAnimalItemDTO::noticeNo)
                 .collect(Collectors.toSet());
 
-        List<ProtectingReport> existingReports = protectingReportRepository.findByNoticeNumberIn(apiNoticeNumbers);
+        List<ProtectingReport> existingReports = protectingReportRepository.findAll();
+
         Set<String> existingNoticeNumbers = existingReports.stream()
                 .map(ProtectingReport::getNoticeNumber)
                 .collect(Collectors.toSet());
