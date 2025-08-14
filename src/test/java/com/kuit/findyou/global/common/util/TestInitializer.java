@@ -36,8 +36,8 @@ public class TestInitializer {
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
 
-        User shelterUser = createTestUser();
-        defaultUser = shelterUser;
+        User shelterUser = createTestUser();      // <---------------------------- 분리
+        defaultUser = shelterUser;                // <---------------------------- 분리
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -49,7 +49,7 @@ public class TestInitializer {
 
         createTestViewedReport(testUser, testProtectingReport);
         createTestViewedReport(testUser, testMissingReport);
-        createTestAnimalShelters();
+        createTestAnimalShelters();  // <---------------------------- 분리
         return testUser;
     }
 
@@ -117,14 +117,14 @@ public class TestInitializer {
         return report;
     }
 
-    public void createTestInterestReport(User user, Report report) {
+    public InterestReport createTestInterestReport(User user, Report report) {
         InterestReport interest = InterestReport.createInterestReport(user, report);
-        interestReportRepository.save(interest);
+        return interestReportRepository.save(interest);
     }
 
-    public void createTestViewedReport(User user, Report report) {
+    public ViewedReport createTestViewedReport(User user, Report report) {
         ViewedReport viewedReport = ViewedReport.createViewedReport(user, report);
-        viewedReportRepository.save(viewedReport);
+        return viewedReportRepository.save(viewedReport);
     }
 
     public User userWith3InterestAnimals() {
