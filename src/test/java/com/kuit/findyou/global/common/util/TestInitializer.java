@@ -36,8 +36,8 @@ public class TestInitializer {
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
 
-        User shelterUser = createTestUser();      // <---------------------------- 분리
-        defaultUser = shelterUser;                // <---------------------------- 분리
+        User shelterUser = createTestUser();
+        defaultUser = shelterUser;
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -49,7 +49,7 @@ public class TestInitializer {
 
         createTestViewedReport(testUser, testProtectingReport);
         createTestViewedReport(testUser, testMissingReport);
-        createTestAnimalShelters();  // <---------------------------- 분리
+        createTestAnimalShelters();
         return testUser;
     }
 
