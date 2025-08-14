@@ -47,11 +47,6 @@ class ViewedReportsRetrieveServiceImplTest {
     @InjectMocks
     private ViewedReportsRetrieveServiceImpl viewedReportsRetrieveService;
 
-    @BeforeEach
-    void setUp() {
-        viewedReportsRetrieveService = new ViewedReportsRetrieveServiceImpl(viewedReportRepository, reportRepository, interestReportRepository, cardFactory);
-    }
-
     @Test
     @DisplayName("최근 본 동물 리스트 조회")
     void retrieveViewedAnimals_success() {

@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.user.service.query;
 
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameRequest;
-import com.kuit.findyou.domain.user.dto.CheckDuplicateNicknameResponse;
+import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

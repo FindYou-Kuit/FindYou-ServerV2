@@ -1,7 +1,11 @@
 package com.kuit.findyou.domain.user.service.facade;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
-import com.kuit.findyou.domain.user.dto.*;
+import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
+import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
+import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
+import com.kuit.findyou.domain.user.service.change_nickname.ChangeNicknameService;
 import com.kuit.findyou.domain.user.service.interest_report.InterestReportService;
 import com.kuit.findyou.domain.user.service.query.QueryUserService;
 import com.kuit.findyou.domain.user.service.register.RegisterUserService;
@@ -16,6 +20,7 @@ public class UserServiceFacade {
     private final ViewedReportsRetrieveService viewedReportsRetrieveService;
     private final RegisterUserService registerUserService;
     private final QueryUserService queryUserService;
+    private final ChangeNicknameService changeNicknameService;
 
     public CardResponseDTO retrieveViewedAnimals(Long lastId, Long userId) {
         return viewedReportsRetrieveService.retrieveViewedAnimals(lastId, userId);
@@ -31,5 +36,9 @@ public class UserServiceFacade {
 
     public CardResponseDTO retrieveInterestAnimals(Long userId, Long lastId) {
         return interestReportService.retrieveInterestAnimals(userId, lastId, 20);
+    }
+
+    public void changeNickname(Long userId, String newNickname) {
+        changeNicknameService.changeNickname(userId, newNickname);
     }
 }

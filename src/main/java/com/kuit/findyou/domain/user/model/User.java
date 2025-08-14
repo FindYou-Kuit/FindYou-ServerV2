@@ -117,4 +117,8 @@ public class User extends BaseEntity {
     public boolean isGuest(){
         return this.role == Role.GUEST;
     }
+
+    public void changeNickname(String newNickname) {
+        this.name = newNickname;
+    }
 }

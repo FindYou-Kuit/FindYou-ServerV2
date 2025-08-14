@@ -33,7 +33,6 @@ class ProtectingReportDetailStrategyTest {
     private ProtectingReportRepository protectingReportRepository;
     @Autowired private EntityManager em;
 
-    @InjectMocks
     private ProtectingReportDetailStrategy strategy;
 
     @BeforeEach
