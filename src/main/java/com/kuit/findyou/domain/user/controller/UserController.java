@@ -88,6 +88,7 @@ public class UserController {
     }
 
     @Operation(
+<<<<<<< HEAD
             summary = "닉네임 수정 API",
             description = "닉네임을 수정합니다."
     )
@@ -100,5 +101,16 @@ public class UserController {
         log.info("[changeNickname] newNickname = {}", request.newNickname());
         userServiceFacade.changeNickname(userId, request.newNickname());
         return BaseResponse.ok(null);
+=======
+            summary = "회원 탈퇴 API",
+            description = "회원 탈퇴 기능을 수행합니다."
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @DeleteMapping("/me")
+    public BaseResponse<Void> deleteUser(@Parameter(hidden = true) @LoginUserId Long userId) {
+        log.info("[deleteUser] userId = {}", userId);
+        userServiceFacade.deleteUser(userId);
+        return new BaseResponse<>(null);
+>>>>>>> 6ffcaa5 ([Feat] #62 회원 탈퇴 API 구현 완료)
     }
 }
