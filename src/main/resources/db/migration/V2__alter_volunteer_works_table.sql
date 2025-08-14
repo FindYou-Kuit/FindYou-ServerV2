@@ -18,3 +18,14 @@ ALTER TABLE volunteer_works RENAME COLUMN recruitment_end_at   TO recruitment_en
 ALTER TABLE volunteer_works RENAME COLUMN volunteer_start_at   TO volunteer_start_date;
 ALTER TABLE volunteer_works RENAME COLUMN volunteer_end_at     TO volunteer_end_date;
 
+-- 칼럼 삭제
+ALTER TABLE volunteer_works DROP COLUMN volunteer_start_date;
+ALTER TABLE volunteer_works DROP COLUMN volunteer_end_date;
+ALTER TABLE volunteer_works DROP COLUMN volunteer_start_time;
+ALTER TABLE volunteer_works DROP COLUMN volunteer_end_time;
+
+-- 칼럼 추가
+ALTER TABLE volunteer_works ADD COLUMN register_number VARCHAR(20);
+ALTER TABLE volunteer_works ADD COLUMN volunteer_start_at DATETIME;
+ALTER TABLE volunteer_works ADD COLUMN volunteer_end_at DATETIME;
+
