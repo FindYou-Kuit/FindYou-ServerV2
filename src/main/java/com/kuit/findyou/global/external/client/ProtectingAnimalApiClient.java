@@ -68,7 +68,6 @@ public class ProtectingAnimalApiClient {
                 .uri(uriBuilder -> uriBuilder
                         .path(API_ENDPOINT)
                         .queryParam("serviceKey", properties.apiKey())
-                        .queryParam("bgnde", "20250814")
                         .queryParam("pageNo", pageNo)
                         .queryParam("numOfRows", DEFAULT_PAGE_SIZE)
                         .queryParam("_type", "json")

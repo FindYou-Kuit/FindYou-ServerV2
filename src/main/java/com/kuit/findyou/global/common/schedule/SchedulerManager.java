@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.common.schedule;
 
+import com.kuit.findyou.domain.report.service.sync.ProtectingReportSyncService;
 import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
@@ -19,7 +20,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @RequiredArgsConstructor
 public class SchedulerManager {
 
-    private final ProtectingAnimalApiClient protectingAnimalApiClient;
+    private final ProtectingReportSyncService protectingReportSyncService;
     private final HomeStatisticsService homeStatisticsService;
 
     /**
@@ -27,7 +28,7 @@ public class SchedulerManager {
      */
     @Scheduled(cron = "0 0 4 * * *")
     public void syncProtectingAnimals() {
-        protectingAnimalApiClient.storeProtectingReports();
+        protectingReportSyncService.syncProtectingReports();
     }
 
     /**
