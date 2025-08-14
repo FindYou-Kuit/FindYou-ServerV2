@@ -197,6 +197,26 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("닉네임이 정확히 8글자인 경우 닉네임 수정에 성공한다.")
+    void shouldChangeNickname_whenLengthIsExactly8() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of("newNickname", "찾아유찾아유찾아"))
+                .when()
+                .patch("/api/v2/users/me/nickname")
+                .then()
+                .statusCode(200)
+                .body("data", nullValue());
+    }
+
+    @Test
     @DisplayName("닉네임 필드가 누락되면 400과 에러 메시지를 반환한다")
     void shouldReturn400_whenNewNicknameFieldMissing() {
         // given
