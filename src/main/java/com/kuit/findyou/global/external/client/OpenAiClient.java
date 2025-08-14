@@ -23,7 +23,7 @@ public class OpenAiClient {
         this.openAiRestClient = openAiRestClient;
     }
 
-    public BreedAiDetectionResponseDTO analyzeImage(String imageUrl, String prompt) {
+    public String analyzeImage(String imageUrl, String prompt) {
         try {
             Map<String, Object> requestBody = Map.of(
                     "model", "gpt-4o",
@@ -57,15 +57,7 @@ public class OpenAiClient {
             String content = response.choices().get(0).message().content();
             log.info("OpenAI Vision API 응답: {}", content);
 
-            String species = OpenAiParser.parseSpecies(content);
-            String breed = OpenAiParser.parseBreed(content);
-            List<String> colors = OpenAiParser.parseColors(content);
-
-            return new BreedAiDetectionResponseDTO(species, breed, colors);
-
-        } catch (OpenAiParsingException e) {
-            log.warn("GPT 응답 파싱 실패: {}", e.getMessage());
-            throw new OpenAiClientException("GPT 응답 파싱에 실패하였습니다: " + e.getMessage(), e);
+            return content;
 
         } catch (Exception e) {
             log.error("OpenAI Vision API 호출 중 오류 발생", e);
