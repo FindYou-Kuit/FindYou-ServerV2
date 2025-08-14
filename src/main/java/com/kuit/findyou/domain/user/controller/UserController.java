@@ -96,9 +96,21 @@ public class UserController {
     public BaseResponse<Void> changeNickname(
             @Parameter(hidden = true) @LoginUserId Long userId,
             @Valid @RequestBody ChangeNicknameRequestDTO request
-    ){
+    ) {
         log.info("[changeNickname] newNickname = {}", request.newNickname());
         userServiceFacade.changeNickname(userId, request.newNickname());
+        return BaseResponse.ok(null);
+    }
+
+    @Operation(
+            summary = "회원 탈퇴 API",
+            description = "회원 탈퇴 기능을 수행합니다."
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @DeleteMapping("/me")
+    public BaseResponse<Void> deleteUser(@Parameter(hidden = true) @LoginUserId Long userId) {
+        log.info("[deleteUser] userId = {}", userId);
+        userServiceFacade.deleteUser(userId);
         return BaseResponse.ok(null);
     }
 }

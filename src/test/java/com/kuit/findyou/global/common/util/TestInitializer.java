@@ -117,14 +117,14 @@ public class TestInitializer {
         return report;
     }
 
-    public void createTestInterestReport(User user, Report report) {
+    public InterestReport createTestInterestReport(User user, Report report) {
         InterestReport interest = InterestReport.createInterestReport(user, report);
-        interestReportRepository.save(interest);
+        return interestReportRepository.save(interest);
     }
 
-    public void createTestViewedReport(User user, Report report) {
+    public ViewedReport createTestViewedReport(User user, Report report) {
         ViewedReport viewedReport = ViewedReport.createViewedReport(user, report);
-        viewedReportRepository.save(viewedReport);
+        return viewedReportRepository.save(viewedReport);
     }
 
     public User userWith3InterestAnimals() {

@@ -25,7 +25,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE users SET status = 'N' WHERE user_id = ?")
+@SQLDelete(sql = "UPDATE users SET status = 'N' WHERE id = ?")
 @SQLRestriction("status = 'Y'")
 public class User extends BaseEntity {
 

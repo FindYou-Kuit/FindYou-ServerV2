@@ -173,6 +173,28 @@ class UserControllerTest {
         assertThat(response.isLast()).isTrue();
     }
 
+    @DisplayName("DELETE /api/v2/users/me : 회원 탈퇴에 성공한다.")
+    @Test
+    void should_DeleteUser(){
+        // given
+        User testUser = testInitializer.createTestUser();
+
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+        // when: 회원 탈퇴 요청
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .delete("/api/v2/users/me")
+                .then()
+                .statusCode(200);
+
+        // then
+        assertThat(userRepository.findById(testUser.getId())).isEmpty();
+    }
+
     @DisplayName("PATCH /api/v2/users/me/nickname : 유저의 닉네임을 수정한다")
     @Test
     void shouldChangeNickname_whenValidNicknameProvided() {
@@ -327,8 +349,5 @@ class UserControllerTest {
                 .body("code", equalTo(400))
                 .body("message", equalTo("특수문자는 들어갈 수 없어요."));
     }
-
-
-
 
 }
