@@ -216,7 +216,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
-                .body("message", equalTo("새로운 닉네임을 반드시 입력해야 합니다."));
+                .body("message", equalTo("닉네임이 비어있어요."));
     }
 
     @Test
@@ -239,7 +239,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
-                .body("message", equalTo("새로운 닉네임을 반드시 입력해야 합니다."));
+                .body("message", equalTo("닉네임이 비어있어요."));
     }
 
     @Test
@@ -261,6 +261,54 @@ class UserControllerTest {
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .body("code", equalTo(400))
-                .body("message", equalTo("새로운 닉네임을 반드시 입력해야 합니다."));
+                .body("message", equalTo("닉네임이 비어있어요."));
     }
+
+    @Test
+    @DisplayName("닉네임이 8글자를 넘어가면 400과 에러 메시지를 반환한다")
+    void shouldReturn400_WhenLengthExceeds8() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of("newNickname", "찾아유찾아유찾아유찾아유"))
+                .when()
+                .patch("/api/v2/users/me/nickname")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("code", equalTo(400))
+                .body("message", equalTo("닉네임은 최대 8글자까지만 가능해요."));
+    }
+
+    @Test
+    @DisplayName("닉네임에 특수문자가 포함될 시 400과 에러 메시지를 반환한다")
+    void shouldReturnBadRequest_WhenPatternDoesNotMatch() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of("newNickname", "찾아유@12"))
+                .when()
+                .patch("/api/v2/users/me/nickname")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("code", equalTo(400))
+                .body("message", equalTo("특수문자는 들어갈 수 없어요."));
+    }
+
+
+
+
 }

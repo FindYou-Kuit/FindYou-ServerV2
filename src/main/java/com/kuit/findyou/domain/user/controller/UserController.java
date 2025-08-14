@@ -99,6 +99,6 @@ public class UserController {
     ){
         log.info("[changeNickname] newNickname = {}", request.newNickname());
         userServiceFacade.changeNickname(userId, request.newNickname());
-        return new BaseResponse<>(null);
+        return BaseResponse.ok(null);
     }
 }
