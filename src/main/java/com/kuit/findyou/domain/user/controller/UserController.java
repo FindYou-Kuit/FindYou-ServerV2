@@ -123,4 +123,11 @@ public class UserController {
         userServiceFacade.addInterestAnimal(userId, request.reportId());
         return BaseResponse.ok(null);
     }
+
+    @DeleteMapping("me/interest-animals/{reportId}")
+    public BaseResponse<Void> deleteInterestAnimal(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                   @Parameter(name = "삭제할 동물신고글 식별자") @RequestParam Long reportId){
+        userServiceFacade.deleteInterestAnimal(userId, reportId);
+        return BaseResponse.ok(null);
+    }
 }
