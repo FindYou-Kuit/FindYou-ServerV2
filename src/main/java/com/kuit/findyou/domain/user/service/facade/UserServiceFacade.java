@@ -44,6 +44,10 @@ public class UserServiceFacade {
         interestReportService.addInterestAnimals(userId, reportId);
     }
 
+    public void deleteInterestAnimal(Long userId, Long reportId){
+        interestReportService.deleteInterestAnimal(userId, reportId);
+    }
+
     public void changeNickname(Long userId, String newNickname) {
         changeNicknameService.changeNickname(userId, newNickname);
     }
