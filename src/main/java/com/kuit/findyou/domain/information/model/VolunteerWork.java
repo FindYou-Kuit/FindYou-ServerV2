@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.information.model;
 
+import com.kuit.findyou.domain.information.dto.UpdateVolunteerWorkRequest;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,6 +41,28 @@ public class VolunteerWork extends BaseEntity {
     @Column(name = "web_link", length = 2083)
     private String webLink;
 
-    @Column(name = "register_number", length = 20)
+    @Column(name = "register_number", length = 20, unique = true)
     private String registerNumber;
+
+    @Column(name = "run_id")
+    private Long runId;
+
+    public void update(UpdateVolunteerWorkRequest request){
+        if(request.institution() != null)
+            this.institution = request.institution();
+        if(request.recruitmentStartDate() != null)
+            this.recruitmentStartDate = request.recruitmentStartDate();
+        if(request.recruitmentEndDate() != null)
+            this.recruitmentEndDate = request.recruitmentEndDate();
+        if(request.address() != null)
+            this.address = request.address();
+        if(request.volunteerStartAt() != null)
+            this.volunteerStartAt = request.volunteerStartAt();
+        if(request.volunteerEndAt() != null)
+            this.volunteerEndAt = request.volunteerEndAt();
+        if(request.webLink() != null)
+            this.webLink = request.webLink();
+        if(request.runId() != null)
+            this.runId = request.runId();
+    }
 }
