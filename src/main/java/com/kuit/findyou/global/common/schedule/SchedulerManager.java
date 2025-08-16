@@ -1,7 +1,7 @@
 package com.kuit.findyou.global.common.schedule;
 
 import com.kuit.findyou.domain.report.service.sync.ProtectingReportSyncService;
-import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
+import com.kuit.findyou.domain.information.service.SyncVolunteerWorkService;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
 import com.kuit.findyou.domain.home.service.HomeStatisticsService;
@@ -22,6 +22,7 @@ public class SchedulerManager {
 
     private final ProtectingReportSyncService protectingReportSyncService;
     private final HomeStatisticsService homeStatisticsService;
+    private final SyncVolunteerWorkService syncVolunteerWorkService;
 
     /**
      * 구조 동물 데이터를 매일 새벽 4시에 동기화
@@ -52,5 +53,10 @@ public class SchedulerManager {
             homeStatisticsService.cacheTotalStatistics(cachedTotalStatistics.get());
             log.error("[excute] 캐시 TTL 연장 성공");
         }
+    }
+
+    @Scheduled(cron = "0 0 3 * * *")
+    public void syncVolunteerWorks(){
+        syncVolunteerWorkService.synchronize();
     }
 }
