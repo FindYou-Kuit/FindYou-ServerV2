@@ -37,7 +37,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
 
     // 유저 - User
     USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
-    ALREADY_ADDED_INTEREST_REPORT(400, "이미 관심글로 등록된 신고글입니다."),
+    DUPLICATE_INTEREST_REPORT(400, "이미 관심글로 등록된 신고글입니다."),
 
     // 글 - Report
     REPORT_NOT_FOUND(404, "존재하지 않는 신고글입니다."),

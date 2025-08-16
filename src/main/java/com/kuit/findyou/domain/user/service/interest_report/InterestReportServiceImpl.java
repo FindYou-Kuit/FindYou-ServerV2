@@ -59,7 +59,7 @@ public class InterestReportServiceImpl implements InterestReportService{
 
         // 이미 관심글로 등록되었으면 예외 발생
         if(interestReportRepository.existsByReportIdAndUserId(reportId, userId)){
-            throw new CustomException(ALREADY_ADDED_INTEREST_REPORT);
+            throw new CustomException(DUPLICATE_INTEREST_REPORT);
         }
 
         // 관심글로 등록
