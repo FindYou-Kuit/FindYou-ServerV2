@@ -1,6 +1,8 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.report.model.WitnessReport;
+import com.kuit.findyou.domain.user.dto.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
@@ -19,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.DUPLICATE_INTEREST_REPORT;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.SUCCESS;
 import static com.kuit.findyou.global.common.util.RestAssuredUtils.multipartText;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -350,4 +354,63 @@ class UserControllerTest {
                 .body("message", equalTo("특수문자는 들어갈 수 없어요."));
     }
 
+    @Test
+    @DisplayName("새로운 관심동물을 등록하면 성공한다")
+    void shouldSucceed_WhenNewInterestAnimalIsAdded() {
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        WitnessReport report = testInitializer.createTestWitnessReportWithImage(reportWriter);
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+        final Long reportId = report.getId();
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(new AddInterestAnimalRequest(reportId))
+                .when()
+                .post("/api/v2/users/me/interest-animals")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(200))
+                .body("message", equalTo(SUCCESS.getMessage()));
+    }
+
+    @Test
+    @DisplayName("이미 등록된 관심동물을 다시 등록하면 실패한다")
+    void shouldFail_WhenInterestAnimalIsDuplicate() {
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        WitnessReport report = testInitializer.createTestWitnessReportWithImage(reportWriter);
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+        final Long reportId = report.getId();
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(new AddInterestAnimalRequest(reportId))
+                .when()
+                .post("/api/v2/users/me/interest-animals")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()));
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(new AddInterestAnimalRequest(reportId))
+                .when()
+                .post("/api/v2/users/me/interest-animals")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(DUPLICATE_INTEREST_REPORT.getCode()))
+                .body("message", equalTo(DUPLICATE_INTEREST_REPORT.getMessage()));
+    }
 }
