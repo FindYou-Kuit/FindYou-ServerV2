@@ -18,12 +18,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
-
 import lombok.extern.slf4j.Slf4j;
 
-import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.CHECK_DUPLICATE_NICKNAME;
-import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.REGISTER_USER;
+import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
@@ -115,8 +112,14 @@ public class UserController {
         return BaseResponse.ok(null);
     }
 
+    @Operation(
+            summary = "관심동물 등록 API",
+            description = "관심동물 등록 기능을 수행합니다. 중복된 요청은 예외를 반환합니다."
+    )
+    @CustomExceptionDescription(ADD_INTEREST_ANIMAL)
     @PostMapping("/me/interest-animals")
-    public BaseResponse<Void> addInterestAnimal(@LoginUserId Long userId, @RequestBody AddInterestAnimalRequest request){
+    public BaseResponse<Void> addInterestAnimal(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                @RequestBody AddInterestAnimalRequest request){
         userServiceFacade.addInterestAnimal(userId, request.reportId());
         return BaseResponse.ok(null);
     }
