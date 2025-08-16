@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SyncVolunteerWorkServiceTest {
     @InjectMocks
-    SyncVolunteerWorkService service;
+    SyncVolunteerWorkServiceImpl service;
     @Mock
     VolunteerWorkApiClient apiClient;
     @Mock
