@@ -49,7 +49,7 @@ public class InterestReportServiceImpl implements InterestReportService{
     }
 
     @Override
-    public void addInterestAnimals(Long userId, Long reportId) {
+    public void addInterestAnimal(Long userId, Long reportId) {
         log.info("[addInterestAnimals] userId = {}, reportId = {}", userId, reportId);
 
         // 사용자 찾기

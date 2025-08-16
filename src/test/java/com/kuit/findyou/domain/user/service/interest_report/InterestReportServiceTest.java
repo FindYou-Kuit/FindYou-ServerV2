@@ -172,7 +172,7 @@ class InterestReportServiceTest {
         when(interestReportRepository.existsByReportIdAndUserId(anyLong(), anyLong())).thenReturn(false);
 
         // when
-        interestReportService.addInterestAnimals(userId, reportId);
+        interestReportService.addInterestAnimal(userId, reportId);
 
         // then
         verify(userRepository, times(1)).findById(userIdCaptor.capture());
@@ -204,7 +204,7 @@ class InterestReportServiceTest {
         when(interestReportRepository.existsByReportIdAndUserId(anyLong(), anyLong())).thenReturn(true);
 
         // when && then
-        assertThatThrownBy(() -> interestReportService.addInterestAnimals(userId, reportId))
+        assertThatThrownBy(() -> interestReportService.addInterestAnimal(userId, reportId))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(DUPLICATE_INTEREST_REPORT.getMessage());
     }
@@ -222,7 +222,7 @@ class InterestReportServiceTest {
         when(reportRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when && then
-        assertThatThrownBy(() -> interestReportService.addInterestAnimals(userId, reportId))
+        assertThatThrownBy(() -> interestReportService.addInterestAnimal(userId, reportId))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(REPORT_NOT_FOUND.getMessage());
     }

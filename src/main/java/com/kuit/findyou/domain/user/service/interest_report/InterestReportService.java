@@ -5,7 +5,7 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 public interface InterestReportService {
     CardResponseDTO retrieveInterestAnimals(Long userId, Long lastId, int size);
 
-    void addInterestAnimals(Long userId, Long reportId);
+    void addInterestAnimal(Long userId, Long reportId);
 
     void deleteInterestAnimal(Long userId, Long reportId);
 }

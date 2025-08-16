@@ -41,7 +41,7 @@ public class UserServiceFacade {
     }
 
     public void addInterestAnimal(Long userId, Long reportId){
-        interestReportService.addInterestAnimals(userId, reportId);
+        interestReportService.addInterestAnimal(userId, reportId);
     }
 
     public void deleteInterestAnimal(Long userId, Long reportId){
