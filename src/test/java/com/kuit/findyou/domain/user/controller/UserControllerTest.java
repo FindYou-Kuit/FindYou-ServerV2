@@ -2,7 +2,7 @@ package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.WitnessReport;
-import com.kuit.findyou.domain.user.dto.AddInterestAnimalRequest;
+import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;

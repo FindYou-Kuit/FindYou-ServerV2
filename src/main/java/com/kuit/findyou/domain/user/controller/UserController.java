@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
-import com.kuit.findyou.domain.user.dto.AddInterestAnimalRequest;
+import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
