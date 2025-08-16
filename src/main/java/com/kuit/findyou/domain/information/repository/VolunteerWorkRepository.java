@@ -8,4 +8,8 @@ import java.util.List;
 
 public interface VolunteerWorkRepository extends JpaRepository<VolunteerWork,Long> {
     List<VolunteerWork> findAllByIdLessThanOrderByIdDesc(Long id, Pageable pageable);
+
+    List<VolunteerWork> findAllByRegisterNumberIn(List<String> registerNumber);
+
+    void deleteAllByRunIdNot(Long runId);
 }
