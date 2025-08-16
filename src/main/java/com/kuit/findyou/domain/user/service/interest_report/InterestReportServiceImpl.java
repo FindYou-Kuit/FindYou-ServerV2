@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,30 @@ public class InterestReportServiceImpl implements InterestReportService{
         // 관심글로 등록
         InterestReport interestReport = new InterestReport(null, user, report);
         interestReportRepository.save(interestReport);
+    }
+
+    @Override
+    public void deleteInterestAnimal(Long userId, Long reportId) {
+        log.info("[deleteInterestAnimals] userId = {}, reportId = {}", userId, reportId);
+
+        // 사용자 조회
+        User user = userRepository.findById(userId).get();
+
+        // 신고글 조회
+        Optional<Report> reportById = reportRepository.findById(reportId);
+
+        // 신고글이 없으면 중단
+        if(reportById.isEmpty()){
+            log.info("deleteInterestAnimals] reportId = {}인 신고글이 존재하지 않음", reportId);
+            return;
+        }
+
+        // 관심신고글을 삭제
+        Report report = reportById.get();
+        interestReportRepository.deleteByUserAndReport(user, report);
+
+        log.info("deleteInterestAnimals] userId = {}, reportId = {}인 관심신고글 삭제 완료", userId, reportId);
+
     }
 
     private List<ReportProjection> takeWithSize(int size, List<ReportProjection> interestReportProjections) {
