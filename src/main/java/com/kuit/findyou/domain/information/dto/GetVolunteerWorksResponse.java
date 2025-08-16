@@ -39,11 +39,12 @@ public record GetVolunteerWorksResponse(
     ){
         public static VolunteerWorkDTO entityToDto(VolunteerWork entity){
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
             return new VolunteerWorkDTO(entity.getInstitution(),
                     entity.getRecruitmentStartDate().format(dateFormatter) + " ~ " + entity.getRecruitmentEndDate().format(dateFormatter),
                     entity.getAddress(),
-                    entity.getVolunteerStartDate().format(dateFormatter) + " ~ " + entity.getVolunteerEndDate().format(dateFormatter),
-                    entity.getVolunteerStartTime() + " ~ " + entity.getVolunteerEndTime(),
+                    entity.getVolunteerStartAt().format(dateFormatter) + " ~ " + entity.getVolunteerEndAt().format(dateFormatter),
+                    entity.getVolunteerStartAt().format(timeFormatter) + " ~ " + entity.getVolunteerEndAt().format(timeFormatter),
                     entity.getWebLink());
         }
     }
