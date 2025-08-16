@@ -156,6 +156,7 @@ class InformationControllerTest {
 
         // then
         assertThat(response.volunteerWorks()).hasSize(size);
+        assertThat(response.volunteerWorks().get(0).workTime()).isEqualTo("05:00 ~ 06:00");
         assertThat(response.lastId()).isEqualTo(1);
         assertThat(response.isLast()).isTrue();
     }
