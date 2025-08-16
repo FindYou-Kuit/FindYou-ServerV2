@@ -6,7 +6,7 @@ import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.information.util.VolunteerWorksByKeywordApiResponseUtil;
 import com.kuit.findyou.global.external.client.VolunteerWorkApiClient;
 import com.kuit.findyou.global.external.dto.VolunteerWorksByKeywordApiResponse;
-import com.kuit.findyou.global.external.exception.ExternalApiException;
+import com.kuit.findyou.global.external.exception.VolunteerWorkApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -129,7 +129,7 @@ class SyncVolunteerWorkServiceTest {
         when(okResp.getBody().getItems()).thenReturn(List.of());
 
         when(apiClient.getVolunteerWorksByKeyword(anyInt(), eq("유기견"), anyInt()))
-                .thenThrow(new ExternalApiException("두번째 키워드에서 예외 발생"));
+                .thenThrow(new VolunteerWorkApiException("두번째 키워드에서 예외 발생"));
 
         var okResp3 = apiResponse();
         when(apiClient.getVolunteerWorksByKeyword(anyInt(), eq("유기묘"), anyInt()))

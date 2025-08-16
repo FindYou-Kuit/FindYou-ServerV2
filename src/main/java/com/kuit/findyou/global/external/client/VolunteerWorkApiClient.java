@@ -1,7 +1,7 @@
 package com.kuit.findyou.global.external.client;
 
 import com.kuit.findyou.global.external.dto.VolunteerWorksByKeywordApiResponse;
-import com.kuit.findyou.global.external.exception.ExternalApiException;
+import com.kuit.findyou.global.external.exception.VolunteerWorkApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -28,12 +28,12 @@ public class VolunteerWorkApiClient {
                 .body(VolunteerWorksByKeywordApiResponse.class);
 
         if (entity.getBody() == null || entity.getHeader() == null) {
-            throw new ExternalApiException("외부 API 에러 : body/header가 비어 있음");
+            throw new VolunteerWorkApiException("외부 API 에러 : body/header가 비어 있음");
         }
         String code = entity.getHeader().getResultCode();
         if (!"00".equals(code)) {
             String resultMsg = entity.getHeader().getResultMsg();
-            throw new ExternalApiException("외부 API 에러 : code=" + code + ", msg=" + resultMsg);
+            throw new VolunteerWorkApiException("외부 API 에러 : code=" + code + ", msg=" + resultMsg);
         }
 
         return entity;
