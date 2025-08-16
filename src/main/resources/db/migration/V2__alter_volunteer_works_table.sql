@@ -25,7 +25,9 @@ ALTER TABLE volunteer_works DROP COLUMN volunteer_start_time;
 ALTER TABLE volunteer_works DROP COLUMN volunteer_end_time;
 
 -- 칼럼 추가
-ALTER TABLE volunteer_works ADD COLUMN register_number VARCHAR(20);
+ALTER TABLE volunteer_works ADD COLUMN register_number VARCHAR(20) NOT NULL UNIQUE;
 ALTER TABLE volunteer_works ADD COLUMN volunteer_start_at DATETIME;
 ALTER TABLE volunteer_works ADD COLUMN volunteer_end_at DATETIME;
+
+ALTER TABLE volunteer_works ADD COLUMN run_id BIGINT NOT NULL;
 
