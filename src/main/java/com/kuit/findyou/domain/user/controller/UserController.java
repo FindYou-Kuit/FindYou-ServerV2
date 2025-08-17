@@ -82,7 +82,7 @@ public class UserController {
     )
     @CustomExceptionDescription(CHECK_DUPLICATE_NICKNAME)
     @PostMapping("/check/duplicate-nickname")
-    public BaseResponse<CheckDuplicateNicknameResponse> checkDuplicateNickname(CheckDuplicateNicknameRequest request){
+    public BaseResponse<CheckDuplicateNicknameResponse> checkDuplicateNickname(@RequestBody CheckDuplicateNicknameRequest request){
         log.info("[checkDuplicateNickname] nickname = {}", request.nickname());
         return new BaseResponse<>(userServiceFacade.checkDuplicateNickname(request));
     }
