@@ -381,6 +381,8 @@ class UserControllerTest {
                 .statusCode(200)
                 .body("code", equalTo(200))
                 .body("message", equalTo(SUCCESS.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(reportId, user.getId())).isTrue();
     }
 
     @Test
@@ -417,6 +419,8 @@ class UserControllerTest {
                 .statusCode(200)
                 .body("code", equalTo(DUPLICATE_INTEREST_REPORT.getCode()))
                 .body("message", equalTo(DUPLICATE_INTEREST_REPORT.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(reportId, user.getId())).isTrue();
     }
 
     @Test
