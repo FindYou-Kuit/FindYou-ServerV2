@@ -124,6 +124,11 @@ public class UserController {
         return BaseResponse.ok(null);
     }
 
+    @Operation(
+            summary = "관심동물 삭제 API",
+            description = "관심동물 삭제 기능을 수행합니다. 중복된 요청은 예외를 반환하지 않습니다."
+    )
+    @CustomExceptionDescription(DEFAULT)
     @DeleteMapping("me/interest-animals/{reportId}")
     public BaseResponse<Void> deleteInterestAnimal(@Parameter(hidden = true) @LoginUserId Long userId,
                                                    @Parameter(name = "삭제할 동물신고글 식별자") @PathVariable Long reportId){
