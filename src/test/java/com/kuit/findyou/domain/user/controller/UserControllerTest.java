@@ -1,7 +1,9 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
+import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
@@ -48,6 +50,9 @@ class UserControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    InterestReportRepository interestReportRepository;
 
     @BeforeEach
     void setUp() {
@@ -412,5 +417,56 @@ class UserControllerTest {
                 .statusCode(200)
                 .body("code", equalTo(DUPLICATE_INTEREST_REPORT.getCode()))
                 .body("message", equalTo(DUPLICATE_INTEREST_REPORT.getMessage()));
+    }
+
+    @Test
+    @DisplayName("관심동물이 존재하면 삭제에 성공한다")
+    void shouldSucceedToDeleteInterestAnimal_WhenItExists(){
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        ProtectingReport report = testInitializer.createTestProtectingReportWithImage(reportWriter);
+        testInitializer.createTestInterestReport(user, report);
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .delete("/api/v2/users/me/interest-animals/" + report.getId())
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId())).isFalse();
+    }
+
+    @Test
+    @DisplayName("관심동물이 존재하지 않아도 삭제에 성공한다")
+    void shouldSucceedToDeleteInterestAnimal_WhenItDoesNotExist(){
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        ProtectingReport report = testInitializer.createTestProtectingReportWithImage(reportWriter);
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .delete("/api/v2/users/me/interest-animals/" + report.getId())
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId())).isFalse();
     }
 }
