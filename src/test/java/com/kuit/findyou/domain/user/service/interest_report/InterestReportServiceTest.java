@@ -66,6 +66,11 @@ class InterestReportServiceTest {
     private ArgumentCaptor<Long> userIdCaptor;
     @Captor
     private ArgumentCaptor<Long> reportIdCaptor;
+    @Captor
+    private ArgumentCaptor<User> userCaptor;
+    @Captor
+    private ArgumentCaptor<Report> reportCaptor;
+
 
     @DisplayName("페이지 사이즈보다 많은 관심글이 존재하면 사이즈에 맞춰서 보여준다")
     @Test
@@ -225,5 +230,54 @@ class InterestReportServiceTest {
         assertThatThrownBy(() -> interestReportService.addInterestAnimal(userId, reportId))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(REPORT_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("관심동물이 존재하면 삭제에 성공한다")
+    @Test
+    void shouldDeleteInterestAnimal_WhenItExists(){
+        // given
+        final long userId = 1L;
+        final long reportId = 2L;
+        User mockUser = mock(User.class);
+        Report mockReport = mock(Report.class);
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        when(reportRepository.findById(anyLong())).thenReturn(Optional.of(mockReport));
+
+        // when
+        interestReportService.deleteInterestAnimal(userId, reportId);
+
+        // then
+        verify(userRepository, times(1)).findById(userIdCaptor.capture());
+
+        verify(reportRepository, times(1)).findById(reportIdCaptor.capture());
+        assertThat(reportIdCaptor.getValue()).isEqualTo(reportId);
+
+        verify(interestReportRepository, times(1)).deleteByUserAndReport(userCaptor.capture(), reportCaptor.capture());
+        assertThat(userCaptor.getValue()).isEqualTo(mockUser);
+        assertThat(reportCaptor.getValue()).isEqualTo(mockReport);
+    }
+
+    @DisplayName("관심동물이 존재하지 않으면 삭제 메서드를 호출하지 않는다")
+    @Test
+    void shouldNotCallDeleteMethod_WhenInterestAnimalDoesNotExist(){
+        // given
+        final long userId = 1L;
+        final long reportId = 2L;
+        User mockUser = mock(User.class);
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        when(reportRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // when
+        interestReportService.deleteInterestAnimal(userId, reportId);
+
+        // then
+        verify(userRepository, times(1)).findById(userIdCaptor.capture());
+
+        verify(reportRepository, times(1)).findById(reportIdCaptor.capture());
+        assertThat(reportIdCaptor.getValue()).isEqualTo(reportId);
+
+        verify(interestReportRepository, never()).deleteByUserAndReport(any(), any());
     }
 }
