@@ -10,6 +10,7 @@ import com.kuit.findyou.domain.report.repository.ReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class InterestReportServiceImpl implements InterestReportService{
     private final InterestReportRepository interestReportRepository;
