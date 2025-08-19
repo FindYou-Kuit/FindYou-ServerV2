@@ -35,8 +35,8 @@ public class TestInitializer {
     private final InterestReportRepository interestReportRepository;
     private final ViewedReportRepository viewedReportRepository;
     private final AnimalCenterRepository animalCenterRepository;
-    private final VolunteerWorkRepository volunteerWorkRepository;
     private final AnimalDepartmentRepository animalDepartmentRepository;
+    private final VolunteerWorkRepository volunteerWorkRepository;
 
     private User defaultUser;
 
@@ -202,5 +202,143 @@ public class TestInitializer {
                         .phoneNumber(phoneNumber)
                         .build()
         );
+    }
+
+    public void createTestReports(User user) {
+        MissingReport missingReport = MissingReport.createMissingReport(
+                "골든 리트리버",
+                "개",
+                ReportTag.MISSING,
+                LocalDate.now().minusDays(5),
+                "서울시 강남구",
+                user,
+                Sex.M,
+                "RFID123456",
+                "3",
+                "황금색",
+                "목에 빨간 목걸이",
+                "김철수",
+                "010-1234-5678",
+                "강남역 근처",
+                new BigDecimal("37.497952"),
+                new BigDecimal("127.027619")
+        );
+
+
+        WitnessReport witnessReport = WitnessReport.createWitnessReport(
+                "믹스견",
+                "개",
+                ReportTag.WITNESS,
+                LocalDate.now().minusDays(3),
+                "서울시 서초구",
+                user,
+                "검은색",
+                "오른쪽 다리 절뚝임",
+                "이영희",
+                "서초역 2번 출구",
+                new BigDecimal("37.483569"),
+                new BigDecimal("127.032455")
+        );
+
+
+        ProtectingReport protectingReport = ProtectingReport.createProtectingReport(
+                "페르시안",
+                "고양이",
+                ReportTag.PROTECTING,
+                LocalDate.now().minusDays(1),
+                "서울시 마포구 월드컵북로 212",
+                user,
+                Sex.F,
+                "2",
+                "4",
+                "흰색",
+                Neutering.Y,
+                "왼쪽 귀에 상처",
+                "마포대교 근처",
+                "NOTICE-2024-001",
+                LocalDate.now(),
+                LocalDate.now().plusDays(14),
+                "마포구 동물보호센터",
+                "02-123-4567",
+                "마포구청",
+                new BigDecimal("37.483569"),
+                new BigDecimal("127.032675")
+        );
+
+
+        missingReportRepository.save(missingReport);
+        witnessReportRepository.save(witnessReport);
+        protectingReportRepository.save(protectingReport);
+    }
+
+    public Report createReportByLatLngAndTag(User testUser, Double lat, Double lng, ReportTag tag){
+        if (tag == ReportTag.MISSING){
+            MissingReport missingReport = MissingReport.createMissingReport(
+                    "골든 리트리버",
+                    "개",
+                    ReportTag.MISSING,
+                    LocalDate.now().minusDays(5),
+                    "서울시 강남구",
+                    testUser,
+                    Sex.M,
+                    "RFID123456",
+                    "3",
+                    "황금색",
+                    "목에 빨간 목걸이",
+                    "김철수",
+                    "010-1234-5678",
+                    "강남역 근처",
+                    new BigDecimal(lat),
+                    new BigDecimal(lng)
+            );
+            missingReportRepository.save(missingReport);
+            return missingReport;
+        }
+        else if(tag == ReportTag.WITNESS){
+            WitnessReport witnessReport = WitnessReport.createWitnessReport(
+                    "믹스견",
+                    "개",
+                    ReportTag.WITNESS,
+                    LocalDate.now().minusDays(3),
+                    "서울시 서초구",
+                    testUser,
+                    "검은색",
+                    "오른쪽 다리 절뚝임",
+                    "이영희",
+                    "서초역 2번 출구",
+                    new BigDecimal(lat),
+                    new BigDecimal(lng)
+            );
+            witnessReportRepository.save(witnessReport);
+            return witnessReport;
+        }
+        else if(tag == ReportTag.PROTECTING){
+            ProtectingReport protectingReport = ProtectingReport.createProtectingReport(
+                    "페르시안",
+                    "고양이",
+                    ReportTag.PROTECTING,
+                    LocalDate.now().minusDays(1),
+                    "서울시 마포구 월드컵북로 212",
+                    testUser,
+                    Sex.F,
+                    "2",
+                    "4",
+                    "흰색",
+                    Neutering.Y,
+                    "왼쪽 귀에 상처",
+                    "마포대교 근처",
+                    "NOTICE-2024-001",
+                    LocalDate.now(),
+                    LocalDate.now().plusDays(14),
+                    "마포구 동물보호센터",
+                    "02-123-4567",
+                    "마포구청",
+                    new BigDecimal(lat),
+                    new BigDecimal(lng)
+            );
+            protectingReportRepository.save(protectingReport);
+            return protectingReport;
+        }
+        return null;
     }
 }
