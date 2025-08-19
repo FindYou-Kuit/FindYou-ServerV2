@@ -25,7 +25,7 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
                 report.getReportImagesUrlList(),
                 report.getBreed(),
                 report.getTag().getValue(),
-                ReportFormatUtil.formatAge(report.getAge()),
+                report.getAge(),
                 report.getSex().getValue(),
                 report.getDate().toString(),
                 report.getRfid(),
