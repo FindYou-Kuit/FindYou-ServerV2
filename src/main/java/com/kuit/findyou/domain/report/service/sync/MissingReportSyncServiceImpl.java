@@ -56,7 +56,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
             SyncResult syncResult = synchronizeData(apiItems, dogBreeds, catBreeds, etcBreeds);
             logSyncResult(syncResult, startTime);
         } catch (Exception e) {
-            log.error("[실종동물 데이터 동기화 실패]", e);
+            log.error("[분실 동물 데이터 동기화 실패]", e);
         }
     }
 
@@ -172,7 +172,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
 
     private void logSyncResult(SyncResult result, long startTime) {
         long duration = System.currentTimeMillis() - startTime;
-        log.info("실종동물 DB 동기화 완료: 추가된 데이터 = {}, 소요 시간 = {}ms",
+        log.info("분실 동물 DB 동기화 완료: 추가된 데이터 = {}, 소요 시간 = {}ms",
                 result.addedCount(), duration);
     }
 }
