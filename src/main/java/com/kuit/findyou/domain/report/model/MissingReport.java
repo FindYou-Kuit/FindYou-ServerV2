@@ -22,7 +22,7 @@ public class MissingReport extends Report {
     @Column(name = "rfid", length = 30)
     private String rfid;
 
-    @Column(name = "age", length = 10)
+    @Column(name = "age", length = 30)
     private String age;
 
     @Column(name = "fur_color", length = 100)

@@ -7,7 +7,7 @@ ALTER TABLE missing_reports DROP COLUMN weight;
 ALTER TABLE missing_reports
     MODIFY sex VARCHAR(20) NULL,
     MODIFY rfid VARCHAR(30) NULL,
-    MODIFY age VARCHAR(10) NULL,
+    MODIFY age VARCHAR(30) NULL,
     MODIFY fur_color VARCHAR(100) NULL,
     MODIFY significant VARCHAR(255) NULL,
     MODIFY reporter_name VARCHAR(20) NULL,
