@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.common.schedule;
 
+import com.kuit.findyou.domain.report.service.sync.MissingReportSyncService;
 import com.kuit.findyou.domain.report.service.sync.ProtectingReportSyncService;
 import com.kuit.findyou.domain.information.service.SyncVolunteerWorkService;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
@@ -21,6 +22,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class SchedulerManager {
 
     private final ProtectingReportSyncService protectingReportSyncService;
+    private final MissingReportSyncService missingReportSyncService;
     private final HomeStatisticsService homeStatisticsService;
     private final SyncVolunteerWorkService syncVolunteerWorkService;
 
@@ -33,18 +35,25 @@ public class SchedulerManager {
     }
 
     /**
+     * 구조 동물 데이터를 매일 새벽 4시 30에 동기화
+     */
+    @Scheduled(cron = "0 30 4 * * *")
+    public void syncMissingAnimals() {
+        missingReportSyncService.syncMissingReports();
+    }
+
+    /**
      * 홈화면 통계 정보를 정각마다 동기화
      */
     @Scheduled(cron = "0 0 * * * *")
-    public void updateHomeStatistics(){
-        try{
+    public void updateHomeStatistics() {
+        try {
             homeStatisticsService.updateTotalStatistics();
-        }
-        catch (CacheUpdateFailedException e){
+        } catch (CacheUpdateFailedException e) {
             log.error("[excute] 캐시 업데이트 실패");
             log.error("[excute] 캐시 TTL 연장 시도");
             Optional<GetHomeResponse.TotalStatistics> cachedTotalStatistics = homeStatisticsService.getCachedTotalStatistics();
-            if(cachedTotalStatistics.isEmpty()){
+            if (cachedTotalStatistics.isEmpty()) {
                 log.warn("[excute] 캐시에 데이터 없어서 TTL 연장 실패");
                 log.warn("[excute] 빈 통계 저장");
                 homeStatisticsService.cacheTotalStatistics(GetHomeResponse.TotalStatistics.empty());
@@ -56,7 +65,7 @@ public class SchedulerManager {
     }
 
     @Scheduled(cron = "0 0 3 * * *")
-    public void syncVolunteerWorks(){
+    public void syncVolunteerWorks() {
         syncVolunteerWorkService.synchronize();
     }
 }
