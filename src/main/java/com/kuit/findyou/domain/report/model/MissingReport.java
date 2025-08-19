@@ -16,19 +16,19 @@ import java.util.ArrayList;
 public class MissingReport extends Report {
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sex", nullable = false)
+    @Column(name = "sex")
     private Sex sex;
 
     @Column(name = "rfid", length = 30)
     private String rfid;
 
-    @Column(name = "age", length = 10, nullable = false)
+    @Column(name = "age", length = 10)
     private String age;
 
-    @Column(name = "fur_color", length = 100, nullable = false)
+    @Column(name = "fur_color", length = 100)
     private String furColor;
 
-    @Column(name = "significant", length = 255, nullable = false)
+    @Column(name = "significant", length = 255)
     private String significant;
 
     @Column(name = "reporter_name", length = 20)
@@ -37,7 +37,7 @@ public class MissingReport extends Report {
     @Column(name = "reporter_tel", length = 20)
     private String reporterTel;
 
-    @Column(name = "landmark", length = 255, nullable = false)
+    @Column(name = "landmark", length = 255)
     private String landmark;
 
     @Builder
