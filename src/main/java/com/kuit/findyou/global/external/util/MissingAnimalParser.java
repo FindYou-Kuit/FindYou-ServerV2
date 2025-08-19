@@ -10,6 +10,7 @@ import static com.kuit.findyou.domain.breed.model.Species.*;
 
 public class MissingAnimalParser {
 
+    private static final String DEFAULT_SIGNIFICANT = "미등록";
     private static final String UNKNOWN = "미상";
     private static final LocalDate DEFAULT_DATE = LocalDate.now();
 
@@ -41,5 +42,9 @@ public class MissingAnimalParser {
         } catch (DateTimeParseException e) {
             return DEFAULT_DATE;
         }
+    }
+
+    public static String parseSignificant(String significant) {
+        return significant != null ? significant : DEFAULT_SIGNIFICANT;
     }
 }

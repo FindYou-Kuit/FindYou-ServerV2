@@ -21,10 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,8 +29,6 @@ import java.util.stream.Collectors;
 @Service
 public class MissingReportSyncServiceImpl implements MissingReportSyncService {
 
-    private static final String DEFAULT_SIGNIFICANT = "미등록";
-    private static final String UNKNOWN = "미상";
     private static final String YESTERDAY = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
 
     private final MissingReportRepository missingReportRepository;
@@ -53,7 +48,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
             Set<String> catBreeds = getCatBreeds();
             Set<String> etcBreeds = getEtcBreeds();
 
-            List<MissingAnimalItemDTO> apiItems = missingAnimalApiClient.fetchAllMissingAnimals(LocalDate.now().minusDays(20).format(DateTimeFormatter.BASIC_ISO_DATE), YESTERDAY);
+            List<MissingAnimalItemDTO> apiItems = missingAnimalApiClient.fetchAllMissingAnimals(YESTERDAY, YESTERDAY);
             SyncResult syncResult = synchronizeData(apiItems, dogBreeds, catBreeds, etcBreeds);
             logSyncResult(syncResult, startTime);
         } catch (Exception e) {
@@ -122,7 +117,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
                 .rfid(item.rfidCd())
                 .age(item.age())
                 .furColor(item.colorCd())
-                .significant(item.specialMark() != null ? item.specialMark() : DEFAULT_SIGNIFICANT)
+                .significant(MissingAnimalParser.parseSignificant(item.specialMark()))
                 .reporterName(item.callName())
                 .reporterTel(item.callTel())
                 .landmark(item.happenPlace())
@@ -136,19 +131,26 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
                                                                    Set<String> otherBreeds) {
         return apiItems.stream()
                 .map(item -> {
-                    MissingReport report = convertToMissingReport(item, dogBreeds, catBreeds, otherBreeds);
-
-                    List<ReportImage> images = new ArrayList<>();
                     String url = item.popfile();
 
-                    // 이미지가 있을 때만, 그리고 DB에 없을 때만 추가
-                    if (url != null && !existingImageUrls.contains(url)) {
+                    // 1. 이미지 중복이면 글 생성도 스킵
+                    if (url != null && existingImageUrls.contains(url)) {
+                        return null; // 나중에 filter 로 제거
+                    }
+
+                    // 2. 글 생성
+                    MissingReport report = convertToMissingReport(item, dogBreeds, catBreeds, otherBreeds);
+
+                    // 3. 이미지 조건부 추가 (null/blank 면 이미지 없이 글만)
+                    List<ReportImage> images = new ArrayList<>();
+
+                    if (url != null) {
                         images.add(ReportImage.createReportImage(url, UUID.randomUUID().toString()));
                     }
 
                     return new ReportWithImages<>(report, images);
                 })
-                // 이미지가 없어도 글은 저장해야 하므로 필터 없음
+                .filter(Objects::nonNull) // 중복 이미지였던 항목 제거
                 .toList();
     }
 
