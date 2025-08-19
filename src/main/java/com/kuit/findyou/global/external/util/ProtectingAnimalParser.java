@@ -13,7 +13,7 @@ import static com.kuit.findyou.domain.breed.model.Species.*;
 public class ProtectingAnimalParser {
 
     private static final String UNKNOWN = "미상";
-    private static final LocalDate UNKNOWN_DATE = LocalDate.of(0, 1, 1);
+    private static final LocalDate UNKNOWN_DATE = LocalDate.of(2000, 1, 1);
 
     /**
      * "yyyyMMdd" 형식의 날짜 문자열을 LocalDate 로 변환.
