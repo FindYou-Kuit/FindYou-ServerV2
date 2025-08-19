@@ -172,7 +172,7 @@ class InterestReportServiceTest {
 
         User mockUser = mock(User.class);
         Report mockReport = mock(Report.class);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
         when(reportRepository.findById(anyLong())).thenReturn(Optional.of(mockReport));
         when(interestReportRepository.existsByReportIdAndUserId(anyLong(), anyLong())).thenReturn(false);
 
@@ -180,7 +180,7 @@ class InterestReportServiceTest {
         interestReportService.addInterestAnimal(userId, reportId);
 
         // then
-        verify(userRepository, times(1)).findById(userIdCaptor.capture());
+        verify(userRepository, times(1)).getReferenceById(userIdCaptor.capture());
         Long actualUserId = userIdCaptor.getValue();
         assertThat(actualUserId).isEqualTo(userId);
 
@@ -204,7 +204,7 @@ class InterestReportServiceTest {
 
         User mockUser = mock(User.class);
         Report mockReport = mock(Report.class);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
         when(reportRepository.findById(anyLong())).thenReturn(Optional.of(mockReport));
         when(interestReportRepository.existsByReportIdAndUserId(anyLong(), anyLong())).thenReturn(true);
 
@@ -223,7 +223,7 @@ class InterestReportServiceTest {
 
         User mockUser = mock(User.class);
         Report mockReport = mock(Report.class);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
         when(reportRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when && then
@@ -241,14 +241,14 @@ class InterestReportServiceTest {
         User mockUser = mock(User.class);
         Report mockReport = mock(Report.class);
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
         when(reportRepository.findById(anyLong())).thenReturn(Optional.of(mockReport));
 
         // when
         interestReportService.deleteInterestAnimal(userId, reportId);
 
         // then
-        verify(userRepository, times(1)).findById(userIdCaptor.capture());
+        verify(userRepository, times(1)).getReferenceById(userIdCaptor.capture());
 
         verify(reportRepository, times(1)).findById(reportIdCaptor.capture());
         assertThat(reportIdCaptor.getValue()).isEqualTo(reportId);
@@ -266,14 +266,14 @@ class InterestReportServiceTest {
         final long reportId = 2L;
         User mockUser = mock(User.class);
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
         when(reportRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when
         interestReportService.deleteInterestAnimal(userId, reportId);
 
         // then
-        verify(userRepository, times(1)).findById(userIdCaptor.capture());
+        verify(userRepository, times(1)).getReferenceById(userIdCaptor.capture());
 
         verify(reportRepository, times(1)).findById(reportIdCaptor.capture());
         assertThat(reportIdCaptor.getValue()).isEqualTo(reportId);
