@@ -25,17 +25,17 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
                 report.getReportImagesUrlList(),
                 report.getBreed(),
                 report.getTag().getValue(),
-                report.getAge(),
-                report.getSex().getValue(),
+                ReportFormatUtil.safeValue(report.getAge()),
+                ReportFormatUtil.safeSex(report.getSex()),
                 report.getDate().toString(),
-                report.getRfid(),
-                report.getSignificant(),
-                report.getLandmark(),       // missingLocation
-                report.getAddress(),        // missingAddress
+                ReportFormatUtil.safeValue(report.getRfid()),
+                ReportFormatUtil.safeValue(report.getSignificant()),
+                ReportFormatUtil.safeValue(report.getLandmark()),       // missingLocation
+                ReportFormatUtil.safeValue(report.getAddress()),        // missingAddress
                 ReportFormatUtil.formatCoordinate(report.getLatitude()),
                 ReportFormatUtil.formatCoordinate(report.getLongitude()),
-                report.getReporterName(),
-                report.getReporterTel(),
+                ReportFormatUtil.safeValue(report.getReporterName()),
+                ReportFormatUtil.safeValue(report.getReporterTel()),
                 interest
         );
     }

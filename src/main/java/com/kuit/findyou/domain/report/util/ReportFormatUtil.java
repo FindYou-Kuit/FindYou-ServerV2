@@ -1,5 +1,7 @@
 package com.kuit.findyou.domain.report.util;
 
+import com.kuit.findyou.domain.report.model.Sex;
+
 import java.math.BigDecimal;
 
 public class ReportFormatUtil {
@@ -20,5 +22,13 @@ public class ReportFormatUtil {
             return null;
         }
         return coordinate.doubleValue();
+    }
+
+    public static String safeValue(String value) {
+        return (value == null || value.isBlank()) ? "-" : value;
+    }
+
+    public static String safeSex(Sex sex) {
+        return (sex == null) ? "-" : sex.getValue();
     }
 }
