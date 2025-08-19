@@ -66,7 +66,7 @@ public class InterestReportServiceImpl implements InterestReportService{
         }
 
         // 관심글로 등록
-        InterestReport interestReport = new InterestReport(null, user, report);
+        InterestReport interestReport = InterestReport.createInterestReport(user, report);
         interestReportRepository.save(interestReport);
     }
 
