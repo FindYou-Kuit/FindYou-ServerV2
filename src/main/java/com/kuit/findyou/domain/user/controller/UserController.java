@@ -135,4 +135,9 @@ public class UserController {
         userServiceFacade.deleteInterestAnimal(userId, reportId);
         return BaseResponse.ok(null);
     }
+
+    @GetMapping("/me/reports")
+    public BaseResponse<CardResponseDTO> retrieveUserReports(@LoginUserId Long userId, @RequestParam(required = true) Long lastId){
+        return BaseResponse.ok(userServiceFacade.retrieveUserReports(userId, lastId));
+    }
 }
