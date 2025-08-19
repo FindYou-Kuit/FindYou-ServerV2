@@ -55,7 +55,7 @@ public class InterestReportServiceImpl implements InterestReportService{
         log.info("[addInterestAnimals] userId = {}, reportId = {}", userId, reportId);
 
         // 사용자 찾기
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.getReferenceById(userId);
 
         // 리포트 찾기
         Report report = reportRepository.findById(reportId).orElseThrow(() -> new CustomException(REPORT_NOT_FOUND));
@@ -75,7 +75,7 @@ public class InterestReportServiceImpl implements InterestReportService{
         log.info("[deleteInterestAnimals] userId = {}, reportId = {}", userId, reportId);
 
         // 사용자 조회
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.getReferenceById(userId);
 
         // 신고글 조회
         Optional<Report> reportById = reportRepository.findById(reportId);
