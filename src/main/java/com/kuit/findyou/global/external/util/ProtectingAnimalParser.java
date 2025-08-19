@@ -1,5 +1,8 @@
 package com.kuit.findyou.global.external.util;
 
+import com.kuit.findyou.domain.report.model.Neutering;
+import com.kuit.findyou.domain.report.model.Sex;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -102,5 +105,37 @@ public class ProtectingAnimalParser {
         if (species == null || species.isBlank()) return UNKNOWN;
 
         return species.trim().equals("개") ? DOG.getValue() : species;
+    }
+
+    /**
+     * 공공데이터의 sexCd 값을 enum 으로 변환
+     *
+     * @param sex 공공데이터의 성별
+     * @return M -> Sex.M / F -> Sex.F / 그 외는 Sex.Q (미상)
+     */
+    public static Sex parseSex(String sex) {
+        if(sex == null) return Sex.Q;
+
+        return switch (sex.trim().toUpperCase()) {
+            case "M" -> Sex.M;
+            case "F" -> Sex.F;
+            default -> Sex.Q;
         };
     }
+
+    /**
+     * 공공데이터의 neuterYn 값을 enum 으로 변환
+     *
+     * @param neutering 공공데이터의 중성화 여부
+     * @return Y -> Neutering.Y / N -> Neutering.N / 그 외는 Neutering.U (미상)
+     */
+    public static Neutering parseNeutering(String neutering) {
+        if(neutering == null) return Neutering.U;
+
+        return switch (neutering.trim().toUpperCase()) {
+            case "Y" -> Neutering.Y;
+            case "N" -> Neutering.N;
+            default -> Neutering.U;
+        };
+    }
+}
