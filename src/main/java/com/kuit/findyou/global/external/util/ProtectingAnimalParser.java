@@ -1,14 +1,9 @@
 package com.kuit.findyou.global.external.util;
 
-import com.kuit.findyou.domain.breed.model.Species;
-import org.springframework.web.util.HtmlUtils;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.kuit.findyou.domain.breed.model.Species.*;
 
