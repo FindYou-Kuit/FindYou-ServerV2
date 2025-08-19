@@ -3,7 +3,9 @@ package com.kuit.findyou.global.common.util;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.information.model.AnimalShelter;
+import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.model.Role;
@@ -15,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class TestInitializer {
     private final InterestReportRepository interestReportRepository;
     private final ViewedReportRepository viewedReportRepository;
     private final AnimalShelterRepository animalShelterRepository;
+    private final VolunteerWorkRepository volunteerWorkRepository;
 
     private User defaultUser;
 
@@ -155,4 +160,20 @@ public class TestInitializer {
         animalShelterRepository.saveAll(List.of(shelter1, hospital1, shelter2));
     }
     public User getDefaultUser() {return this.defaultUser;}
+
+    public void createTestVolunteerWorks(int number){
+        IntStream.rangeClosed(1, number).forEach(i -> {
+            VolunteerWork volunteerWork = VolunteerWork.builder()
+                    .institution("보호센터" + i)
+                    .recruitmentStartDate(LocalDate.of(2025, 1, 1))
+                    .recruitmentEndDate(LocalDate.of(2025, 1, 2))
+                    .address("서울시")
+                    .volunteerStartAt(LocalDateTime.of(2025, 1, 3, 5, 0))
+                    .volunteerEndAt(LocalDateTime.of(2025, 1, 3, 6, 0))
+                    .webLink("www.web.link")
+                    .build();
+            
+            volunteerWorkRepository.save(volunteerWork);
+        });
+    }
 }
