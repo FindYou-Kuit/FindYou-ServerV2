@@ -113,7 +113,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
                 .latitude(coordinate.latitude())
                 .longitude(coordinate.longitude())
                 .user(null)
-                .sex(Sex.valueOf(item.sexCd()))
+                .sex(MissingAnimalParser.parseSex(item.sexCd()))
                 .rfid(item.rfidCd())
                 .age(item.age())
                 .furColor(item.colorCd())
