@@ -199,7 +199,7 @@ class InterestReportRepositoryTest {
         interestReportRepository.deleteByUserAndReport(user, report);
 
         // then
-        boolean exists = interestReportRepository.existsByReportIdAndUserId(user.getId(), report.getId());
+        boolean exists = interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId());
         assertThat(exists).isFalse();
     }
 }
