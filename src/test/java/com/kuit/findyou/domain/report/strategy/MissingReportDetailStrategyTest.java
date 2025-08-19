@@ -68,7 +68,7 @@ class MissingReportDetailStrategyTest {
         User user = persistUser();
         MissingReport report = MissingReport.createMissingReport(
                 "포메", "개", ReportTag.MISSING, LocalDate.now(), "서울", user,
-                Sex.M, "RFID123", "3살", "4kg", "흰색", "특이사항",
+                Sex.M, "RFID123", "3살", "흰색", "특이사항",
                 "김철수", "010", "강남", new BigDecimal("37"), new BigDecimal("127")
         );
         return missingReportRepository.save(report);
