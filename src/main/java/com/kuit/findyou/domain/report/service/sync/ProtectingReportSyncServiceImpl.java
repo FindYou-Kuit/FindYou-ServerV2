@@ -2,6 +2,8 @@ package com.kuit.findyou.domain.report.service.sync;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
+import com.kuit.findyou.domain.report.dto.ReportWithImages;
+import com.kuit.findyou.domain.report.dto.SyncResult;
 import com.kuit.findyou.domain.report.model.Neutering;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
@@ -63,7 +65,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
         List<ProtectingReport> reportsToDelete = findReportsToDelete(existingReports, apiNoticeNumbers);
         protectingReportRepository.deleteAll(reportsToDelete);
 
-        List<ReportWithImages> newReportBundles = createNewReports(apiItems, existingNoticeNumbers);
+        List<ReportWithImages<ProtectingReport>> newReportBundles = createNewReports(apiItems, existingNoticeNumbers);
 
         // 1. report 먼저 저장
         List<ProtectingReport> newReports = newReportBundles.stream()
@@ -74,7 +76,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
         // 2. 연관관계 설정 후 이미지 저장
         List<ReportImage> allImages = new ArrayList<>();
 
-        for (ReportWithImages bundle : newReportBundles) {
+        for (ReportWithImages<ProtectingReport> bundle : newReportBundles) {
             ProtectingReport report = bundle.report();
             for (ReportImage image : bundle.images()) {
                 image.setReport(report);
@@ -121,7 +123,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .build();
     }
 
-    private List<ReportWithImages> createNewReports(List<ProtectingAnimalItemDTO> apiItems, Set<String> existingNoticeNumbers) {
+    private List<ReportWithImages<ProtectingReport>> createNewReports(List<ProtectingAnimalItemDTO> apiItems, Set<String> existingNoticeNumbers) {
         return apiItems.stream()
                 .filter(item -> !existingNoticeNumbers.contains(item.noticeNo()))
                 .map(item -> {
@@ -135,7 +137,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                         images.add(ReportImage.createReportImage(item.popfile2(), UUID.randomUUID().toString()));
                     }
 
-                    return new ReportWithImages(report, images);
+                    return new ReportWithImages<>(report, images);
                 })
                 .toList();
     }
@@ -147,8 +149,4 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 result.deletedCount(), result.addedCount(), duration);
     }
 
-    // 동기화 결과를 담는 레코드
-    private record SyncResult(int deletedCount, int addedCount) {}
-
-    private record ReportWithImages(ProtectingReport report, List<ReportImage> images) {}
 }
