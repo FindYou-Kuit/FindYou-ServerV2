@@ -109,6 +109,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
         WHERE r.user.id = :userId AND r.id < :lastId
         ORDER BY r.id DESC
     """)
-    Slice<ReportProjection> findUserReportsByCusor(@Param("userId") Long userId, @Param("lastId") Long lastId, Pageable pageable);
+    Slice<ReportProjection> findUserReportsByCursor(@Param("userId") Long userId, @Param("lastId") Long lastId, Pageable pageable);
 }
 

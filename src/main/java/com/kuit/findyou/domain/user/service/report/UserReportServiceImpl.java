@@ -28,7 +28,7 @@ public class UserReportServiceImpl implements UserReportService {
         log.info("[retrieveUserReports] userId = {}, lastId = {}, size = {}", userId, lastId, size);
 
         // userId로 신고글 조회
-        Slice<ReportProjection> slices = reportRepository.findUserReportsByCusor(userId, lastId, PageRequest.of(0, size));
+        Slice<ReportProjection> slices = reportRepository.findUserReportsByCursor(userId, lastId, PageRequest.of(0, size));
 
         // 페이징 결과를 반환
         List<ReportProjection> projections = slices.getContent();

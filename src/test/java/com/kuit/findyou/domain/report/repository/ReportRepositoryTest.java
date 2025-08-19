@@ -345,7 +345,7 @@ class ReportRepositoryTest {
         });
 
         // when
-        Slice<ReportProjection> slices = reportRepository.findUserReportsByCusor(user.getId(), lastId, PageRequest.of(0, size));
+        Slice<ReportProjection> slices = reportRepository.findUserReportsByCursor(user.getId(), lastId, PageRequest.of(0, size));
 
         // then
         assertThat(slices.getContent()).hasSize(size);
