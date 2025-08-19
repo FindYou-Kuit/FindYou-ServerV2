@@ -8,7 +8,6 @@ import com.kuit.findyou.domain.report.dto.ReportWithImages;
 import com.kuit.findyou.domain.report.dto.SyncResult;
 import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.MissingReportRepository;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.external.client.MissingAnimalApiClient;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
 @Service
 public class MissingReportSyncServiceImpl implements MissingReportSyncService {
 
-    private static final String YESTERDAY = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
-
     private final MissingReportRepository missingReportRepository;
     private final ReportImageRepository reportImageRepository;
     private final BreedRepository breedRepository;
@@ -48,7 +45,9 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
             Set<String> catBreeds = getCatBreeds();
             Set<String> etcBreeds = getEtcBreeds();
 
-            List<MissingAnimalItemDTO> apiItems = missingAnimalApiClient.fetchAllMissingAnimals(YESTERDAY, YESTERDAY);
+            String targetDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
+
+            List<MissingAnimalItemDTO> apiItems = missingAnimalApiClient.fetchAllMissingAnimals(targetDate, targetDate);
             SyncResult syncResult = synchronizeData(apiItems, dogBreeds, catBreeds, etcBreeds);
             logSyncResult(syncResult, startTime);
         } catch (Exception e) {
