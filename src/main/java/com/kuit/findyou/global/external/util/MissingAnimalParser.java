@@ -13,13 +13,17 @@ public class MissingAnimalParser {
     private static final String UNKNOWN = "미상";
     private static final LocalDate DEFAULT_DATE = LocalDate.now();
 
+    public static String parseBreed(String breedName) {
+        return breedName != null ? breedName.trim() : UNKNOWN;
+    }
+
     public static String parseSpecies(String breedName, Set<String> dogBreeds, Set<String> catBreeds, Set<String> otherBreeds) {
-        if (breedName == null || breedName.isBlank()) {
-            return UNKNOWN;
-        }
+        if (breedName.equals(UNKNOWN)) return UNKNOWN;
 
         if (dogBreeds.contains(breedName)) return DOG.getValue();
+
         if (catBreeds.contains(breedName)) return CAT.getValue();
+
         if (otherBreeds.contains(breedName)) return ETC.getValue();
 
         return UNKNOWN;

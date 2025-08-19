@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 public class MissingReportSyncServiceImpl implements MissingReportSyncService {
 
     private static final String DEFAULT_SIGNIFICANT = "미등록";
+    private static final String UNKNOWN = "미상";
     private static final String YESTERDAY = LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
 
     private final MissingReportRepository missingReportRepository;
@@ -52,7 +53,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
             Set<String> catBreeds = getCatBreeds();
             Set<String> etcBreeds = getEtcBreeds();
 
-            List<MissingAnimalItemDTO> apiItems = missingAnimalApiClient.fetchAllMissingAnimals(YESTERDAY, YESTERDAY);
+            List<MissingAnimalItemDTO> apiItems = missingAnimalApiClient.fetchAllMissingAnimals(LocalDate.now().minusDays(20).format(DateTimeFormatter.BASIC_ISO_DATE), YESTERDAY);
             SyncResult syncResult = synchronizeData(apiItems, dogBreeds, catBreeds, etcBreeds);
             logSyncResult(syncResult, startTime);
         } catch (Exception e) {
@@ -106,7 +107,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
                                                  Set<String> otherBreeds) {
         KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(item.happenAddr());
 
-        String breedName = item.kindCd();
+        String breedName = MissingAnimalParser.parseBreed(item.kindCd());
 
         return MissingReport.builder()
                 .breed(breedName)
