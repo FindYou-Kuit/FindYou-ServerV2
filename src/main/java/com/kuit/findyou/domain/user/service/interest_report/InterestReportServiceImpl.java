@@ -82,7 +82,7 @@ public class InterestReportServiceImpl implements InterestReportService{
 
         // 신고글이 없으면 중단
         if(reportById.isEmpty()){
-            log.info("deleteInterestAnimals] reportId = {}인 신고글이 존재하지 않음", reportId);
+            log.info("[deleteInterestAnimals] reportId = {}인 신고글이 존재하지 않음", reportId);
             return;
         }
 
@@ -90,7 +90,7 @@ public class InterestReportServiceImpl implements InterestReportService{
         Report report = reportById.get();
         interestReportRepository.deleteByUserAndReport(user, report);
 
-        log.info("deleteInterestAnimals] userId = {}, reportId = {}인 관심신고글 삭제 완료", userId, reportId);
+        log.info("[deleteInterestAnimals] userId = {}, reportId = {}인 관심신고글 삭제 완료", userId, reportId);
 
     }
 
