@@ -37,7 +37,7 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
                 ReportFormatUtil.formatCoordinate(report.getLatitude()),
                 ReportFormatUtil.formatCoordinate(report.getLongitude()),
                 report.getCareTel(),
-                report.getDate().toString(),
+                ReportFormatUtil.safeDate(report.getDate()),
                 report.getFoundLocation(),
                 report.getNoticeDuration(),
                 report.getNoticeNumber(),

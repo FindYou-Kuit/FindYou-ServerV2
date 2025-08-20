@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.report.dto.response.Card;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.ReportTag;
+import com.kuit.findyou.domain.report.util.ReportFormatUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class CardFactory {
                         p.getThumbnailImageUrl(),
                         p.getTitle(),
                         ReportTag.valueOf(p.getTag()).getValue(),
-                        p.getDate().toString(),
+                        ReportFormatUtil.safeDate(p.getDate()),
                         p.getAddress(),
                         interestIds.contains(p.getReportId())
                 ))

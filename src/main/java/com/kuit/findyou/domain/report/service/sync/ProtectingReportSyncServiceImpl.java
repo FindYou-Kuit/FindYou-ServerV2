@@ -4,10 +4,8 @@ import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.ReportWithImages;
 import com.kuit.findyou.domain.report.dto.SyncResult;
-import com.kuit.findyou.domain.report.model.Neutering;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
@@ -102,7 +100,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .breed(item.kindNm())
                 .species(ProtectingAnimalParser.parseSpecies(item.upKindNm()))
                 .tag(ReportTag.PROTECTING)
-                .date(ProtectingAnimalParser.changeToLocalDate(item.happenDt()))
+                .date(ProtectingAnimalParser.parseDate(item.happenDt()))
                 .address(item.careAddr())
                 .latitude(coordinate.latitude())
                 .longitude(coordinate.longitude())
@@ -115,8 +113,8 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .significant(item.specialMark() != null ? item.specialMark() : DEFAULT_SIGNIFICANT)
                 .foundLocation(item.happenPlace())
                 .noticeNumber(item.noticeNo())
-                .noticeStartDate(ProtectingAnimalParser.changeToLocalDate(item.noticeSdt()))
-                .noticeEndDate(ProtectingAnimalParser.changeToLocalDate(item.noticeEdt()))
+                .noticeStartDate(ProtectingAnimalParser.parseDate(item.noticeSdt()))
+                .noticeEndDate(ProtectingAnimalParser.parseDate(item.noticeEdt()))
                 .careName(item.careNm())
                 .careTel(item.careTel())
                 .authority(item.orgNm())

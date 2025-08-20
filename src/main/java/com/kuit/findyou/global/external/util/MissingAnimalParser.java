@@ -14,6 +14,7 @@ public class MissingAnimalParser {
 
     private static final String DEFAULT_SIGNIFICANT = "미등록";
     private static final String UNKNOWN = "미상";
+    private static final LocalDate UNKNOWN_DATE = LocalDate.of(2000, 1, 1);
 
     public static String parseBreed(String breedName) {
         return (breedName == null || breedName.isBlank()) ? UNKNOWN : breedName.trim();
@@ -33,7 +34,7 @@ public class MissingAnimalParser {
 
     public static LocalDate parseDate(String dateStr) {
         if (dateStr == null || dateStr.isBlank()) {
-            return LocalDate.now(); // 기본값: 오늘 날짜
+            return UNKNOWN_DATE;
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -41,7 +42,7 @@ public class MissingAnimalParser {
             LocalDateTime dateTime = LocalDateTime.parse(dateStr, formatter);
             return dateTime.toLocalDate();
         } catch (DateTimeParseException e) {
-            return LocalDate.now();
+            return UNKNOWN_DATE;
         }
     }
 

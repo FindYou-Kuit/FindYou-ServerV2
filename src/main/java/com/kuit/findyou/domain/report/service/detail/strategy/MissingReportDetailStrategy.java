@@ -27,7 +27,7 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
                 report.getTag().getValue(),
                 ReportFormatUtil.safeValue(report.getAge()),
                 ReportFormatUtil.safeSex(report.getSex()),
-                report.getDate().toString(),
+                ReportFormatUtil.safeDate(report.getDate()),
                 ReportFormatUtil.safeValue(report.getRfid()),
                 ReportFormatUtil.safeValue(report.getSignificant()),
                 ReportFormatUtil.safeValue(report.getLandmark()),       // missingLocation

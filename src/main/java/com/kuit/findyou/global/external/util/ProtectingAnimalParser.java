@@ -22,7 +22,7 @@ public class ProtectingAnimalParser {
      * @param date 날짜 문자열 (예: 20240718)
      * @return 파싱된 LocalDate, 실패 시 LocalDate.of(0, 1, 1) 반환
      */
-    public static LocalDate changeToLocalDate(String date) {
+    public static LocalDate parseDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         if (date == null || date.isBlank()) return UNKNOWN_DATE;
