@@ -341,4 +341,14 @@ public class TestInitializer {
         }
         return null;
     }
+
+    public User userWith3Reports() {
+        User writer = createTestUser();
+
+        createTestMissingReportWithImage(writer);
+        createTestWitnessReportWithImage(writer);
+        createTestWitnessReportWithImage(writer);
+
+        return writer;
+    }
 }

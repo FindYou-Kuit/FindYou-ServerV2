@@ -473,4 +473,58 @@ class UserControllerTest {
 
         assertThat(interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId())).isFalse();
     }
+    @Test
+    @DisplayName("사용자가 신고한 내역이 있다면 리턴한다.")
+    void shouldReturnUserReports_WhenTheyExist(){
+        // given
+        User user = testInitializer.userWith3Reports();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        CardResponseDTO reponse = given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .queryParam("lastId", Long.MAX_VALUE)
+                .when()
+                .get("/api/v2/users/me/reports")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", CardResponseDTO.class);
+
+        // then
+        assertThat(reponse.cards()).hasSize(3);
+        assertThat(reponse.lastId()).isEqualTo(1);
+        assertThat(reponse.isLast()).isTrue();
+    }
+
+    @Test
+    @DisplayName("사용자가 신고한 내역이 없다면 빈 페이지를 리턴한다.")
+    void shouldReturnEmptyPage_WhenNoUserReportExist(){
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        CardResponseDTO reponse = given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .queryParam("lastId", Long.MAX_VALUE)
+                .when()
+                .get("/api/v2/users/me/reports")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", CardResponseDTO.class);
+
+        // then
+        assertThat(reponse.cards()).hasSize(0);
+        assertThat(reponse.lastId()).isEqualTo(-1);
+        assertThat(reponse.isLast()).isTrue();
+    }
+
 }
