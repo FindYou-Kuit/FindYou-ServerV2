@@ -40,9 +40,6 @@ public class TestInitializer {
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
 
-        User shelterUser = createTestUser();
-        defaultUser = shelterUser;
-
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
         WitnessReport testWitnessReport = createTestWitnessReportWithImage(testUser);
@@ -53,7 +50,7 @@ public class TestInitializer {
 
         createTestViewedReport(testUser, testProtectingReport);
         createTestViewedReport(testUser, testMissingReport);
-        createTestAnimalShelters();
+
         return testUser;
     }
 
@@ -157,6 +154,13 @@ public class TestInitializer {
                 .address("부산시 해운대구 해운대로 55").latitude(35.1).longitude(129.1).build();
 
         animalShelterRepository.saveAll(List.of(shelter1, hospital1, shelter2));
+    }
+
+    public User setupAnimalShelterTestData() {
+        User shelterUser = createTestUser();
+        defaultUser = shelterUser;
+        createTestAnimalShelters();
+        return shelterUser;
     }
     public User getDefaultUser() {return this.defaultUser;}
 
