@@ -1,8 +1,8 @@
 import com.kuit.findyou.FindyouApplication;
-import com.kuit.findyou.domain.information.model.RecommendedNews;
-import com.kuit.findyou.domain.information.model.RecommendedVideo;
-import com.kuit.findyou.domain.information.repository.RecommendedNewsRepository;
-import com.kuit.findyou.domain.information.repository.RecommendedVideoRepository;
+import com.kuit.findyou.domain.information.recommended.model.RecommendedNews;
+import com.kuit.findyou.domain.information.recommended.model.RecommendedVideo;
+import com.kuit.findyou.domain.information.recommended.repository.RecommendedNewsRepository;
+import com.kuit.findyou.domain.information.recommended.repository.RecommendedVideoRepository;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;

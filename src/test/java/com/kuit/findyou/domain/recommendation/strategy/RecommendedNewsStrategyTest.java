@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.recommendation.strategy;
 
-import com.kuit.findyou.domain.information.model.RecommendedNews;
-import com.kuit.findyou.domain.information.repository.RecommendedNewsRepository;
-import com.kuit.findyou.domain.information.service.strategy.RecommendedNewsStrategy;
+import com.kuit.findyou.domain.information.recommended.model.RecommendedNews;
+import com.kuit.findyou.domain.information.recommended.repository.RecommendedNewsRepository;
+import com.kuit.findyou.domain.information.recommended.service.strategy.RecommendedNewsStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

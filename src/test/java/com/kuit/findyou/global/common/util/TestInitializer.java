@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -172,7 +171,7 @@ public class TestInitializer {
                     .volunteerEndAt(LocalDateTime.of(2025, 1, 3, 6, 0))
                     .webLink("www.web.link")
                     .build();
-            
+
             volunteerWorkRepository.save(volunteerWork);
         });
     }

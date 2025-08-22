@@ -1,11 +1,10 @@
 package com.kuit.findyou.domain.animalProtection.service;
 
-import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
+import com.kuit.findyou.domain.information.animalShelter.dto.AnimalShelterPagingResponse;
+import com.kuit.findyou.domain.information.animalShelter.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.model.AnimalShelter;
-import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
-import com.kuit.findyou.domain.information.service.AnimalShelterServiceImpl;
-import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.domain.information.animalShelter.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.animalShelter.service.AnimalShelterServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;

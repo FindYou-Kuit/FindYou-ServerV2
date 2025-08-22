@@ -1,8 +1,8 @@
-package com.kuit.findyou.domain.information.service;
+package com.kuit.findyou.domain.information.recommended.service;
 
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.information.dto.ContentType;
-import com.kuit.findyou.domain.information.service.strategy.RecommendedContentStrategy;
+import com.kuit.findyou.domain.information.recommended.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.recommended.dto.ContentType;
+import com.kuit.findyou.domain.information.recommended.service.strategy.RecommendedContentStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,0 @@
-package com.kuit.findyou.domain.information.service.strategy;
-
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
-
-import java.util.List;
-
-public interface RecommendedContentStrategy {
-    List<RecommendedContentResponse> getRecommendedContents();
-}

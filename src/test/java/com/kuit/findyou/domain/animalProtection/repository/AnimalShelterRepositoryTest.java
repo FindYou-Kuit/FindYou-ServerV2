@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.animalProtection.repository;
 
 import com.kuit.findyou.domain.information.model.AnimalShelter;
-import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.animalShelter.repository.AnimalShelterRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
