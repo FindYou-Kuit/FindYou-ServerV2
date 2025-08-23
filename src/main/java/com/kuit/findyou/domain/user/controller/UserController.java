@@ -14,6 +14,7 @@ import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -151,6 +152,12 @@ public class UserController {
         return BaseResponse.ok(userServiceFacade.retrieveUserReports(userId, lastId));
     }
 
+    @Operation(
+            summary = "마이페이지 프로필 조회 API",
+            description = "마이페이지 프로필 조회 기능을 수행합니다."
+    )
+    @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "API 엑세스 토큰", example = "Bearer asdf1234")
+    @CustomExceptionDescription(DEFAULT)
     @GetMapping("/me")
     public BaseResponse<GetUseProfileResponse> getUserProfile(@LoginUserId Long userId){
         return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
