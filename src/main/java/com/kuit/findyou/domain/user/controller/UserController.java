@@ -152,7 +152,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public BaseResponse<GetUseProfileResponse> getUserProfile(Long userId){
+    public BaseResponse<GetUseProfileResponse> getUserProfile(@LoginUserId Long userId){
         return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
     }
 }
