@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
+import com.kuit.findyou.domain.user.dto.GetUseProfileResponse;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
@@ -525,6 +526,35 @@ class UserControllerTest {
         assertThat(reponse.cards()).hasSize(0);
         assertThat(reponse.lastId()).isEqualTo(-1);
         assertThat(reponse.isLast()).isTrue();
+    }
+
+    @Test
+    @DisplayName("유저가 존재하면 유저 프로필을 반환한다.")
+    void shouldReturnProfile_WhenUserExists(){
+        // given
+        User user = testInitializer.createTestUser();
+        final String nickname = user.getName();
+        final String profileImage = user.getProfileImageUrl();
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        GetUseProfileResponse response = given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .get("/api/v2/users/me")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .jsonPath()
+                .getObject("data", GetUseProfileResponse.class);
+
+        // then
+        assertThat(response.nickname()).isEqualTo(nickname);
+        assertThat(response.profileImage()).isEqualTo(profileImage);
     }
 
 }
