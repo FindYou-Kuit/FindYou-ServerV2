@@ -2,7 +2,7 @@ package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
-import com.kuit.findyou.domain.user.dto.GetUseProfilerResponse;
+import com.kuit.findyou.domain.user.dto.GetUseProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
@@ -152,7 +152,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public BaseResponse<GetUseProfilerResponse> getUserProfile(Long userId){
+    public BaseResponse<GetUseProfileResponse> getUserProfile(Long userId){
         return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
     }
 }

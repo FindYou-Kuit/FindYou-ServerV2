@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.user.service.query;
 
-import com.kuit.findyou.domain.user.dto.GetUseProfilerResponse;
+import com.kuit.findyou.domain.user.dto.GetUseProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.model.User;
@@ -26,9 +26,9 @@ public class QueryUserServiceImpl implements QueryUserService {
     }
 
     @Override
-    public GetUseProfilerResponse getUserProfile(Long userId) {
+    public GetUseProfileResponse getUserProfile(Long userId) {
         log.info("[getUserProfile] userId = {}", userId);
         User user = userRepository.getReferenceById(userId);
-        return new GetUseProfilerResponse(user.getName(), user.getProfileImageUrl());
+        return new GetUseProfileResponse(user.getName(), user.getProfileImageUrl());
     }
 }

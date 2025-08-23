@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.user.dto;
 
-public record GetUseProfilerResponse(
+public record GetUseProfileResponse(
         String nickname,
         String profileImage
 ) {
