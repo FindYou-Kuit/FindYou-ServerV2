@@ -1,0 +1,40 @@
+package com.kuit.findyou.domain.information.util;
+
+import com.kuit.findyou.domain.information.model.AnimalDepartment;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DepartmentHtmlParser {
+    private static final String RELEVANT_LIST_API =
+            "https://www.animal.go.kr/front/awtis/relevant/relevantList.do?menuNo=5000000014";
+
+    public static List<AnimalDepartment> parse(String sido, String sigungu, String orgCd) throws Exception {
+        String url = RELEVANT_LIST_API + "&sido=" + sido + "&sigungu=" + sigungu + "&orgCd=" + orgCd;
+        Document doc = Jsoup.connect(url).get();
+
+        Elements rows = doc.select("table tbody tr");
+        List<AnimalDepartment> departments = new ArrayList<>();
+
+        for (Element row : rows) {
+            Elements cols = row.select("td");
+            if (cols.size() < 3) continue;
+
+            String organization = cols.get(0).text(); // 기관명
+            String department = cols.get(1).text();   // 담당부서
+            String phoneNumber = cols.get(2).text();  // 전화번호
+
+            departments.add(AnimalDepartment.builder()
+                    .organization(organization)
+                    .department(department)
+                    .phoneNumber(phoneNumber)
+                    .build()
+            );
+        }
+        return departments;
+    }
+}
