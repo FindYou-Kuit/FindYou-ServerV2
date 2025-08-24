@@ -27,7 +27,7 @@ public class InquiryServiceImpl implements InquiryService {
 
         User user = userRepository.getReferenceById(userId);
 
-        String category = String.join(",", request.categories());
+        String category = String.join("&", request.categories());
 
         Inquiry inquiry = Inquiry.builder()
                 .category(category)
