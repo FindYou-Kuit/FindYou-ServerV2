@@ -99,7 +99,7 @@ class ReportControllerTest {
                 .body("data.imageUrls[0]", equalTo("https://img.com/missing.png"))
                 .body("data.breed", equalTo("포메라니안"))
                 .body("data.tag", equalTo("실종신고"))
-                .body("data.age", equalTo("3살"))
+                .body("data.age", equalTo("3"))
                 .body("data.sex", equalTo("암컷"))
                 .body("data.missingDate", equalTo("2024-10-05"))
                 .body("data.rfid", equalTo("RF12345"))
