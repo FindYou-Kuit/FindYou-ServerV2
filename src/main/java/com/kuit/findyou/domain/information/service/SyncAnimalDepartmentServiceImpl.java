@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import com.kuit.findyou.domain.information.repository.AnimalDepartmentRepository;
+import com.kuit.findyou.domain.information.util.DepartmentHtmlParser;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
