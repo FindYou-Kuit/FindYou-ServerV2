@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.information.controller;
 
+import com.kuit.findyou.domain.information.dto.GetAnimalDepartmentsResponse;
 import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
@@ -13,12 +14,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -159,5 +165,70 @@ class InformationControllerTest {
         assertThat(response.volunteerWorks().get(0).workTime()).isEqualTo("05:00 ~ 06:00");
         assertThat(response.lastId()).isEqualTo(1);
         assertThat(response.isLast()).isTrue();
+    }
+
+    @DisplayName("보호부서 조회 - 데이터가 없으면 빈 리스트와 isLast=true 반환")
+    @Test
+    void should_ReturnEmptyDepartments_When_NoDataExists() {
+        // given
+        User user = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        var response = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("lastId", 0L)
+                .param("size", 20)
+                .when()
+                .get("api/v2/informations/departments")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getMap("data");
+
+        // then
+        assertThat((List<?>) response.get("departments")).isEmpty();
+        assertThat(response.get("lastId")).isEqualTo(-1);
+        assertThat(response.get("isLast")).isEqualTo(true);
+    }
+
+    @DisplayName("보호부서 조회 - 데이터가 있으면 정상적으로 반환")
+    @Test
+    void should_ReturnDepartments_When_DataExists() {
+        // given
+        User user = testInitializer.createTestUser();
+        testInitializer.createTestAnimalDepartments(5);
+
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        var response  = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("lastId", 0L)
+                .param("size", 20)
+                .when()
+                .get("api/v2/informations/departments")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", GetAnimalDepartmentsResponse.class);
+
+        // then
+        assertThat(response.departments()).isNotEmpty();
+        assertThat(response.departments().get(0).department()).isNotBlank();   // ← DTO 필드로 검증
+        assertThat(response.isLast()).isTrue();
+    }
+    @TestConfiguration
+    static class TestRestConfig {
+        @Bean
+        RestTemplate restTemplate(RestTemplateBuilder builder) {
+            return builder.build();
+        }
     }
 }

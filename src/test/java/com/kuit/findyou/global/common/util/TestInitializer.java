@@ -2,8 +2,10 @@ package com.kuit.findyou.global.common.util;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
+import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import com.kuit.findyou.domain.information.model.AnimalShelter;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
+import com.kuit.findyou.domain.information.repository.AnimalDepartmentRepository;
 import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.report.model.*;
@@ -34,6 +36,7 @@ public class TestInitializer {
     private final ViewedReportRepository viewedReportRepository;
     private final AnimalShelterRepository animalShelterRepository;
     private final VolunteerWorkRepository volunteerWorkRepository;
+    private final AnimalDepartmentRepository animalDepartmentRepository;
 
     private User defaultUser;
 
@@ -175,5 +178,17 @@ public class TestInitializer {
             
             volunteerWorkRepository.save(volunteerWork);
         });
+    }
+
+    public void createTestAnimalDepartments(int n) {
+        for (int i = 1; i <= n; i++) {
+            animalDepartmentRepository.save(
+                    AnimalDepartment.builder()
+                            .organization("서울특별시 송파구청")
+                            .department("테스트부서" + i)
+                            .phoneNumber("02-0000-00" + String.format("%02d", i))
+                            .build()
+            );
+        }
     }
 }

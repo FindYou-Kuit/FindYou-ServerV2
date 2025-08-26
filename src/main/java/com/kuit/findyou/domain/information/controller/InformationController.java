@@ -132,10 +132,8 @@ public class InformationController {
         String s = (sido == null || sido.isBlank()) ? null : sido;
         String g = (sigungu == null || sigungu.isBlank()) ? null : sigungu;
 
-        // facade에 새 메서드 추가 필요 (아래 참고)
         GetAnimalDepartmentsResponse svcResp = informationServiceFacade.getDepartments(lastId, size, s, g);
 
-        // 응답 키 매핑: department -> departmentName, organization -> district
         var mapped = svcResp.departments().stream()
                 .map(dto -> Map.of(
                         "departmentName", dto.department(),
