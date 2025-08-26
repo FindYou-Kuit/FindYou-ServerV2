@@ -5,15 +5,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class DepartmentHtmlParser {
     private static final String RELEVANT_LIST_API =
             "https://www.animal.go.kr/front/awtis/relevant/relevantList.do?menuNo=5000000014";
 
-    public static List<AnimalDepartment> parse(String sido, String sigungu, String orgCd) throws Exception {
+    public List<AnimalDepartment> parse(String sido, String sigungu, String orgCd) throws Exception {
         String url = RELEVANT_LIST_API + "&sido=" + sido + "&sigungu=" + sigungu + "&orgCd=" + orgCd;
         Document doc = Jsoup.connect(url).get();
 

@@ -129,6 +129,21 @@ public class InformationController {
             @Parameter(description = "페이지 크기", example = "20")
             @RequestParam(defaultValue = "20") int size
     ) {
-        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, size, sido, sigungu));
+        String s = (sido == null || sido.isBlank()) ? null : sido;
+        String g = (sigungu == null || sigungu.isBlank()) ? null : sigungu;
+
+        // facade에 새 메서드 추가 필요 (아래 참고)
+        GetAnimalDepartmentsResponse svcResp = informationServiceFacade.getDepartments(lastId, size, s, g);
+
+        // 응답 키 매핑: department -> departmentName, organization -> district
+        var mapped = svcResp.departments().stream()
+                .map(dto -> Map.of(
+                        "departmentName", dto.department(),
+                        "district", dto.organization(),
+                        "phoneNumber", dto.phoneNumber()
+                ))
+                .toList();
+
+        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, size, s, g));
     }
 }
