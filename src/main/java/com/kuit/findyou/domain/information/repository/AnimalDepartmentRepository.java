@@ -6,12 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AnimalDepartmentRepository extends JpaRepository<AnimalDepartment,Long> {
+public interface AnimalDepartmentRepository extends JpaRepository<AnimalDepartment, Long> {
     // 필터링 조건 없이 가나다 순으로 보여줌
-    List<AnimalDepartment> findAllByIdLessThanOrderByDepartmentAsc(Long id, Pageable pageable);
+    List<AnimalDepartment> findAllByIdGreaterThanOrderByDepartmentAsc(Long id, Pageable pageable);
 
     // 시군구 필터링
-    List<AnimalDepartment> findAllByOrganizationContainingAndIdLessThanOrderByDepartmentAsc(
+    List<AnimalDepartment> findAllByOrganizationContainingAndIdGreaterThanOrderByDepartmentAsc(
             String organization, Long id, Pageable pageable
     );
 }
