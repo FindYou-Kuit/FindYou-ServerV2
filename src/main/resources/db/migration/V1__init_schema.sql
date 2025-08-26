@@ -139,7 +139,7 @@ CREATE TABLE missing_reports
     FOREIGN KEY (id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
--- 11. 보호신고 테이블
+-- 11. 보호글 테이블
 CREATE TABLE protecting_reports
 (
     id                BIGINT PRIMARY KEY,
