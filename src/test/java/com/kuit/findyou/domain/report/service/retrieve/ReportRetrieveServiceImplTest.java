@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -104,5 +105,159 @@ class ReportRetrieveServiceImplTest {
         verify(cardFactory, times(1)).createCardResponse(any(), anySet(), anyLong(), anyBoolean());
 
     }
+
+    @Test
+    @DisplayName("ALL 조회: tags=null, 빈 Slice -> lastId=-1, lastPage=false")
+    void retrieveReports_ALL_emptySlice() {
+        // given
+        Slice<ReportProjection> empty = new SliceImpl<>(List.of(), PageRequest.of(0,20), true); // hasNext=true
+        when(reportRepository.findReportsWithFilters(
+                isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), anyLong(), any()
+        )).thenReturn(empty);
+        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(anyLong(), anyList()))
+                .thenReturn(List.of()); // 관심 없음
+
+        CardResponseDTO expected = new CardResponseDTO(List.of(), -1L, false); // lastPage=false (hasNext=true)
+        when(cardFactory.createCardResponse(eq(List.of()), eq(Set.of()), eq(-1L), eq(false)))
+                .thenReturn(expected);
+
+        // when
+        CardResponseDTO result = reportRetrieveService.retrieveReportsWithFilters(
+                ReportViewType.ALL, null, null, null, null, null, 0L, 1L
+        );
+
+        // then
+        assertThat(result).isEqualTo(expected);
+        verify(reportRepository).findReportsWithFilters(
+                isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
+                eq(0L), eq(PageRequest.of(0,20))
+        );
+    }
+
+    @Test
+    @DisplayName("PROTECTING 조회: tags=[PROTECTING], hasNext=false -> lastPage=true")
+    void retrieveReports_PROTECTING_hasNextFalse() {
+        ReportProjection p1 = mock(ReportProjection.class);
+        when(p1.getReportId()).thenReturn(10L);
+        Slice<ReportProjection> slice = new SliceImpl<>(List.of(p1), PageRequest.of(0,20), false);
+
+        when(reportRepository.findReportsWithFilters(
+                eq(List.of(ReportTag.PROTECTING)), any(), any(), any(), any(), any(), anyLong(), any()
+        )).thenReturn(slice);
+        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(anyLong(), anyList()))
+                .thenReturn(List.of()); // 관심 없음
+
+        CardResponseDTO expected = new CardResponseDTO(List.of(), 10L, true);
+        when(cardFactory.createCardResponse(eq(List.of(p1)), eq(Set.of()), eq(10L), eq(true)))
+                .thenReturn(expected);
+
+        CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
+                ReportViewType.PROTECTING, null,null,null,null,null, 0L, 1L
+        );
+
+        assertThat(res).isEqualTo(expected);
+        verify(reportRepository).findReportsWithFilters(
+                eq(List.of(ReportTag.PROTECTING)),
+                isNull(), isNull(), isNull(), isNull(), isNull(),
+                eq(0L), eq(PageRequest.of(0,20))
+        );
+    }
+
+    @Test
+    @DisplayName("breeds 파싱: '치와와,  진돗개 , , 포메라니안' -> ['치와와','진돗개','포메라니안']")
+    void retrieveReports_breedsParsing() {
+        ReportProjection p1 = mock(ReportProjection.class);
+        when(p1.getReportId()).thenReturn(30L);
+        Slice<ReportProjection> slice = new SliceImpl<>(List.of(p1), PageRequest.of(0,20), true);
+
+        when(reportRepository.findReportsWithFilters(
+                eq(List.of(ReportTag.MISSING, ReportTag.WITNESS)),
+                any(), any(), eq("강아지"),
+                eq(List.of("치와와","진돗개","포메라니안")),
+                eq("서울"), anyLong(), any()
+        )).thenReturn(slice);
+
+        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(anyLong(), anyList()))
+                .thenReturn(List.of(30L));
+
+        // hasNext=true → lastPage=false
+        CardResponseDTO expected = new CardResponseDTO(List.of(), 30L, false);
+        when(cardFactory.createCardResponse(eq(List.of(p1)), eq(Set.of(30L)), eq(30L), eq(false)))
+                .thenReturn(expected);
+
+        CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
+                ReportViewType.REPORTING,
+                LocalDate.of(2025,8,1), LocalDate.of(2025,8,31),
+                "강아지",
+                "치와와,  진돗개 , , 포메라니안",
+                "서울",
+                999L, 7L
+        );
+
+        assertThat(res).isEqualTo(expected);
+        verify(reportRepository).findReportsWithFilters(
+                eq(List.of(ReportTag.MISSING, ReportTag.WITNESS)),
+                eq(LocalDate.of(2025,8,1)), eq(LocalDate.of(2025,8,31)),
+                eq("강아지"),
+                eq(List.of("치와와","진돗개","포메라니안")),
+                eq("서울"),
+                eq(999L),
+                eq(PageRequest.of(0,20))
+        );
+    }
+
+    @Test
+    @DisplayName("breeds blank -> null 로 전달")
+    void retrieveReports_breedsBlank_becomesNull() {
+        Slice<ReportProjection> slice = new SliceImpl<>(List.of(), PageRequest.of(0,20), false);
+        when(reportRepository.findReportsWithFilters(
+                any(), any(), any(), any(), isNull(), any(), anyLong(), any()
+        )).thenReturn(slice);
+
+        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(anyLong(), anyList()))
+                .thenReturn(List.of());
+
+        CardResponseDTO expected = new CardResponseDTO(List.of(), -1L, true);
+        when(cardFactory.createCardResponse(eq(List.of()), eq(Set.of()), eq(-1L), eq(true)))
+                .thenReturn(expected);
+
+        CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
+                ReportViewType.REPORTING, null,null, null, "   ", null, 0L, 1L
+        );
+
+        assertThat(res).isEqualTo(expected);
+        verify(reportRepository).findReportsWithFilters(
+                eq(List.of(ReportTag.MISSING, ReportTag.WITNESS)),
+                isNull(), isNull(), isNull(), isNull(), isNull(),
+                eq(0L), eq(PageRequest.of(0,20))
+        );
+    }
+
+    @Test
+    @DisplayName("관심 보고서가 없으면 빈 Set 전달")
+    void retrieveReports_noInterests() {
+        ReportProjection p = mock(ReportProjection.class);
+        when(p.getReportId()).thenReturn(5L);
+        Slice<ReportProjection> slice = new SliceImpl<>(List.of(p), PageRequest.of(0,20), false);
+
+        when(reportRepository.findReportsWithFilters(any(), any(), any(), any(), any(), any(), anyLong(), any()))
+                .thenReturn(slice);
+
+        when(interestReportRepository.findInterestedReportIdsByUserIdAndReportIds(anyLong(), anyList()))
+                .thenReturn(List.of());
+
+        CardResponseDTO expected = new CardResponseDTO(List.of(), 5L, true);
+        when(cardFactory.createCardResponse(eq(List.of(p)), eq(Set.of()), eq(5L), eq(true)))
+                .thenReturn(expected);
+
+        CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
+                ReportViewType.ALL, null,null, null,null,null, 0L, 77L
+        );
+
+        assertThat(res).isEqualTo(expected);
+    }
+
+
+
 
 }
