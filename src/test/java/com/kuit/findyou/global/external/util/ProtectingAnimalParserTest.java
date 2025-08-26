@@ -57,6 +57,15 @@ class ProtectingAnimalParserTest {
             assertThat(ProtectingAnimalParser.parseAge("")).isEqualTo("미상");
             assertThat(ProtectingAnimalParser.parseAge("??")).isEqualTo("미상");
         }
+
+        @Test
+        @DisplayName("올해 태어난 동물이면 0 반환")
+        void parseAge_currentYear_zero() {
+            int y = LocalDate.now().getYear();
+            assertThat(ProtectingAnimalParser.parseAge(y + "(년생)"))
+                    .isEqualTo("0");
+        }
+
     }
 
     @Nested
@@ -75,6 +84,14 @@ class ProtectingAnimalParserTest {
             assertThat(ProtectingAnimalParser.parseWeight(null)).isEqualTo("미상");
             assertThat(ProtectingAnimalParser.parseWeight("")).isEqualTo("미상");
         }
+
+        @Test
+        @DisplayName("공백 제거 및 , 동시 수정 검증")
+        void parseWeight_trim_and_comma() {
+            assertThat(ProtectingAnimalParser.parseWeight("  3,50 (Kg)"))
+                    .isEqualTo("3.50");
+        }
+
     }
 
     @Nested
@@ -115,6 +132,13 @@ class ProtectingAnimalParserTest {
             assertThat(ProtectingAnimalParser.parseSpecies(null)).isEqualTo("미상");
             assertThat(ProtectingAnimalParser.parseSpecies("")).isEqualTo("미상");
         }
+
+        @Test
+        @DisplayName("parseSpecies: '  개  ' → '강아지'")
+        void parseSpecies_trims() {
+            assertThat(ProtectingAnimalParser.parseSpecies("  개  ")).isEqualTo("강아지");
+        }
+
     }
 
     @Nested
