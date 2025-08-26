@@ -1,9 +1,6 @@
 package com.kuit.findyou.domain.information.controller;
 
-import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.information.dto.ContentType;
-import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.*;
 import com.kuit.findyou.domain.information.service.facade.InformationServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
@@ -108,5 +105,30 @@ public class InformationController {
     @GetMapping("volunteer-works")
     public BaseResponse<GetVolunteerWorksResponse> getVolunteerWorks(@Parameter @RequestParam Long lastId){
         return BaseResponse.ok(informationServiceFacade.getVolunteerWorks(lastId));
+    }
+
+    @Operation(summary = "보호부서 조회 API", description = """
+보호부서 목록을 조회합니다.
+
+**[주의]** 커서 페이징을 지원합니다.
+- 첫 요청에서는 lastId를 0으로 전달해주세요
+- 다음 요청에는 이전 응답의 lastId를 세팅해서 전달해주세요.
+""")
+    @CustomExceptionDescription(DEFAULT)
+    @GetMapping("/departments")
+    public BaseResponse<GetAnimalDepartmentsResponse> getDepartments(
+            @Parameter(description = "커서 페이징용 마지막 ID", example = "0")
+            @RequestParam(defaultValue = "0") Long lastId,
+
+            @Parameter(description = "도/광역시", example = "서울특별시")
+            @RequestParam(defaultValue = "") String sido,
+
+            @Parameter(description = "구/리/시/읍", example = "송파구")
+            @RequestParam(defaultValue = "") String sigungu,
+
+            @Parameter(description = "페이지 크기", example = "20")
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, size, sido, sigungu));
     }
 }
