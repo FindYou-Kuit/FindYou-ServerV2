@@ -5,7 +5,7 @@ import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
-import com.kuit.findyou.domain.user.dto.GetUseProfileResponse;
+import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
@@ -539,7 +539,7 @@ class UserControllerTest {
         String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
         // when
-        GetUseProfileResponse response = given()
+        GetUserProfileResponse response = given()
                 .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
@@ -550,7 +550,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .extract()
                 .jsonPath()
-                .getObject("data", GetUseProfileResponse.class);
+                .getObject("data", GetUserProfileResponse.class);
 
         // then
         assertThat(response.nickname()).isEqualTo(nickname);

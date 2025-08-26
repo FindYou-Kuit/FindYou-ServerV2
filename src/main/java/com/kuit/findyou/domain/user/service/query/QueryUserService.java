@@ -1,11 +1,11 @@
 package com.kuit.findyou.domain.user.service.query;
 
-import com.kuit.findyou.domain.user.dto.GetUseProfileResponse;
+import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 
 public interface QueryUserService {
     CheckDuplicateNicknameResponse checkDuplicateNickname(CheckDuplicateNicknameRequest request);
 
-    GetUseProfileResponse getUserProfile(Long userId);
+    GetUserProfileResponse getUserProfile(Long userId);
 }

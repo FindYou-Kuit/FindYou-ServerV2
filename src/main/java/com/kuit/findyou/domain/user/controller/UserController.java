@@ -2,7 +2,7 @@ package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
-import com.kuit.findyou.domain.user.dto.GetUseProfileResponse;
+import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
@@ -159,7 +159,7 @@ public class UserController {
     @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "API 엑세스 토큰", example = "Bearer asdf1234")
     @CustomExceptionDescription(DEFAULT)
     @GetMapping("/me")
-    public BaseResponse<GetUseProfileResponse> getUserProfile(@LoginUserId Long userId){
+    public BaseResponse<GetUserProfileResponse> getUserProfile(@Parameter(hidden = true) @LoginUserId Long userId){
         return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
     }
 }

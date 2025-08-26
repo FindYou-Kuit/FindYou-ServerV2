@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.user.service.query;
 
-import com.kuit.findyou.domain.user.dto.GetUseProfileResponse;
+import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +34,7 @@ class QueryUserServiceTest {
         when(mockUser.getProfileImageUrl()).thenReturn(profileImage);
 
         // when
-        GetUseProfileResponse userProfile = queryUserService.getUserProfile(userId);
+        GetUserProfileResponse userProfile = queryUserService.getUserProfile(userId);
 
         // then
         assertThat(userProfile.nickname()).isEqualTo(name);
