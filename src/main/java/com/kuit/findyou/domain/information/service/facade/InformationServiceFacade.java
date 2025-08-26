@@ -6,6 +6,7 @@ import com.kuit.findyou.domain.information.service.AnimalDepartmentService;
 import com.kuit.findyou.domain.information.service.animalCenter.AnimalCenterService;
 import com.kuit.findyou.domain.information.service.recommended.RecommendedContentService;
 import com.kuit.findyou.domain.information.service.volunteerWork.VolunteerWorkService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
