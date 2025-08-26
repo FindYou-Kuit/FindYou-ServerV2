@@ -35,7 +35,7 @@ CREATE TABLE sigungus
     status     CHAR(1)     NOT NULL DEFAULT 'Y',
     created_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (sido_id) REFERENCES sidos (id)
+    FOREIGN KEY (sido_id) REFERENCES sidos (id) ON DELETE CASCADE
 );
 
 -- 4. 품종 테이블
@@ -120,7 +120,7 @@ CREATE TABLE reports
     status     CHAR(1)      NOT NULL DEFAULT 'Y',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 -- 10. 실종신고 테이블
@@ -131,12 +131,12 @@ CREATE TABLE missing_reports
     rfid          VARCHAR(30),
     age           VARCHAR(10)  NOT NULL,
     weight        VARCHAR(20)  NOT NULL,
-    fur_color     VARCHAR(100)  NOT NULL,
+    fur_color     VARCHAR(100) NOT NULL,
     significant   VARCHAR(255) NOT NULL,
     reporter_name VARCHAR(20),
     reporter_tel  VARCHAR(20),
     landmark      VARCHAR(255) NOT NULL,
-    FOREIGN KEY (id) REFERENCES reports (id)
+    FOREIGN KEY (id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
 -- 11. 보호신고 테이블
@@ -146,7 +146,7 @@ CREATE TABLE protecting_reports
     sex               CHAR(1)      NOT NULL,
     age               VARCHAR(10)  NOT NULL,
     weight            VARCHAR(10)  NOT NULL,
-    fur_color         VARCHAR(100)  NOT NULL,
+    fur_color         VARCHAR(100) NOT NULL,
     neutering         CHAR(1)      NOT NULL,
     significant       VARCHAR(255) NOT NULL,
     found_location    VARCHAR(100) NOT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE protecting_reports
     care_name         VARCHAR(50)  NOT NULL,
     care_tel          VARCHAR(14)  NOT NULL,
     authority         VARCHAR(50)  NOT NULL,
-    FOREIGN KEY (id) REFERENCES reports (id)
+    FOREIGN KEY (id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
 -- 12. 목격신고 테이블
@@ -167,20 +167,20 @@ CREATE TABLE witness_reports
     significant   VARCHAR(255) NOT NULL,
     reporter_name VARCHAR(50),
     landmark      VARCHAR(255) NOT NULL,
-    FOREIGN KEY (id) REFERENCES reports (id)
+    FOREIGN KEY (id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
 -- 13. 신고글 이미지 테이블
 CREATE TABLE report_images
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    image_url  VARCHAR(2083)         NOT NULL,
-    uuid       VARCHAR(255) NOT NULL,
+    image_url  VARCHAR(2083) NOT NULL,
+    uuid       VARCHAR(255)  NOT NULL,
     report_id  BIGINT,
-    status     CHAR(1)      NOT NULL DEFAULT 'Y',
-    created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (report_id) REFERENCES reports (id)
+    status     CHAR(1)       NOT NULL DEFAULT 'Y',
+    created_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (report_id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
 -- 14. 관심글 테이블
@@ -192,8 +192,8 @@ CREATE TABLE interest_reports
     status     CHAR(1)  NOT NULL DEFAULT 'Y',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (report_id) REFERENCES reports (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (report_id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
 -- 15. 최근 본 글 테이블
@@ -205,8 +205,8 @@ CREATE TABLE viewed_reports
     status     CHAR(1)  NOT NULL DEFAULT 'Y',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (report_id) REFERENCES reports (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (report_id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
 -- 16. 키워드 테이블
@@ -228,8 +228,8 @@ CREATE TABLE subscribes
     status     CHAR(1)  NOT NULL DEFAULT 'Y',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (keyword_id) REFERENCES keywords (id),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (keyword_id) REFERENCES keywords (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 -- 18. FCM 토큰 테이블
@@ -241,7 +241,7 @@ CREATE TABLE fcm_tokens
     status     CHAR(1)      NOT NULL DEFAULT 'Y',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 -- 19. 알림 내역 테이블
@@ -254,8 +254,8 @@ CREATE TABLE notification_histories
     status     CHAR(1)  NOT NULL DEFAULT 'Y',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (report_id) REFERENCES reports (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (report_id) REFERENCES reports (id) ON DELETE CASCADE
 );
 
 -- 20. 추천 뉴스 테이블
