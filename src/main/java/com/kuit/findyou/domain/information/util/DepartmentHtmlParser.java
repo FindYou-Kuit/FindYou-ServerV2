@@ -15,10 +15,21 @@ public class DepartmentHtmlParser {
     private static final String RELEVANT_LIST_API =
             "https://www.animal.go.kr/front/awtis/relevant/relevantList.do?menuNo=5000000014";
 
+    // 운영용: Jsoup으로 사이트 직접 호출
     public List<AnimalDepartment> parse(String sido, String sigungu, String orgCd) throws Exception {
         String url = RELEVANT_LIST_API + "&sido=" + sido + "&sigungu=" + sigungu + "&orgCd=" + orgCd;
         Document doc = Jsoup.connect(url).get();
+        return extractDepartments(doc);
+    }
 
+    // 테스트/공용용: HTML 문자열만 받아 파싱
+    public List<AnimalDepartment> parseHtml(String sido, String sigungu, String orgCd, String html) {
+        Document doc = Jsoup.parse(html);
+        return extractDepartments(doc);
+    }
+
+    // 공통 로직
+    private List<AnimalDepartment> extractDepartments(Document doc) {
         Elements rows = doc.select("table tbody tr");
         List<AnimalDepartment> departments = new ArrayList<>();
 
