@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.service.animalShelter;
+package com.kuit.findyou.domain.information.service.volunteerWork;
 
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class SyncVolunteerWorkServiceImpl implements SyncVolunteerWorkService{
+public class SyncVolunteerWorkServiceImpl implements SyncVolunteerWorkService {
     private final VolunteerWorkApiClient volunteerWorkApiClient;
     private final VolunteerWorkRepository volunteerWorkRespository;
     private final VolunteerWorksByKeywordApiResponseUtil responseUtil;

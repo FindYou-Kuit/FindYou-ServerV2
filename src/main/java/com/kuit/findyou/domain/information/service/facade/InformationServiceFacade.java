@@ -7,7 +7,7 @@ import com.kuit.findyou.domain.information.dto.ContentType;
 import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
 import com.kuit.findyou.domain.information.service.animalShelter.AnimalShelterService;
 import com.kuit.findyou.domain.information.service.recommended.RecommendedContentServiceImpl;
-import com.kuit.findyou.domain.information.service.animalShelter.VolunteerWorkService;
+import com.kuit.findyou.domain.information.service.volunteerWork.VolunteerWorkService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

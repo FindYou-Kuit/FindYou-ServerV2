@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.service.animalShelter;
+package com.kuit.findyou.domain.information.service.volunteerWork;
 
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
