@@ -41,7 +41,6 @@ public class S3ImageUploader implements ImageUploader {
                     .bucket(bucket)
                     .key(fileName)
                     .contentType(file.getContentType())
-                    .acl(ObjectCannedACL.PUBLIC_READ)
                     .build();
 
             s3Client.putObject(putObjectRequest,

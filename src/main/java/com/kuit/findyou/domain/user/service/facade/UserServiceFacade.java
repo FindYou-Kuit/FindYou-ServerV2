@@ -40,6 +40,14 @@ public class UserServiceFacade {
         return interestReportService.retrieveInterestAnimals(userId, lastId, 20);
     }
 
+    public void addInterestAnimal(Long userId, Long reportId){
+        interestReportService.addInterestAnimal(userId, reportId);
+    }
+
+    public void deleteInterestAnimal(Long userId, Long reportId){
+        interestReportService.deleteInterestAnimal(userId, reportId);
+    }
+
     public void changeNickname(Long userId, String newNickname) {
         changeNicknameService.changeNickname(userId, newNickname);
     }

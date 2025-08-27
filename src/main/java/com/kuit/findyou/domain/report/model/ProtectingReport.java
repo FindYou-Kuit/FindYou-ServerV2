@@ -123,6 +123,11 @@ public class ProtectingReport extends Report {
 
     @JsonIgnore
     public String getNoticeDuration() {
+        LocalDate unknownDate = LocalDate.of(2000, 1, 1);
+
+        if(noticeStartDate.equals(unknownDate) || noticeEndDate.equals(unknownDate)) {
+            return "-";
+        }
         return noticeStartDate + " ~ " + noticeEndDate;
     }
 

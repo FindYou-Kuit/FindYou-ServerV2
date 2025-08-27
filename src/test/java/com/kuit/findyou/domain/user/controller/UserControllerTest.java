@@ -1,6 +1,10 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.report.model.ProtectingReport;
+import com.kuit.findyou.domain.report.model.WitnessReport;
+import com.kuit.findyou.domain.report.repository.InterestReportRepository;
+import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
@@ -19,6 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.DUPLICATE_INTEREST_REPORT;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.SUCCESS;
 import static com.kuit.findyou.global.common.util.RestAssuredUtils.multipartText;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +50,9 @@ class UserControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    InterestReportRepository interestReportRepository;
 
     @BeforeEach
     void setUp() {
@@ -350,4 +359,118 @@ class UserControllerTest {
                 .body("message", equalTo("특수문자는 들어갈 수 없어요."));
     }
 
+    @Test
+    @DisplayName("새로운 관심동물을 등록하면 성공한다")
+    void shouldSucceed_WhenNewInterestAnimalIsAdded() {
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        WitnessReport report = testInitializer.createTestWitnessReportWithImage(reportWriter);
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+        final Long reportId = report.getId();
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(new AddInterestAnimalRequest(reportId))
+                .when()
+                .post("/api/v2/users/me/interest-animals")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(200))
+                .body("message", equalTo(SUCCESS.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(reportId, user.getId())).isTrue();
+    }
+
+    @Test
+    @DisplayName("이미 등록된 관심동물을 다시 등록하면 실패한다")
+    void shouldFail_WhenInterestAnimalIsDuplicate() {
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        WitnessReport report = testInitializer.createTestWitnessReportWithImage(reportWriter);
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+        final Long reportId = report.getId();
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(new AddInterestAnimalRequest(reportId))
+                .when()
+                .post("/api/v2/users/me/interest-animals")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()));
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(new AddInterestAnimalRequest(reportId))
+                .when()
+                .post("/api/v2/users/me/interest-animals")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(DUPLICATE_INTEREST_REPORT.getCode()))
+                .body("message", equalTo(DUPLICATE_INTEREST_REPORT.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(reportId, user.getId())).isTrue();
+    }
+
+    @Test
+    @DisplayName("관심동물이 존재하면 삭제에 성공한다")
+    void shouldSucceedToDeleteInterestAnimal_WhenItExists(){
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        ProtectingReport report = testInitializer.createTestProtectingReportWithImage(reportWriter);
+        testInitializer.createTestInterestReport(user, report);
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .delete("/api/v2/users/me/interest-animals/" + report.getId())
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId())).isFalse();
+    }
+
+    @Test
+    @DisplayName("관심동물이 존재하지 않아도 삭제에 성공한다")
+    void shouldSucceedToDeleteInterestAnimal_WhenItDoesNotExist(){
+        // given
+        User user = testInitializer.createTestUser();
+        User reportWriter = testInitializer.createTestUser();
+        ProtectingReport report = testInitializer.createTestProtectingReportWithImage(reportWriter);
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .delete("/api/v2/users/me/interest-animals/" + report.getId())
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()));
+
+        assertThat(interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId())).isFalse();
+    }
 }

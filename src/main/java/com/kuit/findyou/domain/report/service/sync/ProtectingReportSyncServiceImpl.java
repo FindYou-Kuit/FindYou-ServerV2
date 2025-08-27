@@ -2,10 +2,10 @@ package com.kuit.findyou.domain.report.service.sync;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
-import com.kuit.findyou.domain.report.model.Neutering;
+import com.kuit.findyou.domain.report.dto.ReportWithImages;
+import com.kuit.findyou.domain.report.dto.SyncResult;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
@@ -63,7 +63,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
         List<ProtectingReport> reportsToDelete = findReportsToDelete(existingReports, apiNoticeNumbers);
         protectingReportRepository.deleteAll(reportsToDelete);
 
-        List<ReportWithImages> newReportBundles = createNewReports(apiItems, existingNoticeNumbers);
+        List<ReportWithImages<ProtectingReport>> newReportBundles = createNewReports(apiItems, existingNoticeNumbers);
 
         // 1. report 먼저 저장
         List<ProtectingReport> newReports = newReportBundles.stream()
@@ -74,7 +74,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
         // 2. 연관관계 설정 후 이미지 저장
         List<ReportImage> allImages = new ArrayList<>();
 
-        for (ReportWithImages bundle : newReportBundles) {
+        for (ReportWithImages<ProtectingReport> bundle : newReportBundles) {
             ProtectingReport report = bundle.report();
             for (ReportImage image : bundle.images()) {
                 image.setReport(report);
@@ -100,28 +100,28 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .breed(item.kindNm())
                 .species(ProtectingAnimalParser.parseSpecies(item.upKindNm()))
                 .tag(ReportTag.PROTECTING)
-                .date(ProtectingAnimalParser.changeToLocalDate(item.happenDt()))
+                .date(ProtectingAnimalParser.parseDate(item.happenDt()))
                 .address(item.careAddr())
                 .latitude(coordinate.latitude())
                 .longitude(coordinate.longitude())
                 .user(null)
-                .sex(Sex.valueOf(item.sexCd()))
+                .sex(ProtectingAnimalParser.parseSex(item.sexCd()))
                 .age(ProtectingAnimalParser.parseAge(item.age()))
                 .weight(ProtectingAnimalParser.parseWeight(item.weight()))
                 .furColor(ProtectingAnimalParser.parseColor(item.colorCd()))
-                .neutering(Neutering.valueOf(item.neuterYn()))
+                .neutering(ProtectingAnimalParser.parseNeutering(item.neuterYn()))
                 .significant(item.specialMark() != null ? item.specialMark() : DEFAULT_SIGNIFICANT)
                 .foundLocation(item.happenPlace())
                 .noticeNumber(item.noticeNo())
-                .noticeStartDate(ProtectingAnimalParser.changeToLocalDate(item.noticeSdt()))
-                .noticeEndDate(ProtectingAnimalParser.changeToLocalDate(item.noticeEdt()))
+                .noticeStartDate(ProtectingAnimalParser.parseDate(item.noticeSdt()))
+                .noticeEndDate(ProtectingAnimalParser.parseDate(item.noticeEdt()))
                 .careName(item.careNm())
                 .careTel(item.careTel())
                 .authority(item.orgNm())
                 .build();
     }
 
-    private List<ReportWithImages> createNewReports(List<ProtectingAnimalItemDTO> apiItems, Set<String> existingNoticeNumbers) {
+    private List<ReportWithImages<ProtectingReport>> createNewReports(List<ProtectingAnimalItemDTO> apiItems, Set<String> existingNoticeNumbers) {
         return apiItems.stream()
                 .filter(item -> !existingNoticeNumbers.contains(item.noticeNo()))
                 .map(item -> {
@@ -135,7 +135,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                         images.add(ReportImage.createReportImage(item.popfile2(), UUID.randomUUID().toString()));
                     }
 
-                    return new ReportWithImages(report, images);
+                    return new ReportWithImages<>(report, images);
                 })
                 .toList();
     }
@@ -147,8 +147,4 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 result.deletedCount(), result.addedCount(), duration);
     }
 
-    // 동기화 결과를 담는 레코드
-    private record SyncResult(int deletedCount, int addedCount) {}
-
-    private record ReportWithImages(ProtectingReport report, List<ReportImage> images) {}
 }

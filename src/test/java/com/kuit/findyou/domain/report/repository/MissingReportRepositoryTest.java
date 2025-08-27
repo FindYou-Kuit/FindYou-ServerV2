@@ -67,7 +67,6 @@ class MissingReportRepositoryTest {
                 Sex.M,
                 "RFID123456789",
                 "3살",
-                "3.5kg",
                 "흰색",
                 "왼쪽 귀에 검은 점이 있음",
                 "김철수",
@@ -94,7 +93,6 @@ class MissingReportRepositoryTest {
         assertThat(foundReport.getSex()).isEqualTo(Sex.M);
         assertThat(foundReport.getRfid()).isEqualTo("RFID123456789");
         assertThat(foundReport.getAge()).isEqualTo("3살");
-        assertThat(foundReport.getWeight()).isEqualTo("3.5kg");
         assertThat(foundReport.getFurColor()).isEqualTo("흰색");
         assertThat(foundReport.getSignificant()).isEqualTo("왼쪽 귀에 검은 점이 있음");
         assertThat(foundReport.getReporterName()).isEqualTo("김철수");
@@ -111,7 +109,7 @@ class MissingReportRepositoryTest {
         MissingReport missingReport = MissingReport.createMissingReport(
                 "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 1, 15),
                 "서울시 강남구 테헤란로 123", testUser, Sex.M, "RFID123456789",
-                "3살", "3.5kg", "흰색", "왼쪽 귀에 검은 점이 있음",
+                "3살",  "흰색", "왼쪽 귀에 검은 점이 있음",
                 "김철수", "010-1234-5678", "강남역 2번 출구 근처",
                 new BigDecimal("37.498095"), new BigDecimal("127.027610")
         );
