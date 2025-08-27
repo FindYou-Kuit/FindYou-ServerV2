@@ -101,7 +101,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .species(ProtectingAnimalParser.parseSpecies(item.upKindNm()))
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.parseDate(item.happenDt()))
-                .address(item.careAddr())
+                .address(ProtectingAnimalParser.parseAddress(item.careAddr()))
                 .latitude(coordinate.latitude())
                 .longitude(coordinate.longitude())
                 .user(null)
