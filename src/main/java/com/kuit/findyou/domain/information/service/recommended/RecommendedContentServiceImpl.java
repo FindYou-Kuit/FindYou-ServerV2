@@ -1,8 +1,8 @@
-package com.kuit.findyou.domain.information.recommended.service;
+package com.kuit.findyou.domain.information.service.recommended;
 
-import com.kuit.findyou.domain.information.recommended.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.information.recommended.dto.ContentType;
-import com.kuit.findyou.domain.information.recommended.service.strategy.RecommendedContentStrategy;
+import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.ContentType;
+import com.kuit.findyou.domain.information.service.recommended.strategy.RecommendedContentStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class RecommendedContentService {
+public class RecommendedContentServiceImpl implements RecommendedContentService{
 
     private final Map<ContentType, RecommendedContentStrategy> strategies;
 
+    @Override
     public List<RecommendedContentResponse> getContents(ContentType type) {
         log.info("[추천 콘텐츠 조회 요청] type = {}", type);
 
