@@ -2,8 +2,8 @@ package com.kuit.findyou.domain.information.service;
 
 import com.kuit.findyou.domain.information.dto.UpdateVolunteerWorkRequest;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
-import com.kuit.findyou.domain.information.service.animalShelter.SyncVolunteerWorkServiceImpl;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
+import com.kuit.findyou.domain.information.service.animalShelter.SyncVolunteerWorkServiceImpl;
 import com.kuit.findyou.domain.information.util.VolunteerWorksByKeywordApiResponseUtil;
 import com.kuit.findyou.global.external.client.VolunteerWorkApiClient;
 import com.kuit.findyou.global.external.dto.VolunteerWorksByKeywordApiResponse;

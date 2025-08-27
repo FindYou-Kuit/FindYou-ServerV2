@@ -1,7 +1,7 @@
 package com.kuit.findyou.global.common.schedule;
 
 import com.kuit.findyou.domain.report.service.sync.ProtectingReportSyncService;
-import com.kuit.findyou.domain.information.service.SyncVolunteerWorkService;
+import com.kuit.findyou.domain.information.service.animalShelter.SyncVolunteerWorkService;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
 import com.kuit.findyou.domain.home.service.HomeStatisticsService;

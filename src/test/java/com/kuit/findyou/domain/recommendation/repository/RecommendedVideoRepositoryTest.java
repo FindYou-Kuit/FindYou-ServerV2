@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.recommendation.repository;
 
-import com.kuit.findyou.domain.information.recommended.model.RecommendedVideo;
-import com.kuit.findyou.domain.information.recommended.repository.RecommendedVideoRepository;
+import com.kuit.findyou.domain.information.model.RecommendedVideo;
+import com.kuit.findyou.domain.information.repository.RecommendedVideoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

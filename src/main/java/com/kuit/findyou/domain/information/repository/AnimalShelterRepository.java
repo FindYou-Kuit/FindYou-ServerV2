@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.animalShelter.repository;
+package com.kuit.findyou.domain.information.repository;
 
 import com.kuit.findyou.domain.information.model.AnimalShelter;
 import org.springframework.data.domain.Pageable;

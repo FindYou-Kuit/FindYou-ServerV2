@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.recommendation.repository;
 
-import com.kuit.findyou.domain.information.recommended.model.RecommendedNews;
-import com.kuit.findyou.domain.information.recommended.repository.RecommendedNewsRepository;
+import com.kuit.findyou.domain.information.model.RecommendedNews;
+import com.kuit.findyou.domain.information.repository.RecommendedNewsRepository;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

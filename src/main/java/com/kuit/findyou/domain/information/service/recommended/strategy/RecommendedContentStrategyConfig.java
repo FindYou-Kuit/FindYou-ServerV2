@@ -1,6 +1,6 @@
-package com.kuit.findyou.domain.information.recommended.service.strategy;
+package com.kuit.findyou.domain.information.service.recommended.strategy;
 
-import com.kuit.findyou.domain.information.recommended.dto.ContentType;
+import com.kuit.findyou.domain.information.dto.ContentType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

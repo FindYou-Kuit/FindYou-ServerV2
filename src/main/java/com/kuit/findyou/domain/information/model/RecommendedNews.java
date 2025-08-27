@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.recommended.model;
+package com.kuit.findyou.domain.information.model;
 
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
@@ -6,12 +6,12 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "recommended_videos")
+@Table(name = "recommended_news")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class RecommendedVideo extends BaseEntity{
+public class RecommendedNews extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

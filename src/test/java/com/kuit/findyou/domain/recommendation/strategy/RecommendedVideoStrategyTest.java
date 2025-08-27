@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.recommendation.strategy;
 
-import com.kuit.findyou.domain.information.recommended.model.RecommendedVideo;
-import com.kuit.findyou.domain.information.recommended.repository.RecommendedVideoRepository;
-import com.kuit.findyou.domain.information.recommended.service.strategy.RecommendedVideoStrategy;
+import com.kuit.findyou.domain.information.model.RecommendedVideo;
+import com.kuit.findyou.domain.information.repository.RecommendedVideoRepository;
+import com.kuit.findyou.domain.information.service.recommended.strategy.RecommendedVideoStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

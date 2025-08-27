@@ -1,7 +1,7 @@
-package com.kuit.findyou.domain.information.recommended.service.strategy;
+package com.kuit.findyou.domain.information.service.recommended.strategy;
 
-import com.kuit.findyou.domain.information.recommended.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.information.recommended.repository.RecommendedNewsRepository;
+import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.repository.RecommendedNewsRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,9 +1,9 @@
-package com.kuit.findyou.domain.information.animalShelter.service;
+package com.kuit.findyou.domain.information.service.animalShelter;
 
-import com.kuit.findyou.domain.information.animalShelter.dto.AnimalShelterPagingResponse;
-import com.kuit.findyou.domain.information.animalShelter.dto.AnimalShelterResponse;
+import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
+import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.model.AnimalShelter;
-import com.kuit.findyou.domain.information.animalShelter.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

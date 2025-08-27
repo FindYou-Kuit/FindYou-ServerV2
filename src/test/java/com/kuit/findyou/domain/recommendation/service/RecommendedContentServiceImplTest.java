@@ -1,9 +1,9 @@
 package com.kuit.findyou.domain.recommendation.service;
 
-import com.kuit.findyou.domain.information.recommended.dto.ContentType;
-import com.kuit.findyou.domain.information.recommended.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.information.recommended.service.RecommendedContentService;
-import com.kuit.findyou.domain.information.recommended.service.strategy.RecommendedContentStrategy;
+import com.kuit.findyou.domain.information.dto.ContentType;
+import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.service.recommended.RecommendedContentServiceImpl;
+import com.kuit.findyou.domain.information.service.recommended.strategy.RecommendedContentStrategy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
-class RecommendedContentServiceTest {
+class RecommendedContentServiceImplTest {
 
     @Test
     @DisplayName("VIDEO 타입에 대응하는 전략을 사용해 추천 콘텐츠를 반환한다")
@@ -27,7 +27,7 @@ class RecommendedContentServiceTest {
         );
         when(mockStrategy.getRecommendedContents()).thenReturn(mockResponse);
 
-        RecommendedContentService service = new RecommendedContentService(
+        RecommendedContentServiceImpl service = new RecommendedContentServiceImpl(
                 Map.of(ContentType.VIDEO, mockStrategy)
         );
 
@@ -49,7 +49,7 @@ class RecommendedContentServiceTest {
         );
         when(mockStrategy.getRecommendedContents()).thenReturn(mockResponse);
 
-        RecommendedContentService service = new RecommendedContentService(
+        RecommendedContentServiceImpl service = new RecommendedContentServiceImpl(
                 Map.of(ContentType.NEWS, mockStrategy)
         );
 
@@ -65,7 +65,7 @@ class RecommendedContentServiceTest {
     @DisplayName("전략이 매핑되지 않은 타입일 경우 예외를 던진다")
     void getContents_strategyNotFound() {
         // given
-        RecommendedContentService service = new RecommendedContentService(Map.of()); // 빈 맵
+        RecommendedContentServiceImpl service = new RecommendedContentServiceImpl(Map.of()); // 빈 맵
 
         // when & then
         assertThatThrownBy(() -> service.getContents(ContentType.VIDEO))
