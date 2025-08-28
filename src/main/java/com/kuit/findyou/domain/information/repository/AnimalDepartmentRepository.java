@@ -11,17 +11,17 @@ public interface AnimalDepartmentRepository extends JpaRepository<AnimalDepartme
     List<AnimalDepartment> findAllByIdGreaterThanOrderByIdAsc(Long id, Pageable pageable);
 
     // 정확하게 일치하는 경우
-    List<AnimalDepartment> findAllByOrganizationEqualsIgnoreCaseAndIdGreaterThanOrderByIdAsc(
+    List<AnimalDepartment> findAllByOrganizationEqualsAndIdGreaterThanOrderByIdAsc(
             String organization, Long id, Pageable pageable
     );
 
     // AND 토큰(시도 & 시군구 모두 포함) 사용
-    List<AnimalDepartment> findAllByOrganizationContainingIgnoreCaseAndOrganizationContainingIgnoreCaseAndIdGreaterThanOrderByIdAsc(
+    List<AnimalDepartment> findAllByOrganizationContainingAndOrganizationContainingAndIdGreaterThanOrderByIdAsc(
             String sidoToken, String sigunguToken, Long id, Pageable pageable
     );
 
     // 전체를 substring으로
-    List<AnimalDepartment> findAllByOrganizationContainingIgnoreCaseAndIdGreaterThanOrderByIdAsc(
+    List<AnimalDepartment> findAllByOrganizationContainingAndIdGreaterThanOrderByIdAsc(
             String organization, Long id, Pageable pageable
     );
 }

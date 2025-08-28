@@ -27,20 +27,20 @@ public class AnimalDepartmentServiceImpl implements AnimalDepartmentService {
         } else {
             String norm = district.trim();
             // 정확하게 일치하는 것을 우선으로
-            rows = animalDepartmentRepository.findAllByOrganizationEqualsIgnoreCaseAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
+            rows = animalDepartmentRepository.findAllByOrganizationEqualsAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
 
             if (rows.isEmpty()) {
                 // AND 토큰(시도/시군구 모두 포함)
                 String[] tokens = norm.split("\\s+", 2);
                 if (tokens.length == 2) {
-                    rows = animalDepartmentRepository.findAllByOrganizationContainingIgnoreCaseAndOrganizationContainingIgnoreCaseAndIdGreaterThanOrderByIdAsc(
+                    rows = animalDepartmentRepository.findAllByOrganizationContainingAndOrganizationContainingAndIdGreaterThanOrderByIdAsc(
                             tokens[0], tokens[1], cursor, pageable
                     );
                 }
             }
             if (rows.isEmpty()) {
                 // 전체 문자열 substring 폴백
-                rows = animalDepartmentRepository.findAllByOrganizationContainingIgnoreCaseAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
+                rows = animalDepartmentRepository.findAllByOrganizationContainingAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
             }
         }
 
