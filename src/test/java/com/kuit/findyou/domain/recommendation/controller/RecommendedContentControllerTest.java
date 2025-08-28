@@ -1,3 +1,5 @@
+package com.kuit.findyou.domain.recommendation.controller;
+
 import com.kuit.findyou.FindyouApplication;
 import com.kuit.findyou.domain.information.model.RecommendedNews;
 import com.kuit.findyou.domain.information.model.RecommendedVideo;
