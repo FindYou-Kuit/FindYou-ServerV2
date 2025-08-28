@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.information.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -21,8 +22,8 @@ public record GetAnimalDepartmentsResponse (
 
     @Schema(description = "보호부서 정보")
     public record AnimalDepartmentDTO(
-            String organization,
-            String department,
+            @JsonProperty("district") String organization, // 담당기관
+            @JsonProperty("departmentName") String department,
             String phoneNumber
     ) {
         public static AnimalDepartmentDTO from(AnimalDepartment entity) {

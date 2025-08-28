@@ -16,23 +16,16 @@ public class AnimalDepartmentServiceImpl implements AnimalDepartmentService {
     private final AnimalDepartmentRepository animalDepartmentRepository;
 
     @Override
-    public GetAnimalDepartmentsResponse getDepartments(Long lastId, int size, String sido, String sigungu) {
-        String organizationFilter = (sido != null && !sido.isBlank() && sigungu != null && !sigungu.isBlank())
-                ? sido + " " + sigungu
-                : null;
+    public GetAnimalDepartmentsResponse getDepartments(Long lastId, int size, String district) {
+        Long cursor = (lastId == null ? 0L : lastId);
+        var pageable = PageRequest.of(0, size + 1);
 
-        List<AnimalDepartment> departments;
+        List<AnimalDepartment> rows = (district == null || district.isBlank())
+                ? animalDepartmentRepository.findAllByIdGreaterThanOrderByIdAsc(cursor, pageable)
+                : animalDepartmentRepository.findAllByOrganizationContainingAndIdGreaterThanOrderByIdAsc(district.trim(), cursor, pageable);
 
-        if (organizationFilter == null) {
-            departments = animalDepartmentRepository.findAllByIdGreaterThanOrderByDepartmentAsc(
-                    lastId == null ? 0L : lastId, PageRequest.of(0, size + 1));
-        } else {
-            departments = animalDepartmentRepository.findAllByOrganizationContainingAndIdGreaterThanOrderByDepartmentAsc(
-                    organizationFilter, lastId == null ? 0L : lastId, PageRequest.of(0, size + 1));
-        }
-
-        boolean isLast = departments.size() <= size;
-        List<AnimalDepartment> taken = departments.size() > size ? departments.subList(0, size) : departments;
+        boolean isLast = rows.size() <= size;
+        List<AnimalDepartment> taken = rows.size() > size ? rows.subList(0, size) : rows;
         Long newLastId = taken.isEmpty() ? -1L : taken.get(taken.size() - 1).getId();
 
         return GetAnimalDepartmentsResponse.from(taken, newLastId, isLast);

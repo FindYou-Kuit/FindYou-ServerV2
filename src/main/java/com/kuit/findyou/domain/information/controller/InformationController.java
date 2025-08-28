@@ -111,7 +111,7 @@ public class InformationController {
 보호부서 목록을 조회합니다.
 
 **[주의]** 커서 페이징을 지원합니다.
-- 첫 요청에서는 lastId를 0으로 전달해주세요
+- 첫 요청에서는 lastId를 0으로 (null인 경우 -> 0)
 - 다음 요청에는 이전 응답의 lastId를 세팅해서 전달해주세요.
 """)
     @CustomExceptionDescription(DEFAULT)
@@ -120,28 +120,13 @@ public class InformationController {
             @Parameter(description = "커서 페이징용 마지막 ID", example = "0")
             @RequestParam(defaultValue = "0") Long lastId,
 
-            @Parameter(description = "도/광역시", example = "서울특별시")
-            @RequestParam(defaultValue = "") String sido,
-
-            @Parameter(description = "구/리/시/읍", example = "송파구")
-            @RequestParam(defaultValue = "") String sigungu,
+            @Parameter(description = "행정구역 전체 문자열", example = "서울특별시 광진구")
+            @RequestParam(defaultValue = "") String district,
 
             @Parameter(description = "페이지 크기", example = "20")
             @RequestParam(defaultValue = "20") int size
     ) {
-        String s = (sido == null || sido.isBlank()) ? null : sido;
-        String g = (sigungu == null || sigungu.isBlank()) ? null : sigungu;
-
-        GetAnimalDepartmentsResponse svcResp = informationServiceFacade.getDepartments(lastId, size, s, g);
-
-        var mapped = svcResp.departments().stream()
-                .map(dto -> Map.of(
-                        "departmentName", dto.department(),
-                        "district", dto.organization(),
-                        "phoneNumber", dto.phoneNumber()
-                ))
-                .toList();
-
-        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, size, s, g));
+        String normalizedDistrict = (district == null || district.isBlank()) ? null : district.trim(); //공백제거
+        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, size, normalizedDistrict));
     }
 }

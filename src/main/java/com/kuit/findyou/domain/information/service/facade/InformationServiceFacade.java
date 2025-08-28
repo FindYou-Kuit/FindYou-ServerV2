@@ -27,8 +27,8 @@ public class InformationServiceFacade {
         return animalShelterService.getNearbyCenters(lastId, lat, lng, size);
     }
 
-    public GetAnimalDepartmentsResponse getDepartments(Long lastId, int size, String sido, String sigungu) {
-        return animalDepartmentService.getDepartments(lastId, size, sido, sigungu);
+    public GetAnimalDepartmentsResponse getDepartments(Long lastId, int size, String district) {
+        return animalDepartmentService.getDepartments(lastId, size, district);
     }
 
     public List<RecommendedContentResponse> getRecommendedContents(ContentType type) {

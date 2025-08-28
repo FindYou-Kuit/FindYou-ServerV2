@@ -19,7 +19,7 @@ public class AnimalDepartment extends BaseEntity {
     private Long id;
 
     @Column(name = "organization", length = 100, nullable = false)
-    private String organization; //기관
+    private String organization; // 담당기관
 
     @Column(name = "department", length = 70, nullable = false)
     private String department; // 담당부서
