@@ -14,12 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -166,53 +162,48 @@ class InformationControllerTest {
         assertThat(response.lastId()).isEqualTo(1);
         assertThat(response.isLast()).isTrue();
     }
-
-    @DisplayName("보호부서 조회 - 데이터가 없으면 빈 리스트와 isLast=true 반환")
+    @DisplayName("보호부서 - 데이터가 없으면 빈 리스트와 isLast=true")
     @Test
-    void should_ReturnEmptyDepartments_When_NoDataExists() {
-        // given
+    void departments_empty_returnsLastTrue() {
         User user = testInitializer.createTestUser();
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
-        // when
-        var response = given()
+        GetAnimalDepartmentsResponse res = given()
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("lastId", 0L)
-                .param("size", 20)
                 .when()
-                .get("api/v2/informations/departments")
+                .get("/api/v2/informations/departments")
                 .then()
                 .statusCode(200)
                 .extract()
                 .jsonPath()
-                .getMap("data");
+                .getObject("data", GetAnimalDepartmentsResponse.class);
 
-        // then
-        assertThat((List<?>) response.get("departments")).isEmpty();
-        assertThat(response.get("lastId")).isEqualTo(-1);
-        assertThat(response.get("isLast")).isEqualTo(true);
+        //then
+        assertThat(res.departments()).isEmpty();
+        assertThat(res.isLast()).isTrue();
+        assertThat(res.lastId()).isNull();
     }
 
-    @DisplayName("보호부서 조회 - 데이터가 있으면 정상적으로 반환")
+    @DisplayName("보호부서 district 없이 첫 페이지 조회 - 25건 중 20건 반환, isLast=false")
     @Test
-    void should_ReturnDepartments_When_DataExists() {
+    void departments_FirstPage_NoFilter_PageSize20() {
         // given
         User user = testInitializer.createTestUser();
-        testInitializer.createTestAnimalDepartments(5);
-
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
+        testInitializer.createTestAnimalDepartments("서울특별시 송파구", 25);
+
         // when
-        var response  = given()
+        GetAnimalDepartmentsResponse res = given()
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("lastId", 0L)
-                .param("size", 20)
                 .when()
-                .get("api/v2/informations/departments")
+                .get("/api/v2/informations/departments")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -220,15 +211,73 @@ class InformationControllerTest {
                 .getObject("data", GetAnimalDepartmentsResponse.class);
 
         // then
-        assertThat(response.departments()).isNotEmpty();
-        assertThat(response.departments().get(0).department()).isNotBlank();   // ← DTO 필드로 검증
-        assertThat(response.isLast()).isTrue();
+        assertThat(res.departments()).hasSize(20); // 고정 사이즈
+        assertThat(res.isLast()).isFalse();
+        assertThat(res.lastId()).isNotNull(); //다음 페이지 커서 존재
     }
-    @TestConfiguration
-    static class TestRestConfig {
-        @Bean
-        RestTemplate restTemplate(RestTemplateBuilder builder) {
-            return builder.build();
-        }
+
+    @DisplayName("보호부서 district 정확일치 필터 - 해당 구만 반환")
+    @Test
+    void departments_Filter_ExactMatch() {
+        // given
+        User user = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        testInitializer.createTestAnimalDepartments("서울특별시 송파구", 3);
+        testInitializer.createTestAnimalDepartments("서울특별시 강남구", 2);
+
+        // when
+        GetAnimalDepartmentsResponse res = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("lastId", 0L)
+                .param("district", "서울특별시 송파구")
+                .when()
+                .get("/api/v2/informations/departments")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", GetAnimalDepartmentsResponse.class);
+
+        // then
+        assertThat(res.departments()).hasSize(3);
+        assertThat(res.isLast()).isTrue();
+        assertThat(res.departments())
+                .extracting(GetAnimalDepartmentsResponse.AnimalDepartmentDTO::organization)
+                .allSatisfy(org -> assertThat(org).isEqualTo("서울특별시 송파구"));
+    }
+    @DisplayName("[보호부서] substring 폴백 - 단일 토큰(공백 없음)으로 부분일치 검색")
+    @Test
+    void departments_Filter_SubstringFallback_WithSingleToken() {
+        // given
+        User user = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        testInitializer.createTestAnimalDepartments("서울특별시 송파구청", 2);
+        testInitializer.createTestAnimalDepartments("서울특별시 강남구", 1);
+
+        // when: 공백 없는 단일 토큰 전달로 substring 폴백 유도
+        GetAnimalDepartmentsResponse res = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("lastId", 0L)
+                .param("district", "송파구청")
+                .when()
+                .get("/api/v2/informations/departments")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", GetAnimalDepartmentsResponse.class);
+
+        // then
+        List<String> orgs = res.departments()
+                .stream().map(GetAnimalDepartmentsResponse.AnimalDepartmentDTO::organization).toList();
+
+        assertThat(orgs).allMatch(o -> o.contains("송파구청"));
+        assertThat(orgs).noneMatch(o -> o.contains("강남구"));
     }
 }
