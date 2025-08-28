@@ -3,14 +3,11 @@ package com.kuit.findyou.domain.information.service;
 import com.kuit.findyou.domain.information.dto.GetAnimalDepartmentsResponse;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import com.kuit.findyou.domain.information.repository.AnimalDepartmentRepository;
-import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
