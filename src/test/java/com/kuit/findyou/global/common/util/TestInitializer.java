@@ -180,13 +180,13 @@ public class TestInitializer {
         });
     }
 
-    public void createTestAnimalDepartments(int n) {
-        for (int i = 1; i <= n; i++) {
+    public void createTestAnimalDepartments(String organization, int count) {
+        for (int i = 1; i <= count; i++) {
             animalDepartmentRepository.save(
                     AnimalDepartment.builder()
-                            .organization("서울특별시 송파구청")
+                            .organization(organization)
                             .department("테스트부서" + i)
-                            .phoneNumber("02-0000-00" + String.format("%02d", i))
+                            .phoneNumber("02-0000-" + String.format("%03d", i))
                             .build()
             );
         }
