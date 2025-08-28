@@ -1,10 +1,6 @@
 package com.kuit.findyou.domain.information.controller;
 
-import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.information.dto.ContentType;
-import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.*;
 import com.kuit.findyou.domain.information.service.facade.InformationServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
@@ -18,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
 import java.util.List;
 
@@ -34,7 +29,7 @@ public class InformationController {
     private final InformationServiceFacade informationServiceFacade;
 
     @Operation(summary = "보호소/병원 조회", description = "사용자 위치 또는 관할구역/유형으로 보호소/병원을 조회합니다.")
-    @GetMapping("/shelters-and-hospitals")
+    @GetMapping("/protection-centers")
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<AnimalShelterPagingResponse<AnimalShelterResponse>> getSheltersAndHospitals(
             @Parameter(hidden = true) @LoginUserId Long userId, // @LoginUserId로 통일
@@ -42,13 +37,10 @@ public class InformationController {
             @Parameter(description = "커서 페이징용 마지막 ID", example = "10")
             @RequestParam(defaultValue = "0") Long lastId,
 
-            @Parameter(description = "기관 종류 (all | shelter | hospital)",example = "hospital")
-            @RequestParam(defaultValue = "all") String type,
-
-            @Parameter(description = "도/광역시", example = "서울특별시")
+            @Parameter(description = "시/도", example = "서울특별시")
             @RequestParam(defaultValue = "") String sido,
 
-            @Parameter(description = "구/리/시/읍", example = "강남구")
+            @Parameter(description = "시/군/구", example = "강남구")
             @RequestParam(defaultValue = "") String sigungu,
 
             //TODO #28 머지 후 validator 적용하기
@@ -61,7 +53,6 @@ public class InformationController {
             @Parameter(description = "페이지 크기", example = "20")
             @RequestParam(defaultValue = "20") int size
     ) {
-        String typeNorm = normalizeType(type);
         String sidoNorm = nullIfBlank(sido);
         String sigunguNorm = nullIfBlank(sigungu);
         Double latVal = parseDoubleOrNull(lat);
@@ -77,7 +68,7 @@ public class InformationController {
         return BaseResponse.ok(
                 hasGeo
                         ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal, size)
-                        : informationServiceFacade.getShelters(cursor, typeNorm, sidoNorm, sigunguNorm, null, null, size)
+                        : informationServiceFacade.getCenters(cursor, sidoNorm, sigunguNorm, size)
         );
     }
 

@@ -12,20 +12,18 @@ import static com.kuit.findyou.global.common.util.CalculateDistanceUtil.calculat
 
 @Service
 @RequiredArgsConstructor
-public class AnimalShelterServiceImpl implements AnimalShelterService {
+public class AnimalCenterServiceImpl implements AnimalCenterService {
 
     private final AnimalShelterRepository animalShelterRepository;
 
     @Override
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
-
-        String hospital = "병원"; //유형 필터에 사용되는 키워드
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String sido, String sigungu, int size) {
 
         //관할구역 필터
         String jurisdiction = (sido != null && !sido.isBlank() && sigungu != null && !sigungu.isBlank())
                 ? sido + " " + sigungu
                 : null;
-        List<AnimalShelter> results = animalShelterRepository.findWithFilter(lastId, type, hospital, jurisdiction, PageRequest.of(0, size + 1));
+        List<AnimalShelter> results = animalShelterRepository.findWithFilter(lastId, jurisdiction, PageRequest.of(0, size + 1));
         boolean isLast = results.size() <= size;
         List<AnimalShelter> page = isLast ? results : results.subList(0, size);
         Long nextLastId = page.isEmpty() ? null : page.get(page.size() - 1).getId();

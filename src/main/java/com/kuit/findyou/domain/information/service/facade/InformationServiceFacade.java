@@ -5,7 +5,7 @@ import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
 import com.kuit.findyou.domain.information.dto.ContentType;
 import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.information.service.animalShelter.AnimalShelterService;
+import com.kuit.findyou.domain.information.service.animalShelter.AnimalCenterService;
 import com.kuit.findyou.domain.information.service.recommended.RecommendedContentServiceImpl;
 import com.kuit.findyou.domain.information.service.volunteerWork.VolunteerWorkService;
 
@@ -18,16 +18,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InformationServiceFacade {
 
-    private final AnimalShelterService animalShelterService;
+    private final AnimalCenterService animalCenterService;
     private final RecommendedContentServiceImpl contentService;
     private final VolunteerWorkService volunteerWorkService;
 
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
-        return animalShelterService.getShelters(lastId, type, sido, sigungu, lat, lng, size);
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String sido, String sigungu, int size) {
+        return animalCenterService.getCenters(lastId, sido, sigungu, size);
     }
 
     public AnimalShelterPagingResponse<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
-        return animalShelterService.getNearbyCenters(lastId, lat, lng, size);
+        return animalCenterService.getNearbyCenters(lastId, lat, lng, size);
     }
 
     public List<RecommendedContentResponse> getRecommendedContents(ContentType type) {
