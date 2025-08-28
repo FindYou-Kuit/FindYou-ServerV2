@@ -45,7 +45,7 @@ public class AnimalShelterControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v2/informations/shelters-and-hospitals - 관할구역, 유형 필터 조회")
+    @DisplayName("GET /api/v2/informations/protection-centers - 관할구역, 유형 필터 조회")
      void getShelters_withJurisdictionAndType() {
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
@@ -54,22 +54,21 @@ public class AnimalShelterControllerTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("lastId", 0L)
-                .param("type", "hospital")
                 .param("sido", "서울특별시")
                 .param("sigungu", "강남구")
         .when()
-                .get("/api/v2/informations/shelters-and-hospitals")
+                .get("/api/v2/informations/protection-centers")
         .then()
                 .statusCode(200)
-                .body("data.centers[0].jurisdiction.size()", equalTo(2))
-                .body("data.centers[0].jurisdiction", hasItems("서울특별시 강남구", "서울특별시 서초구"))
-                .body("data.centers[0].centerName", containsString("병원"))
+                .body("data.centers[0].jurisdiction.size()", equalTo(1))
+                .body("data.centers[0].centerName", notNullValue())
+                .body("data.centers[0].jurisdiction", hasItems("서울특별시 강남구"))
                 .body("data.lastId", anyOf(nullValue(), instanceOf(Number.class)))
                 .body("data.isLast", anyOf(is(true), is(false)));
     }
 
     @Test
-    @DisplayName("GET /api/v2/informations/shelters-and-hospitals - 위치 기반 조회")
+    @DisplayName("GET /api/v2/informations/protection-centers - 위치 기반 조회")
     void getNearbyShelters_withLatLng() {
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
@@ -81,7 +80,7 @@ public class AnimalShelterControllerTest {
                 .param("lat", 37.5)
                 .param("long", 127.1)
         .when()
-                .get("/api/v2/informations/shelters-and-hospitals")
+                .get("/api/v2/informations/protection-centers")
         .then()
                 .statusCode(200)
                 .body("data.centers.size()", greaterThan(0))

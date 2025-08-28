@@ -52,11 +52,13 @@ public class AnimalShelterRepositoryTest {
 
         // when
         List<AnimalShelter> result = animalShelterRepository.findWithFilter(
-                0L, "hospital", "병원", "서울특별시 송파구",  PageRequest.of(0, 10));
+                0L, "서울특별시 송파구",  PageRequest.of(0, 10));
 
         // then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getShelterName()).isEqualTo("송파병원");
+        assertThat(result).hasSize(2);
+        //assertThat(result.get(0).getShelterName()).isEqualTo("송파병원");
+        assertThat(result).extracting("shelterName")
+                .containsExactlyInAnyOrder("송파병원", "서울보호소");
     }
 
     @Test
@@ -116,14 +118,14 @@ public class AnimalShelterRepositoryTest {
         }
 
         // when: lastId=0, size=2
-        List<AnimalShelter> firstPage = animalShelterRepository.findWithFilter(0L, "all", "병원", null, PageRequest.of(0, 2));
+        List<AnimalShelter> firstPage = animalShelterRepository.findWithFilter(0L,  "서울특별시 강동구", PageRequest.of(0, 2));
 
         // then -> 첫 페이지는 2개만 나옴
         assertThat(firstPage).hasSize(2);
         Long lastIdFromFirst = firstPage.get(firstPage.size() - 1).getId();
 
         // when: lastId=첫 페이지 마지막 ID, size=2 로 조회
-        List<AnimalShelter> secondPage = animalShelterRepository.findWithFilter(lastIdFromFirst, "all", "병원", null, PageRequest.of(0, 2));
+        List<AnimalShelter> secondPage = animalShelterRepository.findWithFilter(lastIdFromFirst, "서울특별시 강동구",  PageRequest.of(0, 2));
 
         // then -> 2개만 나옴
         assertThat(secondPage).hasSize(2);
