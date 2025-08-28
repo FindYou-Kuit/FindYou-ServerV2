@@ -6,6 +6,7 @@ import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
+import com.kuit.findyou.global.common.util.TestInitializer;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import static org.assertj.core.api.Assertions.*;
 
 
 @DataJpaTest
+@Import({TestInitializer.class})
 @Transactional
 @ActiveProfiles("test")
 class InterestReportRepositoryTest {
@@ -41,6 +44,9 @@ class InterestReportRepositoryTest {
 
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private TestInitializer testInitializer;
 
     private User testUser;
     private MissingReport missingReport;
@@ -130,7 +136,7 @@ class InterestReportRepositoryTest {
     private void createTestReports() {
         missingReport = MissingReport.createMissingReport(
                 "골든 리트리버", "개", ReportTag.MISSING, LocalDate.now().minusDays(5),
-                "서울시 강남구", testUser, Sex.M, "RFID123456", "3살", "25kg", "황금색", "목에 빨간 목걸이",
+                "서울시 강남구", testUser, Sex.M, "RFID123456", "3살", "황금색", "목에 빨간 목걸이",
                 "김철수", "010-1234-5678", "강남역 근처",
                 new BigDecimal("37.497952"), new BigDecimal("127.027619")
         );
@@ -179,5 +185,21 @@ class InterestReportRepositoryTest {
 
         // then
         assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("사용자와 신고글로 관심동물을 삭제하면 성공한다")
+    void deleteByUserAndReport(){
+        // given
+        User user = testInitializer.createTestUser();
+        MissingReport report = testInitializer.createTestMissingReportWithImage(user);
+        testInitializer.createTestInterestReport(user, report);
+
+        // when
+        interestReportRepository.deleteByUserAndReport(user, report);
+
+        // then
+        boolean exists = interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId());
+        assertThat(exists).isFalse();
     }
 }

@@ -3,8 +3,13 @@ package com.kuit.findyou.domain.user.service.interest_report;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.factory.CardFactory;
+import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
+import com.kuit.findyou.domain.report.repository.ReportRepository;
+import com.kuit.findyou.domain.user.model.User;
+import com.kuit.findyou.domain.user.repository.UserRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +23,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.DUPLICATE_INTEREST_REPORT;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.REPORT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -38,6 +46,12 @@ class InterestReportServiceTest {
     private InterestReportRepository interestReportRepository;
 
     @Mock
+    private ReportRepository reportRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private CardFactory cardFactory;
 
     @Captor
@@ -48,6 +62,15 @@ class InterestReportServiceTest {
     private ArgumentCaptor<Long> nextLastIdCaptor;
     @Captor
     private ArgumentCaptor<Boolean> isLastCaptor;
+    @Captor
+    private ArgumentCaptor<Long> userIdCaptor;
+    @Captor
+    private ArgumentCaptor<Long> reportIdCaptor;
+    @Captor
+    private ArgumentCaptor<User> userCaptor;
+    @Captor
+    private ArgumentCaptor<Report> reportCaptor;
+
 
     @DisplayName("페이지 사이즈보다 많은 관심글이 존재하면 사이즈에 맞춰서 보여준다")
     @Test
@@ -138,5 +161,123 @@ class InterestReportServiceTest {
                         "city"
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @DisplayName("새로운 관심동물을 등록하면 성공한다")
+    @Test
+    void shouldSucceed_WhenNewInterestAnimalIsAdded(){
+        // given
+        final long userId = 1L;
+        final long reportId = 2L;
+
+        User mockUser = mock(User.class);
+        Report mockReport = mock(Report.class);
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
+        when(reportRepository.findById(anyLong())).thenReturn(Optional.of(mockReport));
+        when(interestReportRepository.existsByReportIdAndUserId(anyLong(), anyLong())).thenReturn(false);
+
+        // when
+        interestReportService.addInterestAnimal(userId, reportId);
+
+        // then
+        verify(userRepository, times(1)).getReferenceById(userIdCaptor.capture());
+        Long actualUserId = userIdCaptor.getValue();
+        assertThat(actualUserId).isEqualTo(userId);
+
+        verify(reportRepository, times(1)).findById(reportIdCaptor.capture());
+        Long actualReportId = reportIdCaptor.getValue();
+        assertThat(actualReportId).isEqualTo(reportId);
+
+        verify(interestReportRepository, times(1)).existsByReportIdAndUserId(reportIdCaptor.capture(), userIdCaptor.capture());
+        actualReportId = reportIdCaptor.getValue();
+        actualUserId = userIdCaptor.getValue();
+        assertThat(actualUserId).isEqualTo(userId);
+        assertThat(actualReportId).isEqualTo(reportId);
+    }
+
+    @DisplayName("이미 등록했던 관심동물을 다시 등록하면 예외가 발생한다")
+    @Test
+    void shouldThrowException_WhenInterestReportRequestIsDuplicate(){
+        // given
+        final long userId = 1L;
+        final long reportId = 2L;
+
+        User mockUser = mock(User.class);
+        Report mockReport = mock(Report.class);
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
+        when(reportRepository.findById(anyLong())).thenReturn(Optional.of(mockReport));
+        when(interestReportRepository.existsByReportIdAndUserId(anyLong(), anyLong())).thenReturn(true);
+
+        // when && then
+        assertThatThrownBy(() -> interestReportService.addInterestAnimal(userId, reportId))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(DUPLICATE_INTEREST_REPORT.getMessage());
+    }
+
+    @DisplayName("존재하지 않는 동물을 관심동물로 등록하면 예외가 발생한다")
+    @Test
+    void shouldThrowException_WhenAnimalInAddInterestAnimalRequestDoesNotExist(){
+        // given
+        final long userId = 1L;
+        final long reportId = 2L;
+
+        User mockUser = mock(User.class);
+        Report mockReport = mock(Report.class);
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
+        when(reportRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // when && then
+        assertThatThrownBy(() -> interestReportService.addInterestAnimal(userId, reportId))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(REPORT_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("관심동물이 존재하면 삭제에 성공한다")
+    @Test
+    void shouldDeleteInterestAnimal_WhenItExists(){
+        // given
+        final long userId = 1L;
+        final long reportId = 2L;
+        User mockUser = mock(User.class);
+        Report mockReport = mock(Report.class);
+
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
+        when(reportRepository.findById(anyLong())).thenReturn(Optional.of(mockReport));
+
+        // when
+        interestReportService.deleteInterestAnimal(userId, reportId);
+
+        // then
+        verify(userRepository, times(1)).getReferenceById(userIdCaptor.capture());
+
+        verify(reportRepository, times(1)).findById(reportIdCaptor.capture());
+        assertThat(reportIdCaptor.getValue()).isEqualTo(reportId);
+
+        verify(interestReportRepository, times(1)).deleteByUserAndReport(userCaptor.capture(), reportCaptor.capture());
+        assertThat(userCaptor.getValue()).isEqualTo(mockUser);
+        assertThat(reportCaptor.getValue()).isEqualTo(mockReport);
+    }
+
+    @DisplayName("관심동물이 존재하지 않으면 삭제 메서드를 호출하지 않는다")
+    @Test
+    void shouldNotCallDeleteMethod_WhenInterestAnimalDoesNotExist(){
+        // given
+        final long userId = 1L;
+        final long reportId = 2L;
+        User mockUser = mock(User.class);
+
+        when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
+        when(reportRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // when
+        interestReportService.deleteInterestAnimal(userId, reportId);
+
+        // then
+        verify(userRepository, times(1)).getReferenceById(userIdCaptor.capture());
+
+        verify(reportRepository, times(1)).findById(reportIdCaptor.capture());
+        assertThat(reportIdCaptor.getValue()).isEqualTo(reportId);
+
+        verify(interestReportRepository, never()).deleteByUserAndReport(any(), any());
     }
 }

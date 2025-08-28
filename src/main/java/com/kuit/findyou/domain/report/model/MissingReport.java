@@ -16,22 +16,19 @@ import java.util.ArrayList;
 public class MissingReport extends Report {
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sex", nullable = false)
+    @Column(name = "sex")
     private Sex sex;
 
     @Column(name = "rfid", length = 30)
     private String rfid;
 
-    @Column(name = "age", length = 10, nullable = false)
+    @Column(name = "age", length = 30)
     private String age;
 
-    @Column(name = "weight", length = 20, nullable = false)
-    private String weight;
-
-    @Column(name = "fur_color", length = 100, nullable = false)
+    @Column(name = "fur_color", length = 100)
     private String furColor;
 
-    @Column(name = "significant", length = 255, nullable = false)
+    @Column(name = "significant", length = 255)
     private String significant;
 
     @Column(name = "reporter_name", length = 20)
@@ -40,20 +37,19 @@ public class MissingReport extends Report {
     @Column(name = "reporter_tel", length = 20)
     private String reporterTel;
 
-    @Column(name = "landmark", length = 255, nullable = false)
+    @Column(name = "landmark", length = 255)
     private String landmark;
 
     @Builder
     public MissingReport(String breed, String species, ReportTag tag, LocalDate date,
                           String address, BigDecimal latitude, BigDecimal longitude, User user, Sex sex, String rfid, String age,
-                          String weight, String furColor, String significant,
+                          String furColor, String significant,
                           String reporterName, String reporterTel, String landmark) {
         super(null, breed, species, tag, date, address, latitude, longitude, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
         this.rfid = rfid;
         this.age = age;
-        this.weight = weight;
         this.furColor = furColor;
         this.significant = significant;
         this.reporterName = reporterName;
@@ -63,7 +59,7 @@ public class MissingReport extends Report {
 
     public static MissingReport createMissingReport(String breed, String species, ReportTag tag, LocalDate date,
                                                     String address, User user, Sex sex, String rfid, String age,
-                                                    String weight, String furColor, String significant,
+                                                    String furColor, String significant,
                                                     String reporterName, String reporterTel, String landmark, BigDecimal latitude, BigDecimal longitude) {
         MissingReport report = MissingReport.builder()
                 .breed(breed)
@@ -77,7 +73,6 @@ public class MissingReport extends Report {
                 .sex(sex)
                 .rfid(rfid)
                 .age(age)
-                .weight(weight)
                 .furColor(furColor)
                 .significant(significant)
                 .reporterName(reporterName)

@@ -1,11 +1,15 @@
 package com.kuit.findyou.domain.report.util;
 
+import com.kuit.findyou.domain.report.model.Sex;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class ReportFormatUtil {
 
     private static final String UNKNOWN = "미상";
     private static final BigDecimal DEFAULT_COORDINATE = BigDecimal.valueOf(0.0);
+    private static final LocalDate UNKNOWN_DATE = LocalDate.of(2000, 1, 1);
 
     public static String formatAge(String age) {
         return age == null || UNKNOWN.equals(age) ? UNKNOWN : age + "살";
@@ -21,4 +25,18 @@ public class ReportFormatUtil {
         }
         return coordinate.doubleValue();
     }
+
+    public static String safeValue(String value) {
+        return (value == null || value.isBlank()) ? "-" : value;
+    }
+
+    public static String safeSex(Sex sex) {
+        return (sex == null) ? "-" : sex.getValue();
+    }
+
+    public static String safeDate(LocalDate date) {
+        return date.equals(UNKNOWN_DATE) ? "-" : date.toString();
+    }
+
+
 }
