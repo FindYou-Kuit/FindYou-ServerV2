@@ -20,13 +20,33 @@ public class AnimalDepartmentServiceImpl implements AnimalDepartmentService {
         Long cursor = (lastId == null ? 0L : lastId);
         var pageable = PageRequest.of(0, size + 1);
 
-        List<AnimalDepartment> rows = (district == null || district.isBlank())
-                ? animalDepartmentRepository.findAllByIdGreaterThanOrderByIdAsc(cursor, pageable)
-                : animalDepartmentRepository.findAllByOrganizationContainingAndIdGreaterThanOrderByIdAsc(district.trim(), cursor, pageable);
+        List<AnimalDepartment> rows;
+
+        if (district == null || district.isBlank()) {
+            rows = animalDepartmentRepository.findAllByIdGreaterThanOrderByIdAsc(cursor, pageable);
+        } else {
+            String norm = district.trim();
+            // 정확하게 일치하는 것을 우선으로
+            rows = animalDepartmentRepository.findAllByOrganizationEqualsIgnoreCaseAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
+
+            if (rows.isEmpty()) {
+                // AND 토큰(시도/시군구 모두 포함)
+                String[] tokens = norm.split("\\s+", 2);
+                if (tokens.length == 2) {
+                    rows = animalDepartmentRepository.findAllByOrganizationContainingIgnoreCaseAndOrganizationContainingIgnoreCaseAndIdGreaterThanOrderByIdAsc(
+                            tokens[0], tokens[1], cursor, pageable
+                    );
+                }
+            }
+            if (rows.isEmpty()) {
+                // 전체 문자열 substring 폴백
+                rows = animalDepartmentRepository.findAllByOrganizationContainingIgnoreCaseAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
+            }
+        }
 
         boolean isLast = rows.size() <= size;
-        List<AnimalDepartment> taken = rows.size() > size ? rows.subList(0, size) : rows;
-        Long newLastId = taken.isEmpty() ? -1L : taken.get(taken.size() - 1).getId();
+        List<AnimalDepartment> taken = !isLast ? rows.subList(0, size) : rows;
+        Long newLastId = isLast || taken.isEmpty() ? null : taken.get(taken.size() - 1).getId();
 
         return GetAnimalDepartmentsResponse.from(taken, newLastId, isLast);
     }
