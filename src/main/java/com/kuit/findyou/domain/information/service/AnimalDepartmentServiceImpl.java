@@ -3,11 +3,14 @@ package com.kuit.findyou.domain.information.service;
 import com.kuit.findyou.domain.information.dto.GetAnimalDepartmentsResponse;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import com.kuit.findyou.domain.information.repository.AnimalDepartmentRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
@@ -20,34 +23,47 @@ public class AnimalDepartmentServiceImpl implements AnimalDepartmentService {
         Long cursor = (lastId == null ? 0L : lastId);
         var pageable = PageRequest.of(0, size + 1);
 
-        List<AnimalDepartment> rows;
-
-        if (district == null || district.isBlank()) {
-            rows = animalDepartmentRepository.findAllByIdGreaterThanOrderByIdAsc(cursor, pageable);
-        } else {
-            String norm = district.trim();
-            // 정확하게 일치하는 것을 우선으로
-            rows = animalDepartmentRepository.findAllByOrganizationEqualsAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
-
-            if (rows.isEmpty()) {
-                // AND 토큰(시도/시군구 모두 포함)
-                String[] tokens = norm.split("\\s+", 2);
-                if (tokens.length == 2) {
-                    rows = animalDepartmentRepository.findAllByOrganizationContainingAndOrganizationContainingAndIdGreaterThanOrderByIdAsc(
-                            tokens[0], tokens[1], cursor, pageable
-                    );
-                }
-            }
-            if (rows.isEmpty()) {
-                // 전체 문자열 substring 폴백
-                rows = animalDepartmentRepository.findAllByOrganizationContainingAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
-            }
+        String norm = (district == null || district.isBlank()) ? null : district.trim();
+        // DB 컬럼 organization length=100 방어
+        if (norm != null && norm.length() > 100) {
+            throw new CustomException(BAD_REQUEST);
         }
 
-        boolean isLast = rows.size() <= size;
-        List<AnimalDepartment> taken = !isLast ? rows.subList(0, size) : rows;
-        Long newLastId = isLast || taken.isEmpty() ? null : taken.get(taken.size() - 1).getId();
 
-        return GetAnimalDepartmentsResponse.from(taken, newLastId, isLast);
+        try {
+            List<AnimalDepartment> rows;
+
+            if (norm == null) {
+                rows = animalDepartmentRepository.findAllByIdGreaterThanOrderByIdAsc(cursor, pageable);
+            } else {
+                // 정확하게 일치하는 것을 우선으로
+                rows = animalDepartmentRepository.findAllByOrganizationEqualsAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
+
+                // AND 토큰(시도/시군구 모두 포함)
+                if (rows.isEmpty()) {
+                    String[] tokens = norm.split("\\s+", 2); // [0]=시도, [1]=나머지(시군구 등)
+                    if (tokens.length == 2) {
+                        rows = animalDepartmentRepository.findAllByOrganizationContainingAndOrganizationContainingAndIdGreaterThanOrderByIdAsc(
+                                        tokens[0], tokens[1], cursor, pageable
+                                );
+                    }
+                }
+                // 전체 문자열 substring 폴백
+                if (rows.isEmpty()) {
+                    rows = animalDepartmentRepository.findAllByOrganizationContainingAndIdGreaterThanOrderByIdAsc(norm, cursor, pageable);
+                }
+            }
+
+            boolean isLast = rows.size() <= size;
+            List<AnimalDepartment> taken = isLast ? rows : rows.subList(0, size);
+            Long newLastId = (isLast || taken.isEmpty()) ? null : taken.get(taken.size() - 1).getId();
+
+            return GetAnimalDepartmentsResponse.from(taken, newLastId, isLast);
+
+        } catch (CustomException ce) {
+            throw ce;
+        } catch (Exception e) {
+            throw new IllegalStateException("보호부서 조회 중 내부 오류가 발생했습니다.", e);
+        }
     }
 }
