@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AnimalDepartmentRepository extends JpaRepository<AnimalDepartment, Long> {
-    // 필터링 조건 없이 가나다 순으로 보여줌
+    // 필터링 조건 없이 보여줌
     List<AnimalDepartment> findAllByIdGreaterThanOrderByIdAsc(Long id, Pageable pageable);
 
     // 정확하게 일치하는 경우
