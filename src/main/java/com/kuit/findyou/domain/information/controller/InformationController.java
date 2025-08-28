@@ -121,12 +121,9 @@ public class InformationController {
             @RequestParam(defaultValue = "0") Long lastId,
 
             @Parameter(description = "담당기관 전체 문자열", example = "서울특별시 광진구")
-            @RequestParam(defaultValue = "") String district,
-
-            @Parameter(description = "페이지 크기", example = "20")
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "") String district
     ) {
         String normalizedDistrict = (district == null || district.isBlank()) ? null : district.trim(); //공백제거
-        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, size, normalizedDistrict));
+        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, normalizedDistrict));
     }
 }
