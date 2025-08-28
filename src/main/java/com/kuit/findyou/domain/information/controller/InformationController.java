@@ -24,11 +24,11 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @Slf4j
 @RequestMapping("/api/v2/informations")
 @RequiredArgsConstructor
-@Tag(name = "Information", description = "정보 조회 API - 보호소/병원, 추천 콘텐츠")
+@Tag(name = "Information", description = "정보 조회 API - 보호센터, 추천 콘텐츠")
 public class InformationController {
     private final InformationServiceFacade informationServiceFacade;
 
-    @Operation(summary = "보호소/병원 조회", description = "사용자 위치 또는 관할구역/유형으로 보호소/병원을 조회합니다.")
+    @Operation(summary = "보호센터 조회", description = "사용자 위치 또는 관할구역/유형으로 보호소/병원을 조회합니다.")
     @GetMapping("/protection-centers")
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<AnimalShelterPagingResponse<AnimalShelterResponse>> getSheltersAndHospitals(

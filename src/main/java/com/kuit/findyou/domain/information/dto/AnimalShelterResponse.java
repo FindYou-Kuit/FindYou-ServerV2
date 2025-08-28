@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "보호소 동물병원 응답 DTO")
+@Schema(description = "보호센터 응답 DTO")
 public record AnimalShelterResponse(
         @Schema(description = "보호소/동물병원 관할구역", example = "[\"서울특별시 강남구\", \"서울특별시 서초구\"]")
         List<String> jurisdiction,

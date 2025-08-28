@@ -56,7 +56,6 @@ public class AnimalShelterRepositoryTest {
 
         // then
         assertThat(result).hasSize(2);
-        //assertThat(result.get(0).getShelterName()).isEqualTo("송파병원");
         assertThat(result).extracting("shelterName")
                 .containsExactlyInAnyOrder("송파병원", "서울보호소");
     }
