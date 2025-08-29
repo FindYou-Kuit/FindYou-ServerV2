@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.information.service.facade;
 
 import com.kuit.findyou.domain.information.dto.*;
-import com.kuit.findyou.domain.information.service.animalShelter.AnimalCenterService;
+import com.kuit.findyou.domain.information.service.animalCenter.AnimalCenterService;
 import com.kuit.findyou.domain.information.service.recommended.RecommendedContentService;
 import com.kuit.findyou.domain.information.service.volunteerWork.VolunteerWorkService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ public class InformationServiceFacade {
     private final RecommendedContentService contentService;
     private final VolunteerWorkService volunteerWorkService;
 
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String district, int size) {
+    public AnimalCenterPagingResponse<AnimalCenterResponse> getCenters(Long lastId, String district, int size) {
         return animalCenterService.getCenters(lastId, district, size);
     }
 
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
+    public AnimalCenterPagingResponse<AnimalCenterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
         return animalCenterService.getNearbyCenters(lastId, lat, lng, size);
     }
 

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 @Schema(description = "보호센터 커서 페이징 응답 DTO")
-public record AnimalShelterPagingResponse<T>(
+public record AnimalCenterPagingResponse<T>(
         @Schema(description = "센터 목록")
         List<T> centers,
 

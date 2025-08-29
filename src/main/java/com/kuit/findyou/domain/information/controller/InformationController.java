@@ -31,8 +31,8 @@ public class InformationController {
     @Operation(summary = "보호센터 조회", description = "사용자 위치 또는 관할구역/유형으로 보호센터를 조회합니다.")
     @GetMapping("/protection-centers")
     @CustomExceptionDescription(DEFAULT)
-    public BaseResponse<AnimalShelterPagingResponse<AnimalShelterResponse>> getSheltersAndHospitals(
-            @Parameter(hidden = true) @LoginUserId Long userId, // @LoginUserId로 통일
+    public BaseResponse<AnimalCenterPagingResponse<AnimalCenterResponse>> getCenters(
+            @Parameter(hidden = true) @LoginUserId Long userId,
 
             @Parameter(description = "커서 페이징용 마지막 ID", example = "10")
             @RequestParam(defaultValue = "0") Long lastId,

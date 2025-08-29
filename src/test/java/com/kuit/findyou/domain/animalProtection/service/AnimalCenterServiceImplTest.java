@@ -1,10 +1,10 @@
 package com.kuit.findyou.domain.animalProtection.service;
 
-import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.information.model.AnimalShelter;
-import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
-import com.kuit.findyou.domain.information.service.animalShelter.AnimalCenterServiceImpl;
+import com.kuit.findyou.domain.information.dto.AnimalCenterPagingResponse;
+import com.kuit.findyou.domain.information.dto.AnimalCenterResponse;
+import com.kuit.findyou.domain.information.model.AnimalCenter;
+import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
+import com.kuit.findyou.domain.information.service.animalCenter.AnimalCenterServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,17 +23,17 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class AnimalCenterServiceImplTest {
     @Mock
-    private AnimalShelterRepository animalShelterRepository;
+    private AnimalCenterRepository animalCenterRepository;
 
     @InjectMocks
-    private AnimalCenterServiceImpl animalShelterService;
+    private AnimalCenterServiceImpl animalCenterService;
 
     @Test
     @DisplayName("관할구역 필터  성공")
-    void getShelters_validFilter() {
-        AnimalShelter hospital = AnimalShelter.builder()
+    void getCenters_validFilter() {
+        AnimalCenter hospital = AnimalCenter.builder()
                 .id(10L)
-                .shelterName("OO병원")
+                .name("OO병원")
                 .jurisdiction("서울특별시 송파구")
                 .phoneNumber("02-123-4567")
                 .address("서울특별시 송파구 어딘가")
@@ -42,10 +42,10 @@ public class AnimalCenterServiceImplTest {
                 .build();
         int size = 10;
 
-        when(animalShelterRepository.findWithFilter(0L, "서울특별시 송파구", PageRequest.of(0, size+1)))
+        when(animalCenterRepository.findWithFilter(0L, "서울특별시 송파구", PageRequest.of(0, size+1)))
                 .thenReturn(List.of(hospital));
 
-        AnimalShelterPagingResponse<AnimalShelterResponse> result = animalShelterService.getCenters(0L, "서울특별시 송파구", size);
+        AnimalCenterPagingResponse<AnimalCenterResponse> result = animalCenterService.getCenters(0L, "서울특별시 송파구", size);
 
         assertThat(result.centers()).hasSize(1);
         assertThat(result.centers().get(0).centerName()).isEqualTo("OO병원");
@@ -56,9 +56,9 @@ public class AnimalCenterServiceImplTest {
     @Test
     @DisplayName("위치 기반 조회 - 반경 3km 이내만 반환")
     void getNearbyCenters_withinRadiusOnly() {
-        AnimalShelter s1 = AnimalShelter.builder()
+        AnimalCenter s1 = AnimalCenter.builder()
                 .id(1L)
-                .shelterName("가까운 보호소")
+                .name("가까운 보호소")
                 .jurisdiction("서울특별시 송파구")
                 .phoneNumber("02-123-4567")
                 .address("서울특별시 송파구 어딘가")
@@ -66,9 +66,9 @@ public class AnimalCenterServiceImplTest {
                 .longitude(127.1)
                 .build();
 
-        AnimalShelter s2 = AnimalShelter.builder()
+        AnimalCenter s2 = AnimalCenter.builder()
                 .id(2L)
-                .shelterName("멀리 있는 보호소")
+                .name("멀리 있는 보호소")
                 .jurisdiction("서울특별시 송파구")
                 .phoneNumber("02-123-4567")
                 .address("서울특별시 송파구 어딘가")
@@ -78,10 +78,10 @@ public class AnimalCenterServiceImplTest {
 
         int size = 10;
 
-        when(animalShelterRepository.findAllWithLatLngAfterId(0L, PageRequest.of(0, size+1)))
+        when(animalCenterRepository.findAllWithLatLngAfterId(0L, PageRequest.of(0, size+1)))
                 .thenReturn(List.of(s1, s2));
 
-        AnimalShelterPagingResponse<AnimalShelterResponse> result = animalShelterService.getNearbyCenters(0L, 37.5, 127.1, size);
+        AnimalCenterPagingResponse<AnimalCenterResponse> result = animalCenterService.getNearbyCenters(0L, 37.5, 127.1, size);
 
         assertThat(result.centers()).hasSize(1);
         assertThat(result.centers().get(0).centerName()).isEqualTo("가까운 보호소");

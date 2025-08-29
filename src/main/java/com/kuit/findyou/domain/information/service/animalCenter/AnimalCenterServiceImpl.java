@@ -1,9 +1,9 @@
-package com.kuit.findyou.domain.information.service.animalShelter;
+package com.kuit.findyou.domain.information.service.animalCenter;
 
-import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.information.model.AnimalShelter;
-import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
+import com.kuit.findyou.domain.information.dto.AnimalCenterPagingResponse;
+import com.kuit.findyou.domain.information.dto.AnimalCenterResponse;
+import com.kuit.findyou.domain.information.model.AnimalCenter;
+import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,10 +18,10 @@ import static com.kuit.findyou.global.common.util.CalculateDistanceUtil.calculat
 @RequiredArgsConstructor
 public class AnimalCenterServiceImpl implements AnimalCenterService {
 
-    private final AnimalShelterRepository animalShelterRepository;
+    private final AnimalCenterRepository animalCenterRepository;
 
     @Override
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String district, int size) {
+    public AnimalCenterPagingResponse<AnimalCenterResponse> getCenters(Long lastId, String district, int size) {
 
         if (lastId != null && lastId < 0) {
             throw new CustomException(INVALID_CURSOR);
@@ -34,38 +34,38 @@ public class AnimalCenterServiceImpl implements AnimalCenterService {
         String jurisdiction =  (district != null && !district.isBlank())
                 ? district.trim()
                 : null;
-        List<AnimalShelter> results = animalShelterRepository.findWithFilter(lastId, jurisdiction, PageRequest.of(0, size + 1));
+        List<AnimalCenter> results = animalCenterRepository.findWithFilter(lastId, jurisdiction, PageRequest.of(0, size + 1));
         boolean isLast = results.size() <= size;
-        List<AnimalShelter> page = isLast ? results : results.subList(0, size);
+        List<AnimalCenter> page = isLast ? results : results.subList(0, size);
         Long nextLastId = page.isEmpty() ? null : page.get(page.size() - 1).getId();
 
-        List<AnimalShelterResponse> centers = page.stream()
-                .map(AnimalShelterResponse::from)
+        List<AnimalCenterResponse> centers = page.stream()
+                .map(AnimalCenterResponse::from)
                 .toList();
 
-        return new AnimalShelterPagingResponse<>(centers, nextLastId, isLast);
+        return new AnimalCenterPagingResponse<>(centers, nextLastId, isLast);
     }
 
     @Override
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
+    public AnimalCenterPagingResponse<AnimalCenterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
         final double MAX_DISTANCE_KM = 3.0;
 
-        List<AnimalShelter> nearby = animalShelterRepository.findAllWithLatLngAfterId(lastId, PageRequest.of(0, size + 1));
+        List<AnimalCenter> nearby = animalCenterRepository.findAllWithLatLngAfterId(lastId, PageRequest.of(0, size + 1));
 
-        List<AnimalShelter> filtered = nearby.stream()
+        List<AnimalCenter> filtered = nearby.stream()
                 .filter(shelter ->
                         shelter.getLatitude() != null && shelter.getLongitude() != null &&
                                 calculateDistance(lat, lng, shelter.getLatitude(), shelter.getLongitude()) <= MAX_DISTANCE_KM)
                 .toList();
         boolean isLast = filtered.size() <= size;
-        List<AnimalShelter> page = isLast ? filtered : filtered.subList(0, size);
+        List<AnimalCenter> page = isLast ? filtered : filtered.subList(0, size);
         Long nextLastId = page.isEmpty() ? null : page.get(page.size() - 1).getId();
 
-        List<AnimalShelterResponse> centers = page.stream()
-                .map(AnimalShelterResponse::from)
+        List<AnimalCenterResponse> centers = page.stream()
+                .map(AnimalCenterResponse::from)
                 .toList();
 
-        return new AnimalShelterPagingResponse<>(centers, nextLastId, isLast);
+        return new AnimalCenterPagingResponse<>(centers, nextLastId, isLast);
 
     }
 }
