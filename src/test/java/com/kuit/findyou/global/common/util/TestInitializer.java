@@ -164,7 +164,7 @@ public class TestInitializer {
     }
     public User getDefaultUser() {return this.defaultUser;}
 
-    public void createTestVolunteerWorks(int number){
+    public void createTestVolunteerWorks(int number) {
         IntStream.rangeClosed(1, number).forEach(i -> {
             VolunteerWork volunteerWork = VolunteerWork.builder()
                     .institution("보호센터" + i)
@@ -175,7 +175,7 @@ public class TestInitializer {
                     .volunteerEndAt(LocalDateTime.of(2025, 1, 3, 6, 0))
                     .webLink("www.web.link")
                     .build();
-            
+
             volunteerWorkRepository.save(volunteerWork);
         });
     }
@@ -190,5 +190,15 @@ public class TestInitializer {
                             .build()
             );
         }
+    }
+
+    public void createTestDepartment(String organization, String department, String phoneNumber) {
+        animalDepartmentRepository.save(
+                AnimalDepartment.builder()
+                        .organization(organization)
+                        .department(department)
+                        .phoneNumber(phoneNumber)
+                        .build()
+        );
     }
 }
