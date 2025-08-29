@@ -60,8 +60,6 @@ public class AnimalDepartmentServiceImpl implements AnimalDepartmentService {
 
             return GetAnimalDepartmentsResponse.from(taken, newLastId, isLast);
 
-        } catch (CustomException ce) {
-            throw ce;
         } catch (Exception e) {
             throw new IllegalStateException("보호부서 조회 중 내부 오류가 발생했습니다.", e);
         }
