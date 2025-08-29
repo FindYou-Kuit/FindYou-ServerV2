@@ -24,11 +24,6 @@ public class AnimalDepartmentServiceImpl implements AnimalDepartmentService {
         var pageable = PageRequest.of(0, size + 1);
 
         String norm = (district == null || district.isBlank()) ? null : district.trim();
-        // DB 컬럼 organization length=100 방어
-        if (norm != null && norm.length() > 100) {
-            throw new CustomException(BAD_REQUEST);
-        }
-
 
         try {
             List<AnimalDepartment> rows;
