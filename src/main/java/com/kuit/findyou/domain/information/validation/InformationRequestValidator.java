@@ -21,15 +21,6 @@ public class InformationRequestValidator {
         }
     }
 
-    public static String normalizeType(String raw) {
-        String t = (raw == null) ? "" : raw.trim().toLowerCase();
-        return switch (t) {
-            case "", "all" -> "all";
-            case "shelters", "shelter" -> "shelter";
-            case "hospitals", "hospital" -> "hospital";
-            default -> throw new CustomException(INVALID_TYPE);
-        };
-    }
 
     public static Long validateCursor(Long lastId) {
         Long cursor = (lastId == null || lastId == 0L) ? null : lastId;

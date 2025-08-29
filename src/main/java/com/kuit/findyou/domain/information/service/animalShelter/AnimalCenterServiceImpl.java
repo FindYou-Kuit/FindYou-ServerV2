@@ -4,10 +4,14 @@ import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
 import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
 import com.kuit.findyou.domain.information.model.AnimalShelter;
 import com.kuit.findyou.domain.information.repository.AnimalShelterRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INVALID_CURSOR;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INVALID_SIZE;
 import static com.kuit.findyou.global.common.util.CalculateDistanceUtil.calculateDistance;
 
 @Service
@@ -18,6 +22,13 @@ public class AnimalCenterServiceImpl implements AnimalCenterService {
 
     @Override
     public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String sido, String sigungu, int size) {
+
+        if (lastId != null && lastId < 0) {
+            throw new CustomException(INVALID_CURSOR);
+        }
+        if (size <= 0) {
+            throw new CustomException(INVALID_SIZE);
+        }
 
         //관할구역 필터
         String jurisdiction = (sido != null && !sido.isBlank() && sigungu != null && !sigungu.isBlank())
