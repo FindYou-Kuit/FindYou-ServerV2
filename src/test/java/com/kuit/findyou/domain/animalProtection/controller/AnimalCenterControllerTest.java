@@ -17,12 +17,11 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.data.redis.connection.ReactiveStreamCommands.AddStreamRecord.body;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-public class AnimalShelterControllerTest {
+public class AnimalCenterControllerTest {
     @LocalServerPort
     int port;
 
@@ -41,12 +40,12 @@ public class AnimalShelterControllerTest {
     void setUp() {
         databaseCleaner.execute();
         RestAssured.port = port;
-        this.user = testInitializer.setupAnimalShelterTestData();
+        this.user = testInitializer.setupAnimalCenterTestData();
     }
 
     @Test
     @DisplayName("GET /api/v2/informations/protection-centers - 관할구역, 유형 필터 조회")
-     void getShelters_withJurisdictionAndType() {
+     void getCenters_withJurisdictionAndType() {
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
         given()
@@ -54,8 +53,7 @@ public class AnimalShelterControllerTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("lastId", 0L)
-                .param("sido", "서울특별시")
-                .param("sigungu", "강남구")
+                .param("district", "서울특별시 강남구")
         .when()
                 .get("/api/v2/informations/protection-centers")
         .then()
@@ -69,7 +67,7 @@ public class AnimalShelterControllerTest {
 
     @Test
     @DisplayName("GET /api/v2/informations/protection-centers - 위치 기반 조회")
-    void getNearbyShelters_withLatLng() {
+    void getNearbyCenters_withLatLng() {
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
         given()
