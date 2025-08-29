@@ -21,7 +21,7 @@ public class AnimalCenterServiceImpl implements AnimalCenterService {
     private final AnimalShelterRepository animalShelterRepository;
 
     @Override
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String sido, String sigungu, int size) {
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String district, int size) {
 
         if (lastId != null && lastId < 0) {
             throw new CustomException(INVALID_CURSOR);
@@ -31,8 +31,8 @@ public class AnimalCenterServiceImpl implements AnimalCenterService {
         }
 
         //관할구역 필터
-        String jurisdiction = (sido != null && !sido.isBlank() && sigungu != null && !sigungu.isBlank())
-                ? sido + " " + sigungu
+        String jurisdiction =  (district != null && !district.isBlank())
+                ? district.trim()
                 : null;
         List<AnimalShelter> results = animalShelterRepository.findWithFilter(lastId, jurisdiction, PageRequest.of(0, size + 1));
         boolean isLast = results.size() <= size;

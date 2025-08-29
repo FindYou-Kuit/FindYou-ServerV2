@@ -45,7 +45,7 @@ public class AnimalCenterServiceImplTest {
         when(animalShelterRepository.findWithFilter(0L, "서울특별시 송파구", PageRequest.of(0, size+1)))
                 .thenReturn(List.of(hospital));
 
-        AnimalShelterPagingResponse<AnimalShelterResponse> result = animalShelterService.getCenters(0L, "서울특별시", "송파구", size);
+        AnimalShelterPagingResponse<AnimalShelterResponse> result = animalShelterService.getCenters(0L, "서울특별시 송파구", size);
 
         assertThat(result.centers()).hasSize(1);
         assertThat(result.centers().get(0).centerName()).isEqualTo("OO병원");

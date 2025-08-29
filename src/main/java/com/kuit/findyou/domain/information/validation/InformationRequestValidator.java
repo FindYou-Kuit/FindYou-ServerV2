@@ -31,9 +31,9 @@ public class InformationRequestValidator {
     }
 
     public static void validateGeoOrFilter(Double latVal, Double lonVal,
-                                           String sidoNorm, String sigunguNorm) {
+                                           String districtNorm) {
         boolean hasGeo = (latVal != null && lonVal != null);
-        boolean hasFilter = (sidoNorm != null || sigunguNorm != null);
+        boolean hasFilter = (districtNorm != null);
         if (!hasGeo && !hasFilter) {
             throw new CustomException(GEO_OR_FILTER_REQUIRED);
         }

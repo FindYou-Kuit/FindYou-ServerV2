@@ -37,11 +37,8 @@ public class InformationController {
             @Parameter(description = "커서 페이징용 마지막 ID", example = "10")
             @RequestParam(defaultValue = "0") Long lastId,
 
-            @Parameter(description = "시/도", example = "서울특별시")
-            @RequestParam(defaultValue = "") String sido,
-
-            @Parameter(description = "시/군/구", example = "강남구")
-            @RequestParam(defaultValue = "") String sigungu,
+            @Parameter(description = "관할구역 전체 문자열", example = "서울특별시 송파구")
+            @RequestParam(defaultValue = "") String district,
 
             //TODO #28 머지 후 validator 적용하기
             @Parameter(description = "위도", example = "37.4967")
@@ -53,13 +50,12 @@ public class InformationController {
             @Parameter(description = "페이지 크기", example = "20")
             @RequestParam(defaultValue = "20") int size
     ) {
-        String sidoNorm = nullIfBlank(sido);
-        String sigunguNorm = nullIfBlank(sigungu);
+        String normalizedDistrict = (district == null || district.isBlank()) ? null : district.trim();
         Double latVal = parseDoubleOrNull(lat);
         Double lonVal = parseDoubleOrNull(lng);
 
         Long cursor = validateCursor(lastId);
-        validateGeoOrFilter(latVal, lonVal, sidoNorm, sigunguNorm);
+        validateGeoOrFilter(latVal, lonVal, normalizedDistrict);
         validateLatLngPair(latVal, lonVal);
         boolean hasGeo = (latVal != null && lonVal != null);
 
@@ -68,7 +64,7 @@ public class InformationController {
         return BaseResponse.ok(
                 hasGeo
                         ? informationServiceFacade.getNearbyCenters(cursor, latVal, lonVal, size)
-                        : informationServiceFacade.getCenters(cursor, sidoNorm, sigunguNorm, size)
+                        : informationServiceFacade.getCenters(cursor, normalizedDistrict, size)
         );
     }
 

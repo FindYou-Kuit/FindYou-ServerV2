@@ -17,8 +17,8 @@ public class InformationServiceFacade {
     private final RecommendedContentService contentService;
     private final VolunteerWorkService volunteerWorkService;
 
-    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String sido, String sigungu, int size) {
-        return animalCenterService.getCenters(lastId, sido, sigungu, size);
+    public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String district, int size) {
+        return animalCenterService.getCenters(lastId, district, size);
     }
 
     public AnimalShelterPagingResponse<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
