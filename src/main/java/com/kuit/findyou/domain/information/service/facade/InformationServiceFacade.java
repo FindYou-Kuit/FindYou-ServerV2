@@ -1,14 +1,9 @@
 package com.kuit.findyou.domain.information.service.facade;
 
-import com.kuit.findyou.domain.information.dto.AnimalShelterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
-import com.kuit.findyou.domain.information.dto.ContentType;
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.*;
 import com.kuit.findyou.domain.information.service.animalShelter.AnimalCenterService;
-import com.kuit.findyou.domain.information.service.recommended.RecommendedContentServiceImpl;
+import com.kuit.findyou.domain.information.service.recommended.RecommendedContentService;
 import com.kuit.findyou.domain.information.service.volunteerWork.VolunteerWorkService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +14,7 @@ import java.util.List;
 public class InformationServiceFacade {
 
     private final AnimalCenterService animalCenterService;
-    private final RecommendedContentServiceImpl contentService;
+    private final RecommendedContentService contentService;
     private final VolunteerWorkService volunteerWorkService;
 
     public AnimalShelterPagingResponse<AnimalShelterResponse> getCenters(Long lastId, String sido, String sigungu, int size) {
