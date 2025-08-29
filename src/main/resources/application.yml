@@ -170,3 +170,7 @@ resilience4j:
         limit-for-period: 7
         limit-refresh-period: 1s
         timeout-duration: 2s
+
+image:
+  public-base-url: ${IMAGE_PUBLIC_BASE_URL:${S3_BASE_URL}}  # 1순위 CDN, 없으면 S3로 폴백
+  enforce-cdn: true
