@@ -307,7 +307,6 @@ class ReportRepositoryTest {
         assertThat(result.getContent().get(0).getAddress()).contains("서초구");
     }
 
-
     @Test
     @DisplayName("위도 경도를 이용하여 거리 순으로 신고글 조회에 성공한다")
     void should_ReturnReportsSortedByDistance_When_GivenLatLngAndTags(){

@@ -102,8 +102,7 @@ public class TestInitializer {
         MissingReport report = MissingReport.createMissingReport(
                 "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 10, 5),
                 "서울시 강남구", user, Sex.F, "RF12345", "3",
-                "흰색", "눈 주변 갈색 털",
-                "이슬기", "010-1111-2222", "강남역 10번 출구",
+                "흰색", "눈 주변 갈색 털","강남역 10번 출구",
                 BigDecimal.valueOf(37.501), BigDecimal.valueOf(127.025)
         );
         missingReportRepository.save(report);

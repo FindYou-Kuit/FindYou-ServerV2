@@ -69,8 +69,6 @@ class MissingReportRepositoryTest {
                 "3살",
                 "흰색",
                 "왼쪽 귀에 검은 점이 있음",
-                "김철수",
-                "010-1234-5678",
                 "강남역 2번 출구 근처",
                 new BigDecimal("37.498095"),
                 new BigDecimal("127.027610")
@@ -95,8 +93,6 @@ class MissingReportRepositoryTest {
         assertThat(foundReport.getAge()).isEqualTo("3살");
         assertThat(foundReport.getFurColor()).isEqualTo("흰색");
         assertThat(foundReport.getSignificant()).isEqualTo("왼쪽 귀에 검은 점이 있음");
-        assertThat(foundReport.getReporterName()).isEqualTo("김철수");
-        assertThat(foundReport.getReporterTel()).isEqualTo("010-1234-5678");
         assertThat(foundReport.getLandmark()).isEqualTo("강남역 2번 출구 근처");
         assertThat(foundReport.getLatitude()).isEqualTo(new BigDecimal("37.498095"));
         assertThat(foundReport.getLongitude()).isEqualTo(new BigDecimal("127.027610"));
@@ -109,8 +105,7 @@ class MissingReportRepositoryTest {
         MissingReport missingReport = MissingReport.createMissingReport(
                 "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 1, 15),
                 "서울시 강남구 테헤란로 123", testUser, Sex.M, "RFID123456789",
-                "3살",  "흰색", "왼쪽 귀에 검은 점이 있음",
-                "김철수", "010-1234-5678", "강남역 2번 출구 근처",
+                "3살",  "흰색", "왼쪽 귀에 검은 점이 있음","강남역 2번 출구 근처",
                 new BigDecimal("37.498095"), new BigDecimal("127.027610")
         );
         missingReportRepository.save(missingReport);
