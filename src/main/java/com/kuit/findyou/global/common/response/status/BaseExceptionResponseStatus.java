@@ -45,6 +45,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     MISSING_REPORT_NOT_FOUND(404, "존재하지 않는 실종 신고글입니다."),
     WITNESS_REPORT_NOT_FOUND(404, "존재하지 않는 목격 신고글입니다."),
     ILLEGAL_TAG(500, "잘못된 태그값입니다."),
+    IMAGE_UPLOAD_HTTPS_REQUIRED(500, "이미지 URL은 https만 허용됩니다."),
 
     // 추천 컨텐츠 - Recommendation
     RECOMMENDED_VIDEO_NOT_FOUND(404, "추천 영상이 존재하지 않습니다."),
