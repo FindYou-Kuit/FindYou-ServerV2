@@ -43,7 +43,8 @@ public class MissingReport extends Report {
     @Builder
     public MissingReport(String breed, String species, ReportTag tag, LocalDate date,
                           String address, BigDecimal latitude, BigDecimal longitude, User user, Sex sex, String rfid, String age,
-                          String furColor, String significant,String landmark) {
+                          String furColor, String significant,
+                          String reporterName, String reporterTel, String landmark) {
         super(null, breed, species, tag, date, address, latitude, longitude, user, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         this.sex = sex;
@@ -51,6 +52,8 @@ public class MissingReport extends Report {
         this.age = age;
         this.furColor = furColor;
         this.significant = significant;
+        this.reporterName = reporterName;
+        this.reporterTel = reporterTel;
         this.landmark = landmark;
     }
 
