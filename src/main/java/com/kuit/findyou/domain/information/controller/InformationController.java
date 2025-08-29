@@ -28,7 +28,7 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 public class InformationController {
     private final InformationServiceFacade informationServiceFacade;
 
-    @Operation(summary = "보호센터 조회", description = "사용자 위치 또는 관할구역/유형으로 보호소/병원을 조회합니다.")
+    @Operation(summary = "보호센터 조회", description = "사용자 위치 또는 관할구역/유형으로 보호센터를 조회합니다.")
     @GetMapping("/protection-centers")
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<AnimalShelterPagingResponse<AnimalShelterResponse>> getSheltersAndHospitals(
