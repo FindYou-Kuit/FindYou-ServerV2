@@ -111,6 +111,10 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+  servlet:
+    multipart:
+      max-file-size: 10MB      # 파일 하나당 최대 10MB
+      max-request-size: 50MB   # 요청당 총 크기를 50MB로
 
 
 openapi:
