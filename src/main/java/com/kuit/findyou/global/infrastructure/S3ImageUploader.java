@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -26,6 +25,7 @@ public class S3ImageUploader implements ImageUploader {
     @Value("${cloud.aws.s3.base-url}")
     private String s3baseUrl;
 
+    @Override
     public String upload(MultipartFile file) throws FileUploadingFailedException{
         if(file.isEmpty() || file == null){
             throw new IllegalArgumentException("업로드할 파일이 비어 있을 수 없습니다");
