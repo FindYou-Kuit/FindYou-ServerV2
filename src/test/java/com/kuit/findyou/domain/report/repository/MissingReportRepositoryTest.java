@@ -9,6 +9,7 @@ import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceUnitUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -130,6 +131,10 @@ class MissingReportRepositoryTest {
         assertThat(foundReport.getReportImages()).hasSize(2);
         assertThat(foundReport.getReportImagesUrlList())
                 .containsExactlyInAnyOrder("https://missing1.jpg", "https://missing2.jpg");
+
+        PersistenceUnitUtil persistenceUnitUtil = em.getEntityManagerFactory().getPersistenceUnitUtil();
+        boolean isLoaded = persistenceUnitUtil.isLoaded(foundReport, "reportImages");
+        assertThat(isLoaded).isTrue();
     }
 
 
