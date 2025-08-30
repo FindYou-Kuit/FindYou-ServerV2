@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.report.controller;
 
+import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -251,5 +253,57 @@ class ReportControllerTest {
                 .body("data.isLast", equalTo(true));
     }
 
+    @DisplayName("POST /api/v2/reports/new-missing-reports: 실종 신고글 등록 성공")
+    @Test
+    void createMissingReport_Success() {
+        // given
+        User testUser = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
 
+        CreateMissingReportRequest request = testInitializer.createBasicMissingReportRequest();
+
+        // 실행 및 검증 (when & then)
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+        .when()
+                .post("/api/v2/reports/new-missing-reports")
+        .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200))
+                .body("data", is(nullValue())); // 응답의 data는 null이어야 함
+    }
+
+    @Test
+    @DisplayName("POST /api/v2/reports/new-missing-reports: 실패 - 필수 필드(품종) 누락")
+    void createMissingReport_Fail_MissingBreed() {
+        // given
+        User testUser = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+        // breed 필드가 없는 요청 생성
+        var request = new CreateMissingReportRequest(
+                List.of(), "개", null, "3살", "남자", null, "흰색",
+                "2025.08.30", null, "서울시", 37.5, 127.0, "건대"
+        );
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+        .when()
+                .post("/api/v2/reports/new-missing-reports")
+        .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(false))
+                .body("code", equalTo(400))
+                .body("message", containsString("유효하지 않은 요청입니다."));
+    }
 }
