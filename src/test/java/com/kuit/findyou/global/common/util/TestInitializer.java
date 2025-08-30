@@ -101,12 +101,28 @@ public class TestInitializer {
     }
 
     public MissingReport createTestMissingReportWithImage(User user) {
-        MissingReport report = MissingReport.createMissingReport(
-                "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 10, 5),
-                "서울시 강남구", user, Sex.F, "RF12345", "3",
-                "흰색", "눈 주변 갈색 털","강남역 10번 출구",
-                BigDecimal.valueOf(37.501), BigDecimal.valueOf(127.025)
-        );
+        MissingReport report = MissingReport.builder()
+                .breed("포메라니안")
+                .species("개")
+                .tag(ReportTag.MISSING)
+                .date(LocalDate.of(2024, 10, 5))
+                .address("서울시 강남구")
+                .user(user)
+                .sex(Sex.F)
+                .rfid("RF12345")
+                .age("3")
+                .furColor("흰색")
+                .significant("눈 주변 갈색 털")
+                .landmark("강남역 10번 출구")
+                .latitude(BigDecimal.valueOf(37.501))
+                .longitude(BigDecimal.valueOf(127.025))
+                .reporterName("이슬기")
+                .reporterTel("010-1111-2222")
+                .build();
+
+        if (user != null) {
+            user.addReport(report);
+        }
         missingReportRepository.save(report);
 
         ReportImage image = ReportImage.createReportImage("https://img.com/missing.png");
