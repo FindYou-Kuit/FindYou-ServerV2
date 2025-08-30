@@ -47,6 +47,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     ILLEGAL_TAG(500, "잘못된 태그값입니다."),
     IMAGE_UPLOAD_HTTPS_REQUIRED(500, "이미지 URL은 https만 허용됩니다."),
 
+    // 글 이미지 - ReportImage
+    IMAGE_UPLOAD_LIMIT_EXCEEDED(400, "이미지는 최대 5개까지 업로드할 수 있습니다."),
+    INVALID_IMAGE_FORMAT(400, "잘못된 이미지 형식입니다."),
+
+
     // 추천 컨텐츠 - Recommendation
     RECOMMENDED_VIDEO_NOT_FOUND(404, "추천 영상이 존재하지 않습니다."),
     RECOMMENDED_NEWS_NOT_FOUND(404, "추천 기사가 존재하지 않습니다."),
