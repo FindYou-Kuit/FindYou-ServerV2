@@ -14,6 +14,7 @@ import com.kuit.findyou.domain.information.model.AnimalCenter;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
+import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.model.Role;
@@ -52,6 +53,7 @@ public class TestInitializer {
     @Transactional
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
+        defaultUser = createTestUser();
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -188,6 +190,27 @@ public class TestInitializer {
 
             volunteerWorkRepository.save(volunteerWork);
         });
+    }
+
+    public CreateMissingReportRequest createBasicMissingReportRequest() {
+        return new CreateMissingReportRequest(
+                List.of(
+                        "https://cdn.findyou.store/some-image1.jpg",
+                        "https://cdn.findyou.store/some-image2.jpg"
+                ),
+                "개",
+                "포메라니안",
+                "3살",
+                "남자",
+                "9900112233445566",
+                "흰색",
+                "2025.08.30",
+                "왼쪽 앞발에 붉은 점이 있어요.",
+                "서울특별시 광진구 화양동",
+                37.54321,
+                127.12345,
+                "건국대학교"
+        );
     }
 
     public void createTestAnimalDepartments(String organization, int count) {
