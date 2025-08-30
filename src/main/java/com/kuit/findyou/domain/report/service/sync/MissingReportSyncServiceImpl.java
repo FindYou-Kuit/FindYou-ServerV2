@@ -144,7 +144,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
                     List<ReportImage> images = new ArrayList<>();
 
                     if (url != null) {
-                        images.add(ReportImage.createReportImage(url, UUID.randomUUID().toString()));
+                        images.add(ReportImage.createReportImage(url));
                     }
 
                     return new ReportWithImages<>(report, images);

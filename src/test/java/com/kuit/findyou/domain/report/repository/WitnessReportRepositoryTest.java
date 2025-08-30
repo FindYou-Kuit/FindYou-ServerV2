@@ -105,8 +105,8 @@ class WitnessReportRepositoryTest {
         witnessReportRepository.save(witnessReport);
         em.flush();
 
-        ReportImage image1 = ReportImage.createReportImage("https://witness1.jpg", "uuid-w1");
-        ReportImage image2 = ReportImage.createReportImage("https://witness2.jpg", "uuid-w2");
+        ReportImage image1 = ReportImage.createReportImage("https://witness1.jpg");
+        ReportImage image2 = ReportImage.createReportImage("https://witness2.jpg");
 
         image1.setReport(witnessReport);
         image2.setReport(witnessReport);

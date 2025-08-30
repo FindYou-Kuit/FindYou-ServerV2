@@ -111,8 +111,8 @@ class MissingReportRepositoryTest {
         missingReportRepository.save(missingReport);
         em.flush(); // ID 확정
 
-        ReportImage image1 = ReportImage.createReportImage("https://missing1.jpg", "uuid-m1");
-        ReportImage image2 = ReportImage.createReportImage("https://missing2.jpg", "uuid-m2");
+        ReportImage image1 = ReportImage.createReportImage("https://missing1.jpg");
+        ReportImage image2 = ReportImage.createReportImage("https://missing2.jpg");
 
         image1.setReport(missingReport);
         image2.setReport(missingReport);

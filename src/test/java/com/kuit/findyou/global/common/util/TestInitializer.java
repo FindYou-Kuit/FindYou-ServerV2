@@ -91,7 +91,7 @@ public class TestInitializer {
         );
         protectingReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/1.png", "uuid-1");
+        ReportImage image = ReportImage.createReportImage("https://img.com/1.png");
         image.setReport(report);
         reportImageRepository.save(image);
 
@@ -107,7 +107,7 @@ public class TestInitializer {
         );
         missingReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/missing.png", "uuid-m");
+        ReportImage image = ReportImage.createReportImage("https://img.com/missing.png");
         image.setReport(report);
         reportImageRepository.save(image);
 
@@ -123,7 +123,7 @@ public class TestInitializer {
         );
         witnessReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/witness.png", "uuid-w");
+        ReportImage image = ReportImage.createReportImage("https://img.com/witness.png");
         image.setReport(report);
         reportImageRepository.save(image);
 
