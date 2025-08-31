@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(validateIfTokenExists(request, token)){
             // UserDetails 생성
             Long userId = jwtUtil.getUserId(token);
+
+            // jwt 인증 시 user_id 를 MDC에 삽입
+            MDC.put("user_id", String.valueOf(userId));
 
             // userDetails 조회
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(String.valueOf(userId));
