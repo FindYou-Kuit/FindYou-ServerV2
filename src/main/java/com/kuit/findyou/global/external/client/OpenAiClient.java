@@ -1,10 +1,8 @@
 package com.kuit.findyou.global.external.client;
 
-import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.dto.OpenAiResponse;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
-import com.kuit.findyou.global.external.exception.OpenAiParsingException;
-import com.kuit.findyou.global.external.util.OpenAiParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -12,6 +10,8 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 
 @Component
 @Slf4j
@@ -51,7 +51,7 @@ public class OpenAiClient {
                     .body(OpenAiResponse.class);
 
             if (response == null || response.choices() == null || response.choices().isEmpty()) {
-                throw new OpenAiClientException("OpenAI Vision API 응답이 비어있습니다.");
+                throw new OpenAiClientException(OPENAI_CLIENT_EMPTY_RESPONSE);
             }
 
             String content = response.choices().get(0).message().content();
@@ -59,9 +59,13 @@ public class OpenAiClient {
 
             return content;
 
-        } catch (Exception e) {
+        } catch (OpenAiClientException e) {
+            log.error("OpenAI Vision API 응답이 비어있습니다.", e);
+            throw new OpenAiClientException(OPENAI_CLIENT_EMPTY_RESPONSE);
+        }
+        catch (Exception e) {
             log.error("OpenAI Vision API 호출 중 오류 발생", e);
-            throw new OpenAiClientException("OpenAI Vision API 호출 중 오류가 발생했습니다.", e);
+            throw new OpenAiClientException(OPENAI_CLIENT_CALL_FAILED, e);
         }
     }
 }
