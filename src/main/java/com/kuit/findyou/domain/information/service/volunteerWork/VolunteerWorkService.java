@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.service;
+package com.kuit.findyou.domain.information.service.volunteerWork;
 
 import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
 

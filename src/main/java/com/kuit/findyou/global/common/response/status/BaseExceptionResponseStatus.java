@@ -52,13 +52,12 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     // 품종 - Breed
     BREED_ANALYSIS_FAILED(502, "AI를 통한 품종 판별에 실패했습니다."),
 
-    //보호소 동물병원 조회
+    //보호센터 조회
     INVALID_CURSOR(400, "유효하지 않은 lastId입니다. 0 이상의 정수를 입력하세요."),
-    NEGATIVE_CURSOR(400, "lastId는 양수여야 합니다."),
     INVALID_COORDINATE(400, "유효하지 않은 좌표입니다. lat/long는 double 타입이어야 합니다."),
     LAT_LONG_PAIR_REQUIRED(400, "위도(lat)와 경도(long)는 함께 전달되어야 합니다."),
     GEO_OR_FILTER_REQUIRED(400, "초기 접근은 lat/long 또는 sido/sigungu 중 하나가 필요합니다."),
-    INVALID_TYPE(400, "기관 종류(type)는 all | shelter | hospital 중 하나여야 합니다."),
+    INVALID_SIZE(400, "유효하지 않은 size입니다. 0 초과의 정수를 입력하세요."),
 
     // 시도 / 시군구
     SIDO_NOT_FOUND(404, "존재하지 않는 시/도입니다.");

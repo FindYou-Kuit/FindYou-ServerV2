@@ -1,12 +1,9 @@
 package com.kuit.findyou.domain.information.service.facade;
 
-import com.kuit.findyou.domain.information.dto.AnimalShelterResponse;
-import com.kuit.findyou.domain.information.dto.ContentType;
-import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
-import com.kuit.findyou.domain.information.service.AnimalShelterService;
-import com.kuit.findyou.domain.information.service.RecommendedContentService;
-import com.kuit.findyou.domain.information.service.VolunteerWorkService;
+import com.kuit.findyou.domain.information.dto.*;
+import com.kuit.findyou.domain.information.service.animalCenter.AnimalCenterService;
+import com.kuit.findyou.domain.information.service.recommended.RecommendedContentService;
+import com.kuit.findyou.domain.information.service.volunteerWork.VolunteerWorkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +13,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InformationServiceFacade {
 
-    private final AnimalShelterService animalShelterService;
+    private final AnimalCenterService animalCenterService;
     private final RecommendedContentService contentService;
     private final VolunteerWorkService volunteerWorkService;
 
-    public List<AnimalShelterResponse> getShelters(Long lastId, String type, String sido, String sigungu, Double lat, Double lng, int size) {
-        return animalShelterService.getShelters(lastId, type, sido, sigungu, lat, lng, size);
+    public AnimalCenterPagingResponse<AnimalCenterResponse> getCenters(Long lastId, String district, int size) {
+        return animalCenterService.getCenters(lastId, district, size);
     }
 
-    public List<AnimalShelterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
-        return animalShelterService.getNearbyCenters(lastId, lat, lng, size);
+    public AnimalCenterPagingResponse<AnimalCenterResponse> getNearbyCenters(Long lastId, double lat, double lng, int size) {
+        return animalCenterService.getNearbyCenters(lastId, lat, lng, size);
     }
 
     public List<RecommendedContentResponse> getRecommendedContents(ContentType type) {

@@ -21,15 +21,6 @@ public class InformationRequestValidator {
         }
     }
 
-    public static String normalizeType(String raw) {
-        String t = (raw == null) ? "" : raw.trim().toLowerCase();
-        return switch (t) {
-            case "", "all" -> "all";
-            case "shelters", "shelter" -> "shelter";
-            case "hospitals", "hospital" -> "hospital";
-            default -> throw new CustomException(INVALID_TYPE);
-        };
-    }
 
     public static Long validateCursor(Long lastId) {
         Long cursor = (lastId == null || lastId == 0L) ? null : lastId;
@@ -40,9 +31,9 @@ public class InformationRequestValidator {
     }
 
     public static void validateGeoOrFilter(Double latVal, Double lonVal,
-                                           String sidoNorm, String sigunguNorm) {
+                                           String districtNorm) {
         boolean hasGeo = (latVal != null && lonVal != null);
-        boolean hasFilter = (sidoNorm != null || sigunguNorm != null);
+        boolean hasFilter = (districtNorm != null);
         if (!hasGeo && !hasFilter) {
             throw new CustomException(GEO_OR_FILTER_REQUIRED);
         }
@@ -52,5 +43,9 @@ public class InformationRequestValidator {
         if ((latVal == null) ^ (lonVal == null)) {
             throw new CustomException(LAT_LONG_PAIR_REQUIRED);
         }
+    }
+
+    public static void validatePageSize(int size) {
+        if (size <= 0) throw new CustomException(INVALID_SIZE);
     }
 }
