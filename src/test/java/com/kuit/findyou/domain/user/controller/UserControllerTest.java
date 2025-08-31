@@ -66,13 +66,6 @@ class UserControllerTest {
     @Autowired
     InterestReportRepository interestReportRepository;
 
-    /*@TestConfiguration
-    static class StubUploaderConfig {
-        @Bean
-        public ImageUploader imageUploader() {
-            return file -> "https://img.test/uploaded.jpg";
-        }
-    }*/
     @MockitoBean
     private S3Client s3Client;
 
@@ -95,9 +88,9 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("lastId", Long.MAX_VALUE)
-        .when()
+                .when()
                 .get("/api/v2/users/me/viewed-animals")
-        .then()
+                .then()
                 .statusCode(200)
                 .body("data.cards[0].reportId", equalTo(2))
                 .body("data.cards[0].thumbnailImageUrl", equalTo("https://img.com/missing.png"))
@@ -119,25 +112,25 @@ class UserControllerTest {
 
     @DisplayName("POST /api/v2/users : 처음 로그인한 사람이 회원가입에 성공한다")
     @Test
-    void should_Succeed_When_registerAnyoneWhoFirstLoggedIn(){
+    void should_Succeed_When_registerAnyoneWhoFirstLoggedIn() {
         // given
         final String NICKNAME = "유저1";
 
         // when
         RegisterUserResponse response = given()
 //                    .log().all()
-                    .contentType(ContentType.MULTIPART)
-                    .multiPart(multipartText("defaultProfileImageName", "default"))
-                    .multiPart(multipartText("nickname", NICKNAME))
-                    .multiPart(multipartText("kakaoId", "123456"))
-                    .multiPart(multipartText("deviceId", "device-001"))
+                .contentType(ContentType.MULTIPART)
+                .multiPart(multipartText("defaultProfileImageName", "default"))
+                .multiPart(multipartText("nickname", NICKNAME))
+                .multiPart(multipartText("kakaoId", "123456"))
+                .multiPart(multipartText("deviceId", "device-001"))
                 .when()
-                    .post("/api/v2/users")
+                .post("/api/v2/users")
                 .then()
-                    .statusCode(200)
-                    .extract()
-                    .jsonPath()
-                    .getObject("data", RegisterUserResponse.class);
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", RegisterUserResponse.class);
 
         // then
         Role role = jwtUtil.getRole(response.accessToken());
@@ -148,7 +141,7 @@ class UserControllerTest {
 
     @DisplayName("GET /api/v2/users/me/interest-animals : 유저가 관심동물을 가지고 있으면 반환한다")
     @Test
-    void should_ReturnInterestAnimals_When_UserHasInterestAnimals(){
+    void should_ReturnInterestAnimals_When_UserHasInterestAnimals() {
         // given
         User user = testInitializer.userWith3InterestAnimals();
 
@@ -172,13 +165,13 @@ class UserControllerTest {
         assertThat(response.cards()).hasSize(3);
         assertThat(response.isLast()).isTrue();
         assertThat(response.cards()).allSatisfy(card -> {
-             assertThat(card.interest()).isTrue();
+            assertThat(card.interest()).isTrue();
         });
     }
 
     @DisplayName("GET /api/v2/users/me/interest-animals : 유저가 관심동물을 가지고 있지 않으면 빈 리스트를 반환한다")
     @Test
-    void should_ReturnEmptyList_When_UserHasNoInterestAnimal(){
+    void should_ReturnEmptyList_When_UserHasNoInterestAnimal() {
         // given
         User user = testInitializer.createTestUser();
 
@@ -206,7 +199,7 @@ class UserControllerTest {
 
     @DisplayName("DELETE /api/v2/users/me : 회원 탈퇴에 성공한다.")
     @Test
-    void should_DeleteUser(){
+    void should_DeleteUser() {
         // given
         User testUser = testInitializer.createTestUser();
 
@@ -447,7 +440,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("관심동물이 존재하면 삭제에 성공한다")
-    void shouldSucceedToDeleteInterestAnimal_WhenItExists(){
+    void shouldSucceedToDeleteInterestAnimal_WhenItExists() {
         // given
         User user = testInitializer.createTestUser();
         User reportWriter = testInitializer.createTestUser();
@@ -473,7 +466,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("관심동물이 존재하지 않아도 삭제에 성공한다")
-    void shouldSucceedToDeleteInterestAnimal_WhenItDoesNotExist(){
+    void shouldSucceedToDeleteInterestAnimal_WhenItDoesNotExist() {
         // given
         User user = testInitializer.createTestUser();
         User reportWriter = testInitializer.createTestUser();
@@ -541,7 +534,8 @@ class UserControllerTest {
                 .body("data", nullValue());
 
         User updated = userRepository.findById(user.getId()).orElseThrow();
-        assertThat(updated.getProfileImageUrl()).isEqualTo("https://img.test/uploaded.jpg");
+        assertThat(updated.getProfileImageUrl()).startsWith("base-url");
+        assertThat(updated.getProfileImageUrl()).endsWith("_p.jpg");
     }
 
     @Test
@@ -556,9 +550,9 @@ class UserControllerTest {
                 .contentType(ContentType.MULTIPART)
                 .multiPart(multipartText("defaultProfileImageName", "puppy"))
                 .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
-            .when()
+                .when()
                 .patch("/api/v2/users/me/profile-image")
-            .then()
+                .then()
                 .statusCode(200)
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
@@ -576,9 +570,9 @@ class UserControllerTest {
                 .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.MULTIPART)
                 .multiPart("dummy", "dummy")
-            .when()
+                .when()
                 .patch("/api/v2/users/me/profile-image")
-            .then()
+                .then()
                 .statusCode(200)
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
@@ -604,9 +598,10 @@ class UserControllerTest {
                 .body("code", equalTo(400))
                 .body("message", equalTo("Invalid request"));
     }
+
     @Test
     @DisplayName("사용자가 신고한 내역이 있다면 리턴한다.")
-    void shouldReturnUserReports_WhenTheyExist(){
+    void shouldReturnUserReports_WhenTheyExist() {
         // given
         User user = testInitializer.userWith3Reports();
         String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
@@ -633,7 +628,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("사용자가 신고한 내역이 없다면 빈 페이지를 리턴한다.")
-    void shouldReturnEmptyPage_WhenNoUserReportExist(){
+    void shouldReturnEmptyPage_WhenNoUserReportExist() {
         // given
         User user = testInitializer.createTestUser();
         String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
@@ -660,7 +655,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("유저가 존재하면 유저 프로필을 반환한다.")
-    void shouldReturnProfile_WhenUserExists(){
+    void shouldReturnProfile_WhenUserExists() {
         // given
         User user = testInitializer.createTestUser();
         final String nickname = user.getName();
@@ -686,6 +681,7 @@ class UserControllerTest {
         assertThat(response.nickname()).isEqualTo(nickname);
         assertThat(response.profileImage()).isEqualTo(profileImage);
     }
+
     @Test
     @DisplayName("프로필 이미지 변경 후, 마이페이지 조회 시 변경된 URL이 반환")
     void changeProfileImage_and_VerifyWithMypageApi() {
