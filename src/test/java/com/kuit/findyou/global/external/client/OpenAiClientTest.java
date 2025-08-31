@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.external.client;
 
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.dto.OpenAiResponse;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -61,7 +63,8 @@ class OpenAiClientTest {
         when(responseSpec.body(eq(OpenAiResponse.class))).thenReturn(null);
 
         assertThatThrownBy(() -> client.analyzeImage("https://img", "p"))
-                .isInstanceOf(OpenAiClientException.class);
+                .isInstanceOf(OpenAiClientException.class)
+                .hasMessage(OPENAI_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -71,7 +74,8 @@ class OpenAiClientTest {
         when(responseSpec.body(eq(OpenAiResponse.class))).thenReturn(new OpenAiResponse(List.of()));
 
         assertThatThrownBy(() -> client.analyzeImage("https://img", "p"))
-                .isInstanceOf(OpenAiClientException.class);
+                .isInstanceOf(OpenAiClientException.class)
+                .hasMessage(OPENAI_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -81,6 +85,7 @@ class OpenAiClientTest {
         when(responseSpec.body(eq(OpenAiResponse.class))).thenThrow(new RuntimeException("timeout"));
 
         assertThatThrownBy(() -> client.analyzeImage("https://img", "prompt"))
-                .isInstanceOf(OpenAiClientException.class);
+                .isInstanceOf(OpenAiClientException.class)
+                .hasMessage(OPENAI_CLIENT_CALL_FAILED.getValue());
     }
 }

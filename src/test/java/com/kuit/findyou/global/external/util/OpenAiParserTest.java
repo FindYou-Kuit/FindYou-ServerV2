@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.external.util;
 
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.exception.OpenAiParsingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 import java.util.Map;
 
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 import static org.assertj.core.api.Assertions.*;
 
 @ActiveProfiles("test")
@@ -37,7 +39,7 @@ class OpenAiParserTest {
             String input = "토끼,네덜란드 드워프,하얀색";
             assertThatThrownBy(() -> OpenAiParser.parseSpecies(input))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("유효하지 않은 축종");
+                    .hasMessage(OPENAI_PARSER_SPECIES_INVALID.getValue());
         }
 
         @Test
@@ -46,7 +48,7 @@ class OpenAiParserTest {
             String input = "강아지 치와와 하얀색";
             assertThatThrownBy(() -> OpenAiParser.parseSpecies(input))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("쉼표");
+                    .hasMessage(OPENAI_PARSER_NO_COMMA_DELIMITER.getValue());
         }
 
         @Test
@@ -60,9 +62,11 @@ class OpenAiParserTest {
         @DisplayName("null 또는 빈 문자열이면 예외를 던진다.")
         void null_or_blank_throws() {
             assertThatThrownBy(() -> OpenAiParser.parseSpecies(null))
-                    .isInstanceOf(OpenAiParsingException.class);
+                    .isInstanceOf(OpenAiParsingException.class)
+                    .hasMessage(OPENAI_PARSER_INPUT_NULL_OR_BLANK.getValue());
             assertThatThrownBy(() -> OpenAiParser.parseSpecies("  "))
-                    .isInstanceOf(OpenAiParsingException.class);
+                    .isInstanceOf(OpenAiParsingException.class)
+                    .hasMessage(OPENAI_PARSER_INPUT_NULL_OR_BLANK.getValue());;
         }
 
         @Test
@@ -71,7 +75,7 @@ class OpenAiParserTest {
             String noisy = "***\\n\\\\\\n   "; // 특수문자/백슬래시/개행만
             assertThatThrownBy(() -> OpenAiParser.parseSpecies(noisy))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("정제 후 입력이 비어있습니다");
+                    .hasMessage(OPENAI_PARSER_INPUT_NULL_OR_BLANK.getValue());
         }
 
     }
@@ -109,7 +113,7 @@ class OpenAiParserTest {
 
             assertThatThrownBy(() -> OpenAiParser.parseBreed(input, species, emptyCats))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("해당 축종에 대한 품종 정보가 없습니다");
+                    .hasMessage(OPENAI_PARSER_BREED_GROUP_EMPTY.getValue());
         }
 
         @Test
@@ -120,7 +124,7 @@ class OpenAiParserTest {
 
             assertThatThrownBy(() -> OpenAiParser.parseBreed(input, species, breedGroup))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("유효하지 않은 품종입니다.");
+                    .hasMessage(OPENAI_PARSER_BREED_INVALID.getValue());
         }
 
         @Test
@@ -130,7 +134,7 @@ class OpenAiParserTest {
             String species = "강아지";
             assertThatThrownBy(() -> OpenAiParser.parseBreed(input, species, breedGroup))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("최소 3개");
+                    .hasMessage(OPENAI_PARSER_PARTS_TOO_FEW.getValue());
         }
 
         @Test
@@ -145,7 +149,7 @@ class OpenAiParserTest {
 
             assertThatThrownBy(() -> OpenAiParser.parseBreed(input, species, group))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("해당 축종에 대한 품종 정보가 없습니다");
+                    .hasMessage(OPENAI_PARSER_BREED_GROUP_EMPTY.getValue());
         }
 
     }
@@ -168,7 +172,7 @@ class OpenAiParserTest {
             String input = "강아지,치와와,보라색,파란색";
             assertThatThrownBy(() -> OpenAiParser.parseColors(input))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("유효한 색상이 없습니다");
+                    .hasMessage(OPENAI_PARSER_COLORS_EMPTY.getValue());
         }
 
         @Test
@@ -185,16 +189,18 @@ class OpenAiParserTest {
             String input = "강아지,치와와"; // 색상 없음
             assertThatThrownBy(() -> OpenAiParser.parseColors(input))
                     .isInstanceOf(OpenAiParsingException.class)
-                    .hasMessageContaining("최소 3개");
+                    .hasMessage(OPENAI_PARSER_PARTS_TOO_FEW.getValue());
         }
 
         @Test
         @DisplayName("null 또는 빈 문자열이면 예외를 던진다.")
         void null_or_blank_throws() {
             assertThatThrownBy(() -> OpenAiParser.parseColors(null))
-                    .isInstanceOf(OpenAiParsingException.class);
+                    .isInstanceOf(OpenAiParsingException.class)
+                    .hasMessage(OPENAI_PARSER_INPUT_NULL_OR_BLANK.getValue());;
             assertThatThrownBy(() -> OpenAiParser.parseColors("  "))
-                    .isInstanceOf(OpenAiParsingException.class);
+                    .isInstanceOf(OpenAiParsingException.class)
+                    .hasMessage(OPENAI_PARSER_INPUT_NULL_OR_BLANK.getValue());;
         }
 
         @Test
