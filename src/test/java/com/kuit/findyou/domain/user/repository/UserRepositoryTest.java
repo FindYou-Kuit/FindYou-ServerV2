@@ -223,4 +223,43 @@ class UserRepositoryTest {
         return userRepository.save(build);
     }
 
+    @Test
+    @DisplayName("더티체킹으로 기본 프로필 이미지(enum 문자열) 저장")
+    void dirtyChecking_SaveDefaultProfileName() {
+        // given
+        User user = userRepository.save(User.builder()
+                .name("유저")
+                .role(Role.USER)
+                .deviceId("dev-1")
+                .build());
+
+        // when
+        user.changeProfileImage("puppy");
+        em.flush();
+        em.clear();
+
+        // then
+        User found = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(found.getProfileImageUrl()).isEqualTo("puppy");
+    }
+
+    @Test
+    @DisplayName("더티체킹으로 CDN URL이 저장")
+    void dirtyChecking_SaveCdnUrl() {
+        // given
+        User user = userRepository.save(User.builder()
+                .name("유저")
+                .role(Role.USER)
+                .deviceId("dev-2")
+                .build());
+
+        // when
+        user.changeProfileImage("https://cdn.example/profile.jpg");
+        em.flush();
+        em.clear();
+
+        // then
+        User found = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(found.getProfileImageUrl()).isEqualTo("https://cdn.example/profile.jpg");
+    }
 }
