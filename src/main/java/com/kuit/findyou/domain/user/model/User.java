@@ -121,4 +121,5 @@ public class User extends BaseEntity {
     public void changeNickname(String newNickname) {
         this.name = newNickname;
     }
+    public void changeProfileImage(String newImage) {this.profileImageUrl = newImage;}
 }
