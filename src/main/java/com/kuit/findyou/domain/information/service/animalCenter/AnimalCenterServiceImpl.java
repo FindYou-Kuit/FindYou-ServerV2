@@ -46,9 +46,9 @@ public class AnimalCenterServiceImpl implements AnimalCenterService {
         List<AnimalCenter> nearby = animalCenterRepository.findAllWithLatLngAfterId(lastId, PageRequest.of(0, size + 1));
 
         List<AnimalCenter> filtered = nearby.stream()
-                .filter(shelter ->
-                        shelter.getLatitude() != null && shelter.getLongitude() != null &&
-                                calculateDistance(lat, lng, shelter.getLatitude(), shelter.getLongitude()) <= MAX_DISTANCE_KM)
+                .filter(center ->
+                        center.getLatitude() != null && center.getLongitude() != null &&
+                                calculateDistance(lat, lng, center.getLatitude(), center.getLongitude()) <= MAX_DISTANCE_KM)
                 .toList();
         boolean isLast = filtered.size() <= size;
         List<AnimalCenter> page = isLast ? filtered : filtered.subList(0, size);
