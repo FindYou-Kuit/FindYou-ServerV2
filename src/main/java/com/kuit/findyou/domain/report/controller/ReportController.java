@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.report.controller;
 
+import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.MissingReportDetailResponseDTO;
@@ -79,6 +80,15 @@ public class ReportController {
     ) {
         CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(type, startDate, endDate, species, breeds, address, lastId, userId);
         return BaseResponse.ok(result);
+    }
+
+    @Operation(summary = "목격 신고글 등록 API", description = "목격 신고글 등록에 필요한 내용들을 포함해 등록하는 API")
+    @CustomExceptionDescription(DEFAULT)
+    @PostMapping("/new-witness-reports")
+    public BaseResponse<Void> createWitnessReport(@RequestBody CreateWitnessReportRequest request,
+                                                  @Parameter(hidden = true) @LoginUserId Long userId) {
+        reportServiceFacade.createWitnessReport(request, userId);
+        return BaseResponse.ok(null);
     }
 
 }
