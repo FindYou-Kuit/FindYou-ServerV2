@@ -2,6 +2,7 @@ package com.kuit.findyou.global.config;
 
 import com.kuit.findyou.global.jwt.security.CustomAuthenticationEntryPoint;
 import com.kuit.findyou.global.jwt.filter.JwtAuthenticationFilter;
+import com.kuit.findyou.global.logging.MDCLoggingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final MDCLoggingFilter mdcLoggingFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
     private final String[] PERMIT_URL = {
             "/api/v2/auth/**", "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
             "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html",
@@ -48,6 +51,10 @@ public class SecurityConfig {
 //                        .requestMatchers(PERMIT_URL).permitAll()
 //                        .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
 //                        .anyRequest().authenticated());
+
+        // MDC 필터 추가
+        http
+                .addFilterBefore(mdcLoggingFilter, UsernamePasswordAuthenticationFilter.class);
 
         // 토큰 검증 필터 추가
         http
