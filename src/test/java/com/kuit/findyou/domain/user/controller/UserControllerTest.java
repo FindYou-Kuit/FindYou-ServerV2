@@ -4,25 +4,30 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
-import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
+import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
-import com.kuit.findyou.global.infrastructure.ImageUploader;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -34,6 +39,9 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -58,13 +66,15 @@ class UserControllerTest {
     @Autowired
     InterestReportRepository interestReportRepository;
 
-    @TestConfiguration
+    /*@TestConfiguration
     static class StubUploaderConfig {
         @Bean
         public ImageUploader imageUploader() {
             return file -> "https://img.test/uploaded.jpg";
         }
-    }
+    }*/
+    @MockitoBean
+    private S3Client s3Client;
 
     @BeforeEach
     void setUp() {
@@ -676,5 +686,39 @@ class UserControllerTest {
         assertThat(response.nickname()).isEqualTo(nickname);
         assertThat(response.profileImage()).isEqualTo(profileImage);
     }
+    @Test
+    @DisplayName("프로필 이미지 변경 후, 마이페이지 조회 시 변경된 URL이 반환")
+    void changeProfileImage_and_VerifyWithMypageApi() {
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().build());
+
+        // === 프로필 이미지 변경 API 호출 ===
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(200)
+                .body("success", equalTo(true));
+
+        // === 마이페이지 조회 API 호출 ===
+        String profileImageUrl = given()
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .get("/api/v2/users/me") // 마이페이지 조회 API
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("data.profileImage");
+
+        // === 반환된 URL이 CDN 주소 형식을 따르는지 확인 ===
+        assertThat(profileImageUrl).startsWith("base-url");
+    }
 }
