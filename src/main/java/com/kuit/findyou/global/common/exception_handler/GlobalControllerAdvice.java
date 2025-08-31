@@ -2,17 +2,15 @@ package com.kuit.findyou.global.common.exception_handler;
 
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.response.BaseErrorResponse;
-import com.kuit.findyou.global.common.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.TypeMismatchException;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
@@ -97,5 +95,15 @@ public class GlobalControllerAdvice {
     public BaseErrorResponse handle_CustomException(CustomException e) {
         log.error("[handle_CustomException]", e);
         return new BaseErrorResponse(e.getExceptionStatus());
+    }
+
+    /**
+     * Multipart 요청의 형식이 잘못되었을 때 처리 (e.g. boundary 누락)
+     * 400 Bad Request 응답 반환
+     */
+    @ExceptionHandler(MultipartException.class)
+    public BaseErrorResponse handleMultipartException(MultipartException e) {
+        log.error("[handle_MultipartException]", e);
+        return new BaseErrorResponse(BAD_REQUEST, "잘못된 형식의 파일 업로드 요청입니다.");
     }
 }
