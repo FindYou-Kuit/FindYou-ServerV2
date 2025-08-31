@@ -2,6 +2,7 @@ package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
+import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
@@ -13,6 +14,7 @@ import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -148,5 +150,16 @@ public class UserController {
     public BaseResponse<CardResponseDTO> retrieveUserReports(@Parameter(hidden = true) @LoginUserId Long userId,
                                                              @Parameter(name = "lastId") @RequestParam(required = true) Long lastId){
         return BaseResponse.ok(userServiceFacade.retrieveUserReports(userId, lastId));
+    }
+
+    @Operation(
+            summary = "마이페이지 프로필 조회 API",
+            description = "마이페이지 프로필 조회 기능을 수행합니다."
+    )
+    @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "API 엑세스 토큰", example = "Bearer asdf1234")
+    @CustomExceptionDescription(DEFAULT)
+    @GetMapping("/me")
+    public BaseResponse<GetUserProfileResponse> getUserProfile(@Parameter(hidden = true) @LoginUserId Long userId){
+        return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
     }
 }
