@@ -11,6 +11,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 90    # 잡의 타임아웃 시간을 90분으로 설정
 
     steps:
       - uses: actions/checkout@v4
@@ -63,11 +64,13 @@ jobs:
 
       - name: 🚀 Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master
+        timeout-minutes: 60   # step 기본 30분 제한 회피
         with:
           host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.DEV_EC2_USERNAME }}
           key: ${{ secrets.DEV_EC2_KEY }}
           port: ${{ secrets.DEV_EC2_PORT }}
+          command_timeout: 60m   # 기본 10분 ->  60분으로 늘리기
           script: |
             cd /home/ubuntu/FindYou-ServerV2
             docker compose -f docker-compose-dev.yml pull
