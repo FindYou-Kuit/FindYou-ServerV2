@@ -1,10 +1,7 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
-import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
-import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
-import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
-import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
+import com.kuit.findyou.domain.user.dto.request.*;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.service.facade.UserServiceFacade;
@@ -133,6 +130,20 @@ public class UserController {
     public BaseResponse<Void> deleteInterestAnimal(@Parameter(hidden = true) @LoginUserId Long userId,
                                                    @Parameter(name = "삭제할 동물신고글 식별자") @PathVariable Long reportId){
         userServiceFacade.deleteInterestAnimal(userId, reportId);
+        return BaseResponse.ok(null);
+    }
+
+    @Operation(
+            summary = "프로필 이미지 변경 API",
+            description = "프로필 이미지 변경을 수행합니다. 기본이미지는 enum값 이름으로 저장, 사용자 업로드 이미지는 cdn url로 저장됩니다."
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @PatchMapping(value = "/me/profile-image", consumes = MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<Void> changeProfileImage(
+            @LoginUserId Long userId,
+            @ModelAttribute ChangeProfileImageRequest req
+    ) {
+        userServiceFacade.changeProfileImage(userId, req);
         return BaseResponse.ok(null);
     }
 }
