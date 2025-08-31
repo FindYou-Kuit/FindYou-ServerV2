@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
+import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.IMAGE_UPLOAD;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
@@ -25,7 +26,7 @@ public class ImageController {
     private final ReportImageUploadService imageUploadService;
 
     @Operation(summary = "신고글 이미지 업로드 API", description = "멀티파트 이미지 업로드 후 CDN URL 리스트 반환")
-    @CustomExceptionDescription(DEFAULT)
+    @CustomExceptionDescription(IMAGE_UPLOAD)
     @PostMapping(value = "/upload", consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<ReportImageResponse> uploadImages(@RequestPart(value = "files", required = false) List<MultipartFile> files, @LoginUserId Long userId) {
         List<String> urls = imageUploadService.uploadImages(files);
