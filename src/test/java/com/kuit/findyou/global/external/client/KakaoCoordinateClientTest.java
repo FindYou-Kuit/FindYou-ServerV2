@@ -7,10 +7,14 @@ import org.mockito.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
 
@@ -57,7 +61,10 @@ class KakaoCoordinateClientTest {
         ArgumentCaptor<Function<UriBuilder, URI>> captor = ArgumentCaptor.forClass(Function.class);
         verify(uriSpec).uri(captor.capture());
         URI built = captor.getValue().apply(UriComponentsBuilder.fromHttpUrl("http://localhost"));
-        assertThat(built.toString()).contains("query=");
+
+        String raw = UriComponentsBuilder.fromUri(built).build()
+                .getQueryParams().getFirst("query");
+        assertThat(URLDecoder.decode(raw, StandardCharsets.UTF_8)).isEqualTo("서울");
     }
 
     @Test
