@@ -11,13 +11,16 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.infrastructure.ImageUploader;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -53,6 +56,14 @@ class UserControllerTest {
 
     @Autowired
     InterestReportRepository interestReportRepository;
+
+    @TestConfiguration
+    static class StubUploaderConfig {
+        @Bean
+        public ImageUploader imageUploader() {
+            return file -> "https://img.test/uploaded.jpg";
+        }
+    }
 
     @BeforeEach
     void setUp() {
@@ -472,5 +483,114 @@ class UserControllerTest {
                 .body("message", equalTo(SUCCESS.getMessage()));
 
         assertThat(interestReportRepository.existsByReportIdAndUserId(report.getId(), user.getId())).isFalse();
+    }
+
+    @Test
+    @DisplayName("기본 이미지로 변경 성공")
+    void changeProfileImage_Default_Success() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart(multipartText("defaultProfileImageName", "chick"))
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()))
+                .body("data", nullValue());
+
+        User updated = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(updated.getProfileImageUrl()).isEqualTo("chick");
+    }
+
+    @Test
+    @DisplayName("파일 업로드로 변경 성공")
+    void changeProfileImage_File_Success() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(SUCCESS.getCode()))
+                .body("message", equalTo(SUCCESS.getMessage()))
+                .body("data", nullValue());
+
+        User updated = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(updated.getProfileImageUrl()).isEqualTo("https://img.test/uploaded.jpg");
+    }
+
+    @Test
+    @DisplayName("둘 다 제공(파일+기본명) → 400")
+    void changeProfileImage_BothProvided_BadRequest() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart(multipartText("defaultProfileImageName", "puppy"))
+                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
+            .when()
+                .patch("/api/v2/users/me/profile-image")
+            .then()
+                .statusCode(200)
+                .body("success", equalTo(false))
+                .body("code", equalTo(400))
+                .body("message", equalTo("Invalid request"));
+    }
+
+    @Test
+    @DisplayName("둘 다 제공 X → 400")
+    void changeProfileImage_NoneProvided_BadRequest() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("dummy", "dummy")
+            .when()
+                .patch("/api/v2/users/me/profile-image")
+            .then()
+                .statusCode(200)
+                .body("success", equalTo(false))
+                .body("code", equalTo(400))
+                .body("message", equalTo("Invalid request"));
+    }
+
+    @Test
+    @DisplayName("잘못된 기본이미지 이름 → 400")
+    void changeProfileImage_InvalidDefaultName_BadRequest() {
+        // given
+        User user = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart(multipartText("defaultProfileImageName", "cat"))
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(200)
+                .body("success", equalTo(false))
+                .body("code", equalTo(400))
+                .body("message", equalTo("Invalid request"));
     }
 }
