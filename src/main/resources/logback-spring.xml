@@ -13,7 +13,7 @@
 
     <!-- 파일 로그 패턴 (텍스트, key=value 형태) -->
     <property name="file.format"
-              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%level] [%thread] [%logger] [request_id:%X{request_id}] [user_id:%X{user_id}] %msg%n"/>
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%level] [%thread] [%logger] [request_id:%X{request_id}] [user_id:%X{user_id}] %msg%n%wEx"/>
 
     <!-- 콘솔 로그 Appender(컬러) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

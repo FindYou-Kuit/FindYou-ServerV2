@@ -19,8 +19,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final MDCLoggingFilter mdcLoggingFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    // MDCLoggingFilter 명시적 빈 등록
+    @Bean
+    public MDCLoggingFilter mdcLoggingFilter() {
+        return new MDCLoggingFilter();
+    }
 
     private final String[] PERMIT_URL = {
             "/api/v2/auth/**", "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
@@ -52,13 +57,13 @@ public class SecurityConfig {
 //                        .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
 //                        .anyRequest().authenticated());
 
-        // MDC 필터 추가
-        http
-                .addFilterBefore(mdcLoggingFilter, UsernamePasswordAuthenticationFilter.class);
-
         // 토큰 검증 필터 추가
         http
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // MDC 필터 추가 - 반드시 JwtAuthenticationFilter 이전에 실행되도록 설정
+        http
+                .addFilterBefore(mdcLoggingFilter(), JwtAuthenticationFilter.class);
 
         // 토큰 검증 예외 처리 추가
         http
