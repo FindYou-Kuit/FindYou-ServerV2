@@ -11,5 +11,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       TZ: Asia/Seoul
+    volumes:
+      - ${LOG_DIRECTORY}:/logs
 
 #test
