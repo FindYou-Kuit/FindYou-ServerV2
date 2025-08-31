@@ -2,6 +2,8 @@ package com.kuit.findyou.global.common.util;
 
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
+import com.kuit.findyou.domain.information.model.AnimalDepartment;
+import com.kuit.findyou.domain.information.repository.AnimalDepartmentRepository;
 import com.kuit.findyou.domain.information.model.AnimalCenter;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
@@ -34,6 +36,7 @@ public class TestInitializer {
     private final ViewedReportRepository viewedReportRepository;
     private final AnimalCenterRepository animalCenterRepository;
     private final VolunteerWorkRepository volunteerWorkRepository;
+    private final AnimalDepartmentRepository animalDepartmentRepository;
 
     private User defaultUser;
 
@@ -177,5 +180,27 @@ public class TestInitializer {
 
             volunteerWorkRepository.save(volunteerWork);
         });
+    }
+
+    public void createTestAnimalDepartments(String organization, int count) {
+        for (int i = 1; i <= count; i++) {
+            animalDepartmentRepository.save(
+                    AnimalDepartment.builder()
+                            .organization(organization)
+                            .department("테스트부서" + i)
+                            .phoneNumber("02-0000-" + String.format("%03d", i))
+                            .build()
+            );
+        }
+    }
+
+    public void createTestDepartment(String organization, String department, String phoneNumber) {
+        animalDepartmentRepository.save(
+                AnimalDepartment.builder()
+                        .organization(organization)
+                        .department(department)
+                        .phoneNumber(phoneNumber)
+                        .build()
+        );
     }
 }

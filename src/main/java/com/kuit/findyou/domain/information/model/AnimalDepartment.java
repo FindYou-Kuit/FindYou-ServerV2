@@ -11,7 +11,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLRestriction("status = 'Y'")
 public class AnimalDepartment extends BaseEntity {
 
     @Id
@@ -20,11 +19,11 @@ public class AnimalDepartment extends BaseEntity {
     private Long id;
 
     @Column(name = "organization", length = 100, nullable = false)
-    private String organization;
+    private String organization; // 담당기관
 
     @Column(name = "department", length = 70, nullable = false)
-    private String department;
+    private String department; // 담당부서
 
     @Column(name = "phone_number", length = 20, nullable = false)
-    private String phoneNumber;
+    private String phoneNumber; // 전화번호
 }

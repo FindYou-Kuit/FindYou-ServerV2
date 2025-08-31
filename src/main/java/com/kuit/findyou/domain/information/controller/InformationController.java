@@ -8,7 +8,6 @@ import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,5 +100,25 @@ public class InformationController {
     @GetMapping("volunteer-works")
     public BaseResponse<GetVolunteerWorksResponse> getVolunteerWorks(@Parameter @RequestParam Long lastId){
         return BaseResponse.ok(informationServiceFacade.getVolunteerWorks(lastId));
+    }
+
+    @Operation(summary = "보호부서 조회 API", description = """
+보호부서 목록을 조회합니다.
+
+**[주의]** 커서 페이징을 지원합니다.
+- 첫 요청에서는 lastId를 0 or 미지정 (null)
+- 다음 요청에는 이전 응답의 lastId를 세팅해서 전달해주세요. 마지막 페이지인 경우 null
+""")
+    @CustomExceptionDescription(DEFAULT)
+    @GetMapping("/departments")
+    public BaseResponse<GetAnimalDepartmentsResponse> getDepartments(
+            @Parameter(description = "커서 페이징용 마지막 ID", example = "0")
+            @RequestParam(defaultValue = "0") Long lastId,
+
+            @Parameter(description = "담당기관 전체 문자열", example = "서울특별시 광진구")
+            @RequestParam(defaultValue = "") String district
+    ) {
+        String normalizedDistrict = (district == null || district.isBlank()) ? null : district.trim(); //공백제거
+        return BaseResponse.ok(informationServiceFacade.getDepartments(lastId, normalizedDistrict));
     }
 }
