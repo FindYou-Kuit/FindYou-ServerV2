@@ -1,5 +1,7 @@
 package com.kuit.findyou.global.common.util;
 
+import com.kuit.findyou.domain.breed.model.Breed;
+import com.kuit.findyou.domain.breed.repository.BreedRepository;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
@@ -37,6 +39,7 @@ public class TestInitializer {
     private final AnimalCenterRepository animalCenterRepository;
     private final AnimalDepartmentRepository animalDepartmentRepository;
     private final VolunteerWorkRepository volunteerWorkRepository;
+    private final BreedRepository breedRepository;
 
     private User defaultUser;
 
@@ -350,5 +353,16 @@ public class TestInitializer {
         createTestWitnessReportWithImage(writer);
 
         return writer;
+    }
+
+    public void createTestBreeds() {
+        List<Breed> breeds = List.of(
+                Breed.builder().name("진돗개").species("강아지").build(),
+                Breed.builder().name("포메라니안").species("강아지").build(),
+                Breed.builder().name("코리안 숏헤어").species("고양이").build(),
+                Breed.builder().name("스코티시 폴드").species("고양이").build(),
+                Breed.builder().name("기타축종").species("기타").build()
+        );
+        breedRepository.saveAll(breeds);
     }
 }
