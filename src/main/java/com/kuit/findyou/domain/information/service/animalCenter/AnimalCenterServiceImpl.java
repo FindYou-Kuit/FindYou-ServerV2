@@ -23,13 +23,6 @@ public class AnimalCenterServiceImpl implements AnimalCenterService {
     @Override
     public AnimalCenterPagingResponse<AnimalCenterResponse> getCenters(Long lastId, String district, int size) {
 
-        if (lastId != null && lastId < 0) {
-            throw new CustomException(INVALID_CURSOR);
-        }
-        if (size <= 0) {
-            throw new CustomException(INVALID_SIZE);
-        }
-
         //관할구역 필터
         String jurisdiction =  (district != null && !district.isBlank())
                 ? district.trim()

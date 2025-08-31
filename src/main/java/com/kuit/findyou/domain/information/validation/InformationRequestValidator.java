@@ -44,4 +44,8 @@ public class InformationRequestValidator {
             throw new CustomException(LAT_LONG_PAIR_REQUIRED);
         }
     }
+
+    public static void validatePageSize(int size) {
+        if (size <= 0) throw new CustomException(INVALID_SIZE);
+    }
 }
