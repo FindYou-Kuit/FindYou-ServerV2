@@ -10,6 +10,11 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 
 @Getter
 public enum SwaggerResponseDescription {
+    ADD_INTEREST_ANIMAL(new LinkedHashSet<>(Set.of(
+            DUPLICATE_INTEREST_REPORT,
+            REPORT_NOT_FOUND
+    ))),
+
     GET_HOME(new LinkedHashSet<>(Set.of(
             HOME_STATISTICS_UPDATE_FAILED
     ))),

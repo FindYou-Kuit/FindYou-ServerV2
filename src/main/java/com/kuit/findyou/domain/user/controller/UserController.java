@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
@@ -17,12 +18,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
-
 import lombok.extern.slf4j.Slf4j;
 
-import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.CHECK_DUPLICATE_NICKNAME;
-import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.REGISTER_USER;
+import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
@@ -111,6 +109,30 @@ public class UserController {
     public BaseResponse<Void> deleteUser(@Parameter(hidden = true) @LoginUserId Long userId) {
         log.info("[deleteUser] userId = {}", userId);
         userServiceFacade.deleteUser(userId);
+        return BaseResponse.ok(null);
+    }
+
+    @Operation(
+            summary = "관심동물 등록 API",
+            description = "관심동물 등록 기능을 수행합니다. 중복된 요청은 예외를 반환합니다."
+    )
+    @CustomExceptionDescription(ADD_INTEREST_ANIMAL)
+    @PostMapping("/me/interest-animals")
+    public BaseResponse<Void> addInterestAnimal(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                @RequestBody AddInterestAnimalRequest request){
+        userServiceFacade.addInterestAnimal(userId, request.reportId());
+        return BaseResponse.ok(null);
+    }
+
+    @Operation(
+            summary = "관심동물 삭제 API",
+            description = "관심동물 삭제 기능을 수행합니다. 중복된 요청은 예외를 반환하지 않습니다."
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @DeleteMapping("me/interest-animals/{reportId}")
+    public BaseResponse<Void> deleteInterestAnimal(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                   @Parameter(name = "삭제할 동물신고글 식별자") @PathVariable Long reportId){
+        userServiceFacade.deleteInterestAnimal(userId, reportId);
         return BaseResponse.ok(null);
     }
 }

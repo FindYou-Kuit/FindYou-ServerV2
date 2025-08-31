@@ -1,8 +1,8 @@
-package com.kuit.findyou.domain.information.service;
+package com.kuit.findyou.domain.information.service.volunteerWork;
 
+import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
-import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

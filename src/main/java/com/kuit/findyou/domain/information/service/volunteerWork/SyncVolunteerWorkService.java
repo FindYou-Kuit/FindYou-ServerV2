@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.service;
+package com.kuit.findyou.domain.information.service.volunteerWork;
 
 import org.springframework.stereotype.Service;
 

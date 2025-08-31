@@ -3,6 +3,8 @@ package com.kuit.findyou.domain.report.repository;
 
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.InterestReport;
+import com.kuit.findyou.domain.report.model.Report;
+import com.kuit.findyou.domain.user.model.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +45,6 @@ public interface InterestReportRepository extends JpaRepository<InterestReport, 
         ORDER BY ir.id DESC
     """)
     List<ReportProjection> findInterestReportsByCursor(@Param("userId") Long userId, @Param("lastId") Long lastId, Pageable pageable);
+
+    void deleteByUserAndReport(User user, Report report);
 }
