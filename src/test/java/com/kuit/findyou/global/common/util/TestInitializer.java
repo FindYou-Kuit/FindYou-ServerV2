@@ -1,5 +1,11 @@
 package com.kuit.findyou.global.common.util;
 
+import com.kuit.findyou.domain.breed.model.Breed;
+import com.kuit.findyou.domain.breed.repository.BreedRepository;
+import com.kuit.findyou.domain.city.model.Sido;
+import com.kuit.findyou.domain.city.model.Sigungu;
+import com.kuit.findyou.domain.city.repository.SidoRepository;
+import com.kuit.findyou.domain.city.repository.SigunguRepository;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
@@ -37,6 +43,9 @@ public class TestInitializer {
     private final AnimalCenterRepository animalCenterRepository;
     private final AnimalDepartmentRepository animalDepartmentRepository;
     private final VolunteerWorkRepository volunteerWorkRepository;
+    private final BreedRepository breedRepository;
+    private final SidoRepository sidoRepository;
+    private final SigunguRepository sigunguRepository;
 
     private User defaultUser;
 
@@ -350,5 +359,37 @@ public class TestInitializer {
         createTestWitnessReportWithImage(writer);
 
         return writer;
+    }
+
+    @Transactional
+    public void createTestBreeds() {
+        List<Breed> breeds = List.of(
+                Breed.builder().name("진돗개").species("강아지").build(),
+                Breed.builder().name("포메라니안").species("강아지").build(),
+                Breed.builder().name("코리안 숏헤어").species("고양이").build(),
+                Breed.builder().name("스코티시 폴드").species("고양이").build(),
+                Breed.builder().name("기타축종").species("기타").build()
+        );
+        breedRepository.saveAll(breeds);
+    }
+
+    @Transactional
+    public void createTestCities() {
+        // 서울
+        Sido seoul = sidoRepository.save(
+                Sido.builder()
+                        .name("서울특별시")
+                        .build()
+        );
+        sigunguRepository.save(Sigungu.builder().name("강남구").sido(seoul).build());
+        sigunguRepository.save(Sigungu.builder().name("송파구").sido(seoul).build());
+
+        // 부산
+        Sido busan = sidoRepository.save(
+                Sido.builder()
+                        .name("부산광역시")
+                        .build()
+        );
+        sigunguRepository.save(Sigungu.builder().name("해운대구").sido(busan).build());
     }
 }
