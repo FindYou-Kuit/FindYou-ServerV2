@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.service;
+package com.kuit.findyou.domain.information.service.animalDepartment;
 
 import com.kuit.findyou.domain.information.dto.GetAnimalDepartmentsResponse;
 

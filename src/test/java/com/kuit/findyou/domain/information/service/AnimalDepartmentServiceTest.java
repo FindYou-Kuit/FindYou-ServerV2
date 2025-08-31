@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.information.service;
 import com.kuit.findyou.domain.information.dto.GetAnimalDepartmentsResponse;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import com.kuit.findyou.domain.information.repository.AnimalDepartmentRepository;
+import com.kuit.findyou.domain.information.service.animalDepartment.AnimalDepartmentServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
