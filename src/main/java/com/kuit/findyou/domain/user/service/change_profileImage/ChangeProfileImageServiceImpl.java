@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 
@@ -30,38 +29,21 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-        MultipartFile file = request.profileImageFile();
-        String defaultName = request.defaultProfileImageName();
-
-        //둘 다 null이거나, 둘 다 채워졌으면 잘못된 요청
-        boolean emptyFile = file == null || file.isEmpty();
-        boolean invalidDefault = (defaultName == null) || !DefaultProfileImage.validate(defaultName);
-
-        if ((emptyFile && invalidDefault) || (!emptyFile && !invalidDefault)) {
-            throw new CustomException(BAD_REQUEST);
-        }
-
         String toSave;
-        if (!emptyFile) {
+        if (request.profileImageFile() != null && !request.profileImageFile().isEmpty()) {
             try {
-                toSave = imageUploader.upload(file);  //업로드 후 CDN URL 반환
+                toSave = imageUploader.upload(request.profileImageFile());
             } catch (FileUploadingFailedException e) {
                 throw new CustomException(IMAGE_UPLOAD_FAILED);
             }
+        } else {
+            //enum 이름을 소문자로 저장
+            toSave = Arrays.stream(DefaultProfileImage.values())
+                    .filter(v -> v.getName().equalsIgnoreCase(request.defaultProfileImageName()))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(BAD_REQUEST))
+                    .getName();
         }
-        //기본 프로필 (enum 이름을 소문자로 저장)
-        else {
-            toSave = normalizeDefaultName(defaultName);
-        }
-
         user.changeProfileImage(toSave);
-    }
-
-    private String normalizeDefaultName(String name) {
-        return Arrays.stream(DefaultProfileImage.values())
-                .filter(v -> v.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .map(DefaultProfileImage::getName) // 저장은 항상 소문자(name 필드)
-                .orElseThrow(() -> new CustomException(BAD_REQUEST));
     }
 }
