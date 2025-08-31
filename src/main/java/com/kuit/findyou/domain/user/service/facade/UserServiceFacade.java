@@ -10,6 +10,7 @@ import com.kuit.findyou.domain.user.service.delete.DeleteUserService;
 import com.kuit.findyou.domain.user.service.interest_report.InterestReportService;
 import com.kuit.findyou.domain.user.service.query.QueryUserService;
 import com.kuit.findyou.domain.user.service.register.RegisterUserService;
+import com.kuit.findyou.domain.user.service.report.UserReportService;
 import com.kuit.findyou.domain.user.service.viewed_reports.ViewedReportsRetrieveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class UserServiceFacade {
     private final QueryUserService queryUserService;
     private final ChangeNicknameService changeNicknameService;
     private final DeleteUserService deleteUserService;
+    private final UserReportService userReportService;
 
     public CardResponseDTO retrieveViewedAnimals(Long lastId, Long userId) {
         return viewedReportsRetrieveService.retrieveViewedAnimals(lastId, userId);
@@ -54,5 +56,9 @@ public class UserServiceFacade {
 
     public void deleteUser(Long userId) {
         deleteUserService.deleteUser(userId);
+    }
+
+    public CardResponseDTO retrieveUserReports(Long userId, Long lastId){
+        return userReportService.retrieveUserReports(userId, lastId, 20);
     }
 }

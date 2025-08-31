@@ -135,4 +135,18 @@ public class UserController {
         userServiceFacade.deleteInterestAnimal(userId, reportId);
         return BaseResponse.ok(null);
     }
+
+    @Operation(
+            summary = "신고 내역 조회 API",
+            description = """
+신고 내역 조회 기능을 수행합니다. 
+커서페이징을 지원합니다. 직전 응답의 lastId를 요청에 포함해야 합니다. 처음에는 Long 타입의 MAX_VALUE를 전달합니다.
+    """
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @GetMapping("/me/reports")
+    public BaseResponse<CardResponseDTO> retrieveUserReports(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                             @Parameter(name = "lastId") @RequestParam(required = true) Long lastId){
+        return BaseResponse.ok(userServiceFacade.retrieveUserReports(userId, lastId));
+    }
 }
