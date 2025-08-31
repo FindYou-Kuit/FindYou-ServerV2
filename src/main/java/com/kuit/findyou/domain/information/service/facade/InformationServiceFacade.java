@@ -1,8 +1,6 @@
 package com.kuit.findyou.domain.information.service.facade;
 
 import com.kuit.findyou.domain.information.dto.*;
-import com.kuit.findyou.domain.information.service.AnimalDepartmentService;
-
 import com.kuit.findyou.domain.information.service.animalCenter.AnimalCenterService;
 import com.kuit.findyou.domain.information.service.animalDepartment.AnimalDepartmentService;
 import com.kuit.findyou.domain.information.service.recommended.RecommendedContentService;
@@ -22,7 +20,6 @@ public class InformationServiceFacade {
     private final AnimalCenterService animalCenterService;
     private final RecommendedContentService contentService;
     private final VolunteerWorkService volunteerWorkService;
-    private final AnimalDepartmentService animalDepartmentService;
 
     public AnimalCenterPagingResponse<AnimalCenterResponse> getCenters(Long lastId, String district, int size) {
         return animalCenterService.getCenters(lastId, district, size);
