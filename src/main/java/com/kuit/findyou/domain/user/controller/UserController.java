@@ -141,7 +141,7 @@ public class UserController {
     @PatchMapping(value = "/me/profile-image", consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<Void> changeProfileImage(
             @LoginUserId Long userId,
-            @ModelAttribute ChangeProfileImageRequest req
+            @Valid @ModelAttribute ChangeProfileImageRequest req
     ) {
         userServiceFacade.changeProfileImage(userId, req);
         return BaseResponse.ok(null);
