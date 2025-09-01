@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   findyou_blue:
     image: jjjjyy0704/findyou_repository:prod
