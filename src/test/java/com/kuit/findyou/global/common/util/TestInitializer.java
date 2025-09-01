@@ -265,8 +265,6 @@ public class TestInitializer {
                 "황금색",
                 "목에 빨간 목걸이",
                 "김철수",
-                "010-1234-5678",
-                "강남역 근처",
                 new BigDecimal("37.497952"),
                 new BigDecimal("127.027619")
         );
@@ -333,8 +331,6 @@ public class TestInitializer {
                     "황금색",
                     "목에 빨간 목걸이",
                     "김철수",
-                    "010-1234-5678",
-                    "강남역 근처",
                     new BigDecimal(lat),
                     new BigDecimal(lng)
             );
