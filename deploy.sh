@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 IS_BLUE_RUNNING=$(docker ps | grep findyou_blue)
 export NGINX_CONF="/etc/nginx/sites-available/default"
