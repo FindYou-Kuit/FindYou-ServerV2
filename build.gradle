@@ -2,6 +2,11 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
+}
+
+jacoco {
+	toolVersion = "0.8.12"
 }
 
 group = 'com.kuit'
@@ -98,4 +103,88 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // 테스트 후 자동으로 커버리지 리포트 생성
 }
+
+// Jacoco 테스트 리포트 설정
+jacocoTestReport {
+	dependsOn test // 테스트가 선행되어야 함
+
+	reports {
+		xml.required = true // CI 에서 파싱하기 위해 필요
+		csv.required = false
+		html.required = true // 개발자가 브라우저에서 보기 위해 필요
+	}
+
+	// 커버리지에서 제외할 클래스들
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					'**/config/**',          // 설정 클래스 제외
+					'**/dto/**',             // DTO 클래스 제외
+					'**/model/**',           // JPA 엔티티 제외
+					'**/*Application.class', // 메인 애플리케이션 클래스 제외
+					'**/exception/**',       // 예외 클래스 제외
+					'**/common/**',          // 공통 클래스 제외
+					'**/constant/**',        // ENUM 클래스 제외
+					'**/logging/**',         // 로그 관련 클래스 제외
+					'**/notification/**',    // 알림 관련 클래스 제외
+					'**/test/**',            // 테스트용 클래스 제외
+					'**/infrastructure/**'   // S3 관련 클래스 제외
+
+			])
+		}))
+	}
+
+	finalizedBy jacocoTestCoverageVerification  // 리포트 생성 후 커버리지 검증
+}
+
+// 커버리지 검증 규칙
+jacocoTestCoverageVerification {
+	dependsOn jacocoTestReport
+
+	violationRules {
+		rule {
+			// 전체 프로젝트 커버리지 규칙
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.00  // 전체 라인 커버리지
+			}
+		}
+
+		rule {
+			// 브랜치 커버리지 규칙
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.00  // 브랜치 커버리지
+			}
+		}
+
+		rule {
+			// 개별 클래스 커버리지 규칙
+			element = 'CLASS'
+			excludes = [
+					'*.config.*',        	 // 설정 클래스 제외
+					'*.dto.*',           	 // DTO 클래스 제외
+					'*.model.*',         	 // 엔티티 클래스 제외
+					'*Application',      	 // 메인 애플리케이션 클래스 제외
+					'*.exception.*',     	 // 예외 클래스 제외
+					'*.common.*',         	 // 공통 클래스 제외
+					'*.constant.*',      	 // ENUM 클래스 제외
+					'*.logging.*',       	 // 로그 관련 클래스 제외
+					'*.notification.*',  	 // 알림 관련 클래스 제외
+					'*.test.*',         	 // 테스트용 클래스 제외
+					'*.infrastructure.*'   // S3 관련 클래스 제외
+			]
+
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.00  // 개별 클래스
+			}
+		}
+	}
+}
+
