@@ -94,6 +94,9 @@ dependencies {
 
 	// Jackson xml parsing
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+	// Spring Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 tasks.named('test') {
