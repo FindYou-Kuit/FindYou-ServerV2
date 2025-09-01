@@ -112,6 +112,8 @@ spring:
       host: ${REDIS_HOST}
       port: 6379
 
+server:
+  forward-headers-strategy: framework
 
 openapi:
   protecting-animal:
