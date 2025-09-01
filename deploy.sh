@@ -7,7 +7,7 @@ export NGINX_CONF="/etc/nginx/sites-available/default"
 if [ -n "$IS_BLUE_RUNNING" ]; then
   echo "### BLUE => GREEN ####"
 
-# 최신 이미지 강제 가져오기
+  # 최신 이미지 강제 가져오기
   echo ">>> 최신 green 이미지 가져오기"
   docker-compose -f docker-compose-prod.yml pull findyou_green
 
@@ -16,14 +16,22 @@ if [ -n "$IS_BLUE_RUNNING" ]; then
   sleep 7
 
   echo ">>> health check 진행..."
+  HEALTH_TIMEOUT_SEC=120
+  HEALTH_INTERVAL_SEC=3
+  DEADLINE=$((SECONDS + HEALTH_TIMEOUT_SEC))
   while true; do
-    RESPONSE=$(curl http://localhost:9002/actuator/health | grep UP)
+    # 실패 시에도 즉시 빠져나오도록 -fsS와 타임아웃 추가
+    RESPONSE=$(curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:9002/actuator/health 2>/dev/null | grep '"status":"UP"')
     if [ -n "$RESPONSE" ]; then
-      echo ">>> green health check 성공! "
-      break;
+      echo ">>> green health check 성공!"
+      break
     fi
-    sleep 3
-  done;
+    if (( SECONDS >= DEADLINE )); then
+      echo ">>> green health check TIMEOUT (120s)"
+      exit 1
+    fi
+    sleep "${HEALTH_INTERVAL_SEC}"
+  done
 
   echo ">>> Nginx 설정 변경 (green)"
   sudo sed -i 's/set \$ACTIVE_APP findyou_blue;/set $ACTIVE_APP findyou_green;/' $NGINX_CONF
@@ -45,14 +53,21 @@ else
   sleep 7
 
   echo ">>> health check 진행..."
+  HEALTH_TIMEOUT_SEC=120
+  HEALTH_INTERVAL_SEC=3
+  DEADLINE=$((SECONDS + HEALTH_TIMEOUT_SEC))
   while true; do
-    RESPONSE=$(curl http://localhost:9001/actuator/health | grep UP)
+    RESPONSE=$(curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:9001/actuator/health 2>/dev/null | grep '"status":"UP"')
     if [ -n "$RESPONSE" ]; then
-      echo ">>> blue health check 성공! "
-      break;
+      echo ">>> blue health check 성공!"
+      break
     fi
-    sleep 3
-  done;
+    if (( SECONDS >= DEADLINE )); then
+      echo ">>> blue health check TIMEOUT (120s)"
+      exit 1
+    fi
+    sleep "${HEALTH_INTERVAL_SEC}"
+  done
 
   echo ">>> Nginx 설정 변경 (blue)"
   sudo sed -i 's/set \$ACTIVE_APP findyou_green;/set $ACTIVE_APP findyou_blue;/' $NGINX_CONF
