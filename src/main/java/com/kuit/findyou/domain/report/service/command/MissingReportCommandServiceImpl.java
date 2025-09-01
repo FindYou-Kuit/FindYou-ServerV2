@@ -83,11 +83,7 @@ public class MissingReportCommandServiceImpl implements MissingReportCommandServ
         List<ReportImage> images = imageUrls.stream()
                 .filter(url -> url != null && !url.isBlank()) //null이나 빈 문자열 URL은 제외
                 .distinct() //중복 URL 제거
-                .map(url -> {
-                    ReportImage image = ReportImage.createReportImage(url);// ReportImage 엔티티 생성
-                    image.setReport(savedReport);// Report와 연관관계 설정
-                    return image;
-                })
+                .map(url -> ReportImage.createReportImage(url, savedReport))
                 .collect(Collectors.toList());
 
         reportImageRepository.saveAll(images);
