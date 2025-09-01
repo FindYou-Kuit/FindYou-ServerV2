@@ -1,26 +1,28 @@
 plugins.withId('jacoco') {
 
-    jacoco {
-        toolVersion = "0.8.13"
-    }
+    jacoco { toolVersion = "0.8.13" }
 
-    // 모든 Test 작업 공통 설정
+    // 모든 Test 작업 공통 설정: JUnit5
     tasks.withType(Test).configureEach {
         useJUnitPlatform()
-        finalizedBy("jacocoTestReport") // test 후 리포트
     }
 
-    // 모든 JacocoReport 작업(= jacocoTestReport 포함) 설정
-    tasks.withType(JacocoReport).configureEach {
-        dependsOn(tasks.withType(Test))
+    // 기본 test만 끝난 뒤 리포트 1회 실행
+    tasks.named('test', Test).configure {
+        finalizedBy('jacocoTestReport')
+    }
+
+    // 3) 리포트 → 검증 순서 고정
+    tasks.named('jacocoTestReport', JacocoReport).configure {
+        dependsOn('test')
 
         reports {
-            xml.required = true   // CI 파싱용
-            csv.required = false
-            html.required = true   // 로컬 열람용
+            xml.required  = true   // CI 파싱용 (PR 코멘트 액션)
+            csv.required  = false
+            html.required = true   // 로컬/아티팩트 열람용
         }
 
-        def javaMainDir = layout.buildDirectory.dir("classes/java/main").get().asFile
+        def javaMainDir = layout.buildDirectory.dir('classes/java/main').get().asFile
 
         classDirectories.setFrom(
                 fileTree(javaMainDir) {
@@ -32,38 +34,37 @@ plugins.withId('jacoco') {
                 }
         )
 
-        finalizedBy(tasks.withType(JacocoCoverageVerification))
+        finalizedBy('jacocoTestCoverageVerification')
     }
 
-    // 모든 커버리지 검증 작업 설정
-    tasks.withType(JacocoCoverageVerification).configureEach {
-        dependsOn(tasks.withType(JacocoReport))
+    tasks.named('jacocoTestCoverageVerification', JacocoCoverageVerification).configure {
+        dependsOn('jacocoTestReport')
 
         violationRules {
             rule {
                 limit {
                     counter = 'LINE'
-                    value = 'COVEREDRATIO'
+                    value   = 'COVEREDRATIO'
                     minimum = 0.00
                 }
             }
             rule {
                 limit {
                     counter = 'BRANCH'
-                    value = 'COVEREDRATIO'
+                    value   = 'COVEREDRATIO'
                     minimum = 0.00
                 }
             }
             rule {
-                element = 'CLASS'
+                element  = 'CLASS'
                 excludes = [
-                        '*.config.*', '*.dto.*', '*.model.*', '*Application',
-                        '*.exception.*', '*.common.*', '*.constant.*', '*.logging.*',
-                        '*.notification.*', '*.test.*', '*.infrastructure.*'
+                        '*.config.*','*.dto.*','*.model.*','*Application',
+                        '*.exception.*','*.common.*','*.constant.*',
+                        '*.logging.*','*.notification.*','*.test.*','*.infrastructure.*'
                 ]
                 limit {
                     counter = 'LINE'
-                    value = 'COVEREDRATIO'
+                    value   = 'COVEREDRATIO'
                     minimum = 0.00
                 }
             }
