@@ -11,6 +11,7 @@ import com.kuit.findyou.domain.report.repository.MissingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class MissingReportCommandServiceImpl implements MissingReportCommandServ
     private final MissingReportRepository missingReportRepository;
     private final ReportImageRepository reportImageRepository;
     private final UserRepository userRepository;
+    private final KakaoCoordinateClient kakaoCoordinateClient;
 
 
     private static final DateTimeFormatter DOT_DATE = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -55,14 +57,14 @@ public class MissingReportCommandServiceImpl implements MissingReportCommandServ
         requireText(req.location());
         requireText(req.landmark());
         requireText(req.furColor());
-        requireNotNull(req.latitude());
-        requireNotNull(req.longitude());
+
+        KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(req.location());
 
         // 형식 변환
         LocalDate date = parseDotDate(req.missingDate());
         Sex sex = mapSexStrict(req.sex());
-        BigDecimal lat = toScale(req.latitude());
-        BigDecimal lng = toScale(req.longitude());
+        BigDecimal lat = coordinate.latitude();
+        BigDecimal lng = coordinate.longitude();
 
         return MissingReport.createMissingReport(
                 req.breed(), req.species(), ReportTag.MISSING, date,

@@ -16,7 +16,5 @@ public record CreateMissingReportRequest (
         String missingDate,  //"yyyy.MM.dd"
         String significant,
         String location,
-        Double latitude,
-        Double longitude,
         String landmark
 ){ }

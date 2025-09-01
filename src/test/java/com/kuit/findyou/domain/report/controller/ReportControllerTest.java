@@ -288,7 +288,7 @@ class ReportControllerTest {
         // breed 필드가 없는 요청 생성
         var request = new CreateMissingReportRequest(
                 List.of(), "개", null, "3살", "남자", null, "흰색",
-                "2025.08.30", null, "서울시", 37.5, 127.0, "건대"
+                "2025.08.30", null, "서울시", "건대"
         );
 
         // when & then

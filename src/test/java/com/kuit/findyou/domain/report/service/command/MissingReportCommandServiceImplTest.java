@@ -17,9 +17,10 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import java.util.Collections;
 import java.util.List;
+import java.math.BigDecimal;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +42,9 @@ public class MissingReportCommandServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private KakaoCoordinateClient kakaoCoordinateClient;
+
     @Captor
     private ArgumentCaptor<MissingReport> reportCaptor;
 
@@ -59,7 +63,7 @@ public class MissingReportCommandServiceImplTest {
     private CreateMissingReportRequest createValidRequest(List<String> imgUrls) {
         return new CreateMissingReportRequest(
                 imgUrls, "개", "포메라니안", "3살", "남자", "1234", "흰색",
-                "2025.08.30", "특이사항 없음", "서울시 광진구", 37.5, 127.5, "건대입구"
+                "2025.08.30", "특이사항 없음", "서울시 광진구", "건대입구"
         );
     }
 
@@ -70,6 +74,9 @@ public class MissingReportCommandServiceImplTest {
         // given
         CreateMissingReportRequest request = createValidRequest(List.of("http://cdn.com/url1.jpg", "http://cdn.com/url2.jpg"));
         when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+
+        var mockCoordinate = new KakaoCoordinateClient.Coordinate(new BigDecimal("37.123"), new BigDecimal("127.123"));
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString())).thenReturn(mockCoordinate);
 
         // when
         missingReportCommandService.createMissingReport(request, userId);
@@ -97,6 +104,9 @@ public class MissingReportCommandServiceImplTest {
         CreateMissingReportRequest request = createValidRequest(Collections.emptyList()); // 빈 이미지 리스트
         when(userRepository.getReferenceById(userId)).thenReturn(testUser);
 
+        var mockCoordinate = new KakaoCoordinateClient.Coordinate(new BigDecimal("37.123"), new BigDecimal("127.123"));
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString())).thenReturn(mockCoordinate);
+
         // when
         missingReportCommandService.createMissingReport(request, userId);
 
@@ -112,7 +122,7 @@ public class MissingReportCommandServiceImplTest {
         // given
         CreateMissingReportRequest request = new CreateMissingReportRequest(
                 List.of(), "개", null, "3살", "남자", "1234", "흰색",
-                "2025.08.30", "특이사항", "서울시", 37.5, 127.5, "건대입구"
+                "2025.08.30", "특이사항", "서울시", "건대입구"
         );
         when(userRepository.getReferenceById(userId)).thenReturn(testUser);
 
@@ -136,7 +146,7 @@ public class MissingReportCommandServiceImplTest {
         var request = new CreateMissingReportRequest(
                 List.of("url"), "개", "말티즈", "3살", "남자", "1234", "흰색",
                 "2025-08-30", // "yyyy.MM.dd" 형식이 아님
-                "특이사항", "서울시", 37.5, 127.5, "건대입구"
+                "특이사항", "서울시", "건대입구"
         );
 
         // then
