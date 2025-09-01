@@ -16,8 +16,12 @@ public class MDCLoggingFilter extends OncePerRequestFilter {
                                     jakarta.servlet.http.HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            String requestId = request.getHeader("X-Request-ID");
-            MDC.put("request_id", Objects.toString(requestId, UUID.randomUUID().toString()));
+            String rawRequestId = request.getHeader("X-Request-ID");
+            String requestId = (rawRequestId == null || rawRequestId.trim().isEmpty())
+                    ? UUID.randomUUID().toString()
+                    : rawRequestId;
+
+            MDC.put("request_id", requestId);
             filterChain.doFilter(request, response);
         } finally {
             MDC.clear();
