@@ -9,10 +9,10 @@ if [ -n "$IS_BLUE_RUNNING" ]; then
 
 # 최신 이미지 강제 가져오기
   echo ">>> 최신 green 이미지 가져오기"
-  docker compose pull findyou_green
+  docker-compose pull findyou_green
 
   echo ">>> green 컨테이너 실행 (기존 이미지 무시)"
-  docker compose up -d --force-recreate findyou_green
+  docker-compose up -d --force-recreate findyou_green
   sleep 7
 
   echo ">>> health check 진행..."
@@ -30,7 +30,7 @@ if [ -n "$IS_BLUE_RUNNING" ]; then
   sudo nginx -s reload
 
   echo ">>> blue 컨테이너 종료"
-  docker compose stop findyou_blue
+  docker-compose stop findyou_blue
 
 # green 이 실행 중이면 blue 를 up
 else
@@ -38,10 +38,10 @@ else
 
   # 최신 이미지 강제 가져오기
   echo ">>> 최신 blue 이미지 가져오기"
-  docker compose pull findyou_blue
+  docker-compose pull findyou_blue
 
   echo ">>> blue 컨테이너 실행 (기존 이미지 무시)"
-  docker compose up -d --force-recreate findyou_blue
+  docker-compose up -d --force-recreate findyou_blue
   sleep 7
 
   echo ">>> health check 진행..."
@@ -59,7 +59,7 @@ else
   sudo nginx -s reload
 
   echo ">>> green 컨테이너 종료"
-  docker compose stop findyou_green
+  docker-compose stop findyou_green
 fi
 
 echo ">>> 종료된 컨테이너들 정리"
