@@ -132,8 +132,8 @@ class ProtectingReportRepositoryTest {
         em.flush(); // ID 확정
 
         // 2. 이미지 생성 및 연관관계 설정
-        ReportImage image1 = ReportImage.createReportImage("https://image1.jpg");
-        ReportImage image2 = ReportImage.createReportImage("https://image2.jpg");
+        ReportImage image1 = ReportImage.createReportImage("https://image1.jpg", report);
+        ReportImage image2 = ReportImage.createReportImage("https://image2.jpg",report);
 
         image1.setReport(report);
         image2.setReport(report);
