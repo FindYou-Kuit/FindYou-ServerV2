@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class CreateMissingReportServiceImplTest {
     @InjectMocks
-    private CreateMissingReportServiceImpl missingReportCommandService;
+    private CreateMissingReportServiceImpl createMissingReportService;
 
     @Mock
     private MissingReportRepository missingReportRepository;
@@ -79,7 +79,7 @@ public class CreateMissingReportServiceImplTest {
         when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString())).thenReturn(mockCoordinate);
 
         // when
-        missingReportCommandService.createMissingReport(request, userId);
+        createMissingReportService.createMissingReport(request, userId);
 
         // then
         verify(userRepository, times(1)).getReferenceById(userId); //한번 호출 확인
@@ -108,7 +108,7 @@ public class CreateMissingReportServiceImplTest {
         when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString())).thenReturn(mockCoordinate);
 
         // when
-        missingReportCommandService.createMissingReport(request, userId);
+        createMissingReportService.createMissingReport(request, userId);
 
         // then
         verify(missingReportRepository, times(1)).save(any(MissingReport.class));
@@ -127,7 +127,7 @@ public class CreateMissingReportServiceImplTest {
         when(userRepository.getReferenceById(userId)).thenReturn(testUser);
 
         // when & then
-        assertThatThrownBy(() -> missingReportCommandService.createMissingReport(request, userId))
+        assertThatThrownBy(() -> createMissingReportService.createMissingReport(request, userId))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining("유효하지 않은 요청입니다.");
 
@@ -150,7 +150,7 @@ public class CreateMissingReportServiceImplTest {
         );
 
         // then
-        assertThatThrownBy(() -> missingReportCommandService.createMissingReport(request, userId))
+        assertThatThrownBy(() -> createMissingReportService.createMissingReport(request, userId))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> {
                     CustomException customException = (CustomException) exception;
