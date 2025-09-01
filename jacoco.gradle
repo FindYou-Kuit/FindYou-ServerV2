@@ -1,0 +1,72 @@
+plugins.withId('jacoco') {
+
+    jacoco {
+        toolVersion = "0.8.13"
+    }
+
+    // 모든 Test 작업 공통 설정
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        finalizedBy("jacocoTestReport") // test 후 리포트
+    }
+
+    // 모든 JacocoReport 작업(= jacocoTestReport 포함) 설정
+    tasks.withType(JacocoReport).configureEach {
+        dependsOn(tasks.withType(Test))
+
+        reports {
+            xml.required = true   // CI 파싱용
+            csv.required = false
+            html.required = true   // 로컬 열람용
+        }
+
+        def javaMainDir = layout.buildDirectory.dir("classes/java/main").get().asFile
+
+        classDirectories.setFrom(
+                fileTree(javaMainDir) {
+                    exclude(
+                            '**/config/**','**/dto/**','**/model/**','**/*Application.class',
+                            '**/exception/**','**/common/**','**/constant/**',
+                            '**/logging/**','**/notification/**','**/test/**','**/infrastructure/**'
+                    )
+                }
+        )
+
+        finalizedBy(tasks.withType(JacocoCoverageVerification))
+    }
+
+    // 모든 커버리지 검증 작업 설정
+    tasks.withType(JacocoCoverageVerification).configureEach {
+        dependsOn(tasks.withType(JacocoReport))
+
+        violationRules {
+            rule {
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.00
+                }
+            }
+            rule {
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.00
+                }
+            }
+            rule {
+                element = 'CLASS'
+                excludes = [
+                        '*.config.*', '*.dto.*', '*.model.*', '*Application',
+                        '*.exception.*', '*.common.*', '*.constant.*', '*.logging.*',
+                        '*.notification.*', '*.test.*', '*.infrastructure.*'
+                ]
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.00
+                }
+            }
+        }
+    }
+}
