@@ -29,9 +29,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MissingReportCommandServiceImplTest {
+public class CreateMissingReportServiceImplTest {
     @InjectMocks
-    private MissingReportCommandServiceImpl missingReportCommandService;
+    private CreateMissingReportServiceImpl missingReportCommandService;
 
     @Mock
     private MissingReportRepository missingReportRepository;

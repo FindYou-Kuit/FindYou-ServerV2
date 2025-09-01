@@ -28,7 +28,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 
 @Service
 @RequiredArgsConstructor
-public class MissingReportCommandServiceImpl implements MissingReportCommandService {
+public class CreateMissingReportServiceImpl implements CreateMissingReportService {
     private final MissingReportRepository missingReportRepository;
     private final ReportImageRepository reportImageRepository;
     private final UserRepository userRepository;
