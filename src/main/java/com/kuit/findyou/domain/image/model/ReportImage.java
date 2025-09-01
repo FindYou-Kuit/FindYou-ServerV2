@@ -22,21 +22,25 @@ public class ReportImage extends BaseEntity {
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_id")
+    @JoinColumn(name = "report_id", nullable = false)
     private Report report;
 
 
-    public static ReportImage createReportImage(String imageUrl) {
+    public static ReportImage createReportImage(String imageUrl, Report report) {
         ReportImage image = new ReportImage();
         image.imageUrl = imageUrl;
+        image.setReport(report);
         return image;
     }
 
     public void setReport(Report report) {
+        if (report == null) {
+            throw new IllegalArgumentException("Report는 null이 될 수 없습니다.");
+        }
         if (this.report != null && this.report != report) {
             this.report.getReportImages().remove(this);
         }
-        this.report = report; //nullable
+        this.report = report; //null이 아님
         if (report != null && !report.getReportImages().contains(this)) {
             report.getReportImages().add(this);
         }
