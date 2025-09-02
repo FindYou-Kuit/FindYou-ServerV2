@@ -5,15 +5,17 @@ import com.kuit.findyou.global.common.response.BaseErrorResponse;
 import com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus;
 import com.kuit.findyou.global.common.swagger.ExampleHolder;
 import com.kuit.findyou.global.common.swagger.SwaggerResponseDescription;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.examples.Example;
+import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,19 +27,31 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.groupingBy;
 
-@OpenAPIDefinition(
-        info = @Info(
-                title = "찾아유 V2 API 명세서",
-                description = "Springdoc을 이용한 Swagger API 문서입니다.",
-                version = "1.0"
-        )
-)
 @Configuration
 public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
-        return new OpenAPI();
+        Info info = new Info()
+                .version("1.0")
+                .title("찾아유 V2 API 명세서")
+                .description("Springdoc을 이용한 Swagger API 문서입니다.");
+
+        String jwtSchemeName = "JWT Authentication";
+
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+
+        Components components = new Components()
+                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
+                        .name(jwtSchemeName)
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT"));
+
+        return new OpenAPI()
+                .info(info)
+                .addSecurityItem(securityRequirement)
+                .components(components);
     }
 
     @Bean
