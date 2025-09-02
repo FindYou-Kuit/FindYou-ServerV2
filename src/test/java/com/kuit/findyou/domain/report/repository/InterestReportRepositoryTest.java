@@ -136,8 +136,7 @@ class InterestReportRepositoryTest {
     private void createTestReports() {
         missingReport = MissingReport.createMissingReport(
                 "골든 리트리버", "개", ReportTag.MISSING, LocalDate.now().minusDays(5),
-                "서울시 강남구", testUser, Sex.M, "RFID123456", "3살", "황금색", "목에 빨간 목걸이",
-                "김철수", "010-1234-5678", "강남역 근처",
+                "서울시 강남구", testUser, Sex.M, "RFID123456", "3살", "황금색", "목에 빨간 목걸이", "강남역 근처",
                 new BigDecimal("37.497952"), new BigDecimal("127.027619")
         );
 

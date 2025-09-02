@@ -14,6 +14,7 @@ import com.kuit.findyou.domain.information.model.AnimalCenter;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
+import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.model.Role;
@@ -52,6 +53,7 @@ public class TestInitializer {
     @Transactional
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
+        defaultUser = createTestUser();
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -91,25 +93,38 @@ public class TestInitializer {
         );
         protectingReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/1.png", "uuid-1");
-        image.setReport(report);
+        ReportImage image = ReportImage.createReportImage("https://img.com/1.png", report);
         reportImageRepository.save(image);
 
         return report;
     }
 
     public MissingReport createTestMissingReportWithImage(User user) {
-        MissingReport report = MissingReport.createMissingReport(
-                "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 10, 5),
-                "서울시 강남구", user, Sex.F, "RF12345", "3",
-                "흰색", "눈 주변 갈색 털",
-                "이슬기", "010-1111-2222", "강남역 10번 출구",
-                BigDecimal.valueOf(37.501), BigDecimal.valueOf(127.025)
-        );
+        MissingReport report = MissingReport.builder()
+                .breed("포메라니안")
+                .species("개")
+                .tag(ReportTag.MISSING)
+                .date(LocalDate.of(2024, 10, 5))
+                .address("서울시 강남구")
+                .user(user)
+                .sex(Sex.F)
+                .rfid("RF12345")
+                .age("3")
+                .furColor("흰색")
+                .significant("눈 주변 갈색 털")
+                .landmark("강남역 10번 출구")
+                .latitude(BigDecimal.valueOf(37.501))
+                .longitude(BigDecimal.valueOf(127.025))
+                .reporterName("이슬기")
+                .reporterTel("010-1111-2222")
+                .build();
+
+        if (user != null) {
+            user.addReport(report);
+        }
         missingReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/missing.png", "uuid-m");
-        image.setReport(report);
+        ReportImage image = ReportImage.createReportImage("https://img.com/missing.png", report);
         reportImageRepository.save(image);
 
         return report;
@@ -124,8 +139,7 @@ public class TestInitializer {
         );
         witnessReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/witness.png", "uuid-w");
-        image.setReport(report);
+        ReportImage image = ReportImage.createReportImage("https://img.com/witness.png", report);
         reportImageRepository.save(image);
 
         return report;
@@ -191,6 +205,25 @@ public class TestInitializer {
         });
     }
 
+    public CreateMissingReportRequest createBasicMissingReportRequest() {
+        return new CreateMissingReportRequest(
+                List.of(
+                        "https://cdn.findyou.store/some-image1.jpg",
+                        "https://cdn.findyou.store/some-image2.jpg"
+                ),
+                "개",
+                "포메라니안",
+                "3살",
+                "남자",
+                "9900112233445566",
+                "흰색",
+                "2025.08.30",
+                "왼쪽 앞발에 붉은 점이 있어요.",
+                "서울특별시 광진구 화양동",
+                "건국대학교"
+        );
+    }
+
     public void createTestAnimalDepartments(String organization, int count) {
         for (int i = 1; i <= count; i++) {
             animalDepartmentRepository.save(
@@ -227,8 +260,6 @@ public class TestInitializer {
                 "황금색",
                 "목에 빨간 목걸이",
                 "김철수",
-                "010-1234-5678",
-                "강남역 근처",
                 new BigDecimal("37.497952"),
                 new BigDecimal("127.027619")
         );
@@ -295,8 +326,6 @@ public class TestInitializer {
                     "황금색",
                     "목에 빨간 목걸이",
                     "김철수",
-                    "010-1234-5678",
-                    "강남역 근처",
                     new BigDecimal(lat),
                     new BigDecimal(lng)
             );
