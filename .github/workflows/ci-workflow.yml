@@ -24,8 +24,17 @@ jobs:
       - name: 👏🏻 grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: 🐘 build with Gradle (with test)
-        run: ./gradlew clean build --stacktrace
+      - name: 🐘 Run tests with coverage
+        run: ./gradlew clean test --stacktrace
+
+      - name: 📦 Upload JaCoCo HTML report (artifact)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-html
+          path: |
+            **/build/reports/jacoco/test/html/**
+          retention-days: 7
 
       - name: ✉️ Post test results as a comment on the PR
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -39,3 +48,13 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ github.token }}
+
+      - name: 📊 Comment JaCoCo coverage summary on PR
+        uses: madrapps/jacoco-report@v1.7.2
+        if: always()
+        with:
+          paths: |
+            **/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ github.token }}
+          title: '📊 JaCoCo Coverage'
+          update-comment: true

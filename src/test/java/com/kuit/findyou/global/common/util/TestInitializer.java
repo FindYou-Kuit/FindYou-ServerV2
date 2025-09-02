@@ -1,5 +1,11 @@
 package com.kuit.findyou.global.common.util;
 
+import com.kuit.findyou.domain.breed.model.Breed;
+import com.kuit.findyou.domain.breed.repository.BreedRepository;
+import com.kuit.findyou.domain.city.model.Sido;
+import com.kuit.findyou.domain.city.model.Sigungu;
+import com.kuit.findyou.domain.city.repository.SidoRepository;
+import com.kuit.findyou.domain.city.repository.SigunguRepository;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
@@ -8,6 +14,7 @@ import com.kuit.findyou.domain.information.model.AnimalCenter;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
+import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.model.Role;
@@ -37,12 +44,16 @@ public class TestInitializer {
     private final AnimalCenterRepository animalCenterRepository;
     private final AnimalDepartmentRepository animalDepartmentRepository;
     private final VolunteerWorkRepository volunteerWorkRepository;
+    private final BreedRepository breedRepository;
+    private final SidoRepository sidoRepository;
+    private final SigunguRepository sigunguRepository;
 
     private User defaultUser;
 
     @Transactional
     public User userWith3InterestReportsAnd2ViewedReports() {
         User testUser = createTestUser();
+        defaultUser = createTestUser();
 
         ProtectingReport testProtectingReport = createTestProtectingReportWithImage(testUser);
         MissingReport testMissingReport = createTestMissingReportWithImage(testUser);
@@ -82,25 +93,38 @@ public class TestInitializer {
         );
         protectingReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/1.png", "uuid-1");
-        image.setReport(report);
+        ReportImage image = ReportImage.createReportImage("https://img.com/1.png", report);
         reportImageRepository.save(image);
 
         return report;
     }
 
     public MissingReport createTestMissingReportWithImage(User user) {
-        MissingReport report = MissingReport.createMissingReport(
-                "포메라니안", "개", ReportTag.MISSING, LocalDate.of(2024, 10, 5),
-                "서울시 강남구", user, Sex.F, "RF12345", "3",
-                "흰색", "눈 주변 갈색 털",
-                "이슬기", "010-1111-2222", "강남역 10번 출구",
-                BigDecimal.valueOf(37.501), BigDecimal.valueOf(127.025)
-        );
+        MissingReport report = MissingReport.builder()
+                .breed("포메라니안")
+                .species("개")
+                .tag(ReportTag.MISSING)
+                .date(LocalDate.of(2024, 10, 5))
+                .address("서울시 강남구")
+                .user(user)
+                .sex(Sex.F)
+                .rfid("RF12345")
+                .age("3")
+                .furColor("흰색")
+                .significant("눈 주변 갈색 털")
+                .landmark("강남역 10번 출구")
+                .latitude(BigDecimal.valueOf(37.501))
+                .longitude(BigDecimal.valueOf(127.025))
+                .reporterName("이슬기")
+                .reporterTel("010-1111-2222")
+                .build();
+
+        if (user != null) {
+            user.addReport(report);
+        }
         missingReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/missing.png", "uuid-m");
-        image.setReport(report);
+        ReportImage image = ReportImage.createReportImage("https://img.com/missing.png", report);
         reportImageRepository.save(image);
 
         return report;
@@ -115,8 +139,7 @@ public class TestInitializer {
         );
         witnessReportRepository.save(report);
 
-        ReportImage image = ReportImage.createReportImage("https://img.com/witness.png", "uuid-w");
-        image.setReport(report);
+        ReportImage image = ReportImage.createReportImage("https://img.com/witness.png", report);
         reportImageRepository.save(image);
 
         return report;
@@ -182,6 +205,25 @@ public class TestInitializer {
         });
     }
 
+    public CreateMissingReportRequest createBasicMissingReportRequest() {
+        return new CreateMissingReportRequest(
+                List.of(
+                        "https://cdn.findyou.store/some-image1.jpg",
+                        "https://cdn.findyou.store/some-image2.jpg"
+                ),
+                "개",
+                "포메라니안",
+                "3살",
+                "남자",
+                "9900112233445566",
+                "흰색",
+                "2025.08.30",
+                "왼쪽 앞발에 붉은 점이 있어요.",
+                "서울특별시 광진구 화양동",
+                "건국대학교"
+        );
+    }
+
     public void createTestAnimalDepartments(String organization, int count) {
         for (int i = 1; i <= count; i++) {
             animalDepartmentRepository.save(
@@ -218,8 +260,6 @@ public class TestInitializer {
                 "황금색",
                 "목에 빨간 목걸이",
                 "김철수",
-                "010-1234-5678",
-                "강남역 근처",
                 new BigDecimal("37.497952"),
                 new BigDecimal("127.027619")
         );
@@ -286,8 +326,6 @@ public class TestInitializer {
                     "황금색",
                     "목에 빨간 목걸이",
                     "김철수",
-                    "010-1234-5678",
-                    "강남역 근처",
                     new BigDecimal(lat),
                     new BigDecimal(lng)
             );
@@ -350,5 +388,37 @@ public class TestInitializer {
         createTestWitnessReportWithImage(writer);
 
         return writer;
+    }
+
+    @Transactional
+    public void createTestBreeds() {
+        List<Breed> breeds = List.of(
+                Breed.builder().name("진돗개").species("강아지").build(),
+                Breed.builder().name("포메라니안").species("강아지").build(),
+                Breed.builder().name("코리안 숏헤어").species("고양이").build(),
+                Breed.builder().name("스코티시 폴드").species("고양이").build(),
+                Breed.builder().name("기타축종").species("기타").build()
+        );
+        breedRepository.saveAll(breeds);
+    }
+
+    @Transactional
+    public void createTestCities() {
+        // 서울
+        Sido seoul = sidoRepository.save(
+                Sido.builder()
+                        .name("서울특별시")
+                        .build()
+        );
+        sigunguRepository.save(Sigungu.builder().name("강남구").sido(seoul).build());
+        sigunguRepository.save(Sigungu.builder().name("송파구").sido(seoul).build());
+
+        // 부산
+        Sido busan = sidoRepository.save(
+                Sido.builder()
+                        .name("부산광역시")
+                        .build()
+        );
+        sigunguRepository.save(Sigungu.builder().name("해운대구").sido(busan).build());
     }
 }

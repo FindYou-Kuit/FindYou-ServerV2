@@ -111,7 +111,13 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+  servlet:
+    multipart:
+      max-file-size: 30MB      # 파일 하나당 최대 30MB
+      max-request-size: 150MB   # 요청당 총 크기를 150MB로
 
+server:
+  forward-headers-strategy: framework
 
 openapi:
   protecting-animal:
@@ -132,8 +138,6 @@ openapi:
   volunteer-work:
     api-url: http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrSearchWordList
 
-
-
 logging:
   level:
     root: info
@@ -149,8 +153,8 @@ cloud:
     region:
       static: ap-northeast-2 # 서울 리전
     credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
     s3:
       bucket: ${S3_BUCKET_NAME}
       base-url: ${S3_BASE_URL}
@@ -170,3 +174,10 @@ resilience4j:
         limit-for-period: 7
         limit-refresh-period: 1s
         timeout-duration: 2s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+

@@ -5,6 +5,7 @@ import com.kuit.findyou.global.common.response.BaseErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.TypeMismatchException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,15 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Slf4j
 @RestControllerAdvice
 public class GlobalControllerAdvice {
+
+    /**
+     * 잘못된 HTTP 메서드로 요청을 보낼 시 발생 (405 Method Not Allowed)
+     */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public BaseErrorResponse handle_HttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e){
+        log.error("[handle_HttpRequestMethodNotSupportedException]", e);
+        return new BaseErrorResponse(METHOD_NOT_ALLOWED);
+    }
 
     /**
      * 숫자/boolean 등의 타입이 일치하지 않는 경우 발생하는 Hibernate 예외 처리

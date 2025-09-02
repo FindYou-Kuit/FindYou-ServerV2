@@ -101,7 +101,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .species(ProtectingAnimalParser.parseSpecies(item.upKindNm()))
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.parseDate(item.happenDt()))
-                .address(item.careAddr())
+                .address(ProtectingAnimalParser.parseAddress(item.careAddr()))
                 .latitude(coordinate.latitude())
                 .longitude(coordinate.longitude())
                 .user(null)
@@ -129,10 +129,10 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                     List<ReportImage> images = new ArrayList<>();
 
                     if (item.popfile1() != null && !item.popfile1().isBlank()) {
-                        images.add(ReportImage.createReportImage(item.popfile1(), UUID.randomUUID().toString()));
+                        images.add(ReportImage.createReportImage(item.popfile1(), report));
                     }
                     if (item.popfile2() != null && !item.popfile2().isBlank()) {
-                        images.add(ReportImage.createReportImage(item.popfile2(), UUID.randomUUID().toString()));
+                        images.add(ReportImage.createReportImage(item.popfile2(), report));
                     }
 
                     return new ReportWithImages<>(report, images);
