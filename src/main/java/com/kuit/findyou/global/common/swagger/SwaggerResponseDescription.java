@@ -70,6 +70,12 @@ public enum SwaggerResponseDescription {
             IMAGE_UPLOAD_FAILED
     ))),
 
+    CHANGE_PROFILE_IMAGE(new LinkedHashSet<>(Set.of(
+            USER_NOT_FOUND,
+            IMAGE_UPLOAD_FAILED,
+            BAD_REQUEST
+    ))),
+
     DEFAULT(new LinkedHashSet<>());
 
 

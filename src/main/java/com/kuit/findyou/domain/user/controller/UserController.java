@@ -143,7 +143,7 @@ public class UserController {
             summary = "프로필 이미지 변경 API",
             description = "프로필 이미지 변경을 수행합니다. 기본이미지는 enum값 이름으로 저장, 사용자 업로드 이미지는 cdn url로 저장됩니다."
     )
-    @CustomExceptionDescription(DEFAULT)
+    @CustomExceptionDescription(CHANGE_PROFILE_IMAGE)
     @PatchMapping(value = "/me/profile-image", consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<Void> changeProfileImage(
             @LoginUserId Long userId,
