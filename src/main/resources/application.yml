@@ -116,6 +116,8 @@ spring:
       max-file-size: 30MB      # 파일 하나당 최대 30MB
       max-request-size: 150MB   # 요청당 총 크기를 150MB로
 
+server:
+  forward-headers-strategy: framework
 
 openapi:
   protecting-animal:
@@ -135,8 +137,6 @@ openapi:
     api-key: ${OPENAI_API_KEY}
   volunteer-work:
     api-url: http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrSearchWordList
-
-
 
 logging:
   level:
@@ -174,4 +174,10 @@ resilience4j:
         limit-for-period: 7
         limit-refresh-period: 1s
         timeout-duration: 2s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
 
