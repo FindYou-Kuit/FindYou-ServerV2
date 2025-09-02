@@ -94,6 +94,12 @@ dependencies {
 
 	// Jackson xml parsing
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+	// Spring Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Prometheus
+	implementation('io.micrometer:micrometer-registry-prometheus')
 }
 
 tasks.named('test') {

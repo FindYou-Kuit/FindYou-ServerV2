@@ -1,8 +1,21 @@
-version: '3.8'
 services:
-  findyou-server:
+  findyou_blue:
     image: jjjjyy0704/findyou_repository:prod
-    container_name: findyou-server
+    container_name: findyou_blue
+    ports:
+      - "9001:9002"
+    restart: always
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      TZ: Asia/Seoul
+    volumes:
+      - ${LOG_DIRECTORY}:/logs
+
+  findyou_green:
+    image: jjjjyy0704/findyou_repository:prod
+    container_name: findyou_green
     ports:
       - "9002:9002"
     restart: always
@@ -11,5 +24,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       TZ: Asia/Seoul
+    volumes:
+      - ${LOG_DIRECTORY}:/logs
 
-#test
