@@ -134,8 +134,6 @@ openapi:
   volunteer-work:
     api-url: http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrSearchWordList
 
-
-
 logging:
   level:
     root: info
@@ -172,3 +170,9 @@ resilience4j:
         limit-for-period: 7
         limit-refresh-period: 1s
         timeout-duration: 2s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus

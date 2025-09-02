@@ -51,14 +51,14 @@ jobs:
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
-      - name: 📦 Update docker-compose-prod.yml on EC2
+      - name: 📦 Send docker-compose-prod.yml & deploy.sh on EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.PROD_EC2_HOST }}
           username: ${{ secrets.PROD_EC2_USERNAME }}
           key: ${{ secrets.PROD_EC2_KEY }}
           port: ${{ secrets.PROD_EC2_PORT }}
-          source: "./docker-compose-prod.yml"
+          source: "./docker-compose-prod.yml, ./deploy.sh"
           target: "/home/ubuntu/FindYou-ServerV2/"
 
       - name: 🚀 Deploy to EC2 via SSH
@@ -69,13 +69,14 @@ jobs:
           key: ${{ secrets.PROD_EC2_KEY }}
           port: ${{ secrets.PROD_EC2_PORT }}
           script: |
+            echo "🗂️ Change Directory to EC2 Root"
             cd /home/ubuntu/FindYou-ServerV2
-            docker-compose -f docker-compose-prod.yml pull
-            docker-compose -f docker-compose-prod.yml down
-            docker-compose -f docker-compose-prod.yml up -d
             
-            echo "🚮 Cleaning up old images"
-            sudo docker image prune -f
+            echo "👉🏻 Grant Permission to deploy.sh"
+            chmod +x ./deploy.sh
+            
+            echo "✋🏻 Stopping Existing Container and Deploy New Container"
+            ./deploy.sh
 
 
       - name: ❌ Remove GitHub Actions IP
