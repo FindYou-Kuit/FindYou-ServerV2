@@ -29,7 +29,7 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
         User user = userRepository.getReferenceById(userId);
 
         String toSave;
-        if (request.profileImageFile() != null && !request.profileImageFile().isEmpty()) {
+        if (request.profileImageFile() != null) {
             try {
                 toSave = imageUploader.upload(request.profileImageFile());
             } catch (FileUploadingFailedException e) {
