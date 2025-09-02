@@ -36,6 +36,7 @@ class CityControllerTest {
     @BeforeAll
     void setUp() {
         databaseCleaner.execute();
+        testInitializer.createTestUser();
         testInitializer.createTestCities();
         RestAssured.port = port;
         accessToken = jwtUtil.createAccessJwt(1L, Role.USER);
@@ -51,7 +52,7 @@ class CityControllerTest {
             // when
             var json =
                     given()
-                            .header("Authorization", accessToken)
+                            .header("Authorization","Bearer " + accessToken)
                             .accept(ContentType.JSON)
                             .when()
                             .get("/api/v2/sidos")
@@ -79,7 +80,7 @@ class CityControllerTest {
             // when
             var json =
                     given()
-                            .header("Authorization", accessToken)
+                            .header("Authorization", "Bearer " +accessToken)
                             .accept(ContentType.JSON)
                             .queryParam("sidoId", sidoId)
                             .when()
@@ -97,7 +98,7 @@ class CityControllerTest {
         @DisplayName("400 Bad Request - 필수 파라미터 누락 시")
         void missingParam() {
             given()
-                    .header("Authorization", accessToken)
+                    .header("Authorization", "Bearer " +accessToken)
                     .accept(ContentType.JSON)
                     .when()
             .get("/api/v2/sigungus") // sidoId 없음
@@ -110,7 +111,7 @@ class CityControllerTest {
         @DisplayName("SIDO_NOT_FOUND 매핑 - 존재하지 않는 sidoId")
         void notFoundSido() {
             given()
-                    .header("Authorization", accessToken)
+                    .header("Authorization", "Bearer " +accessToken)
                     .accept(ContentType.JSON)
                     .queryParam("sidoId", 999999L)
                     .when()

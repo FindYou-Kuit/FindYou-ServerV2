@@ -18,8 +18,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.Map;
-
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BREED_ANALYSIS_FAILED;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +49,7 @@ class BreedControllerTest {
     @BeforeAll
     void setUp() {
         databaseCleaner.execute();
+        testInitializer.createTestUser();
         testInitializer.createTestBreeds();
         RestAssured.port = port;
     }
@@ -63,7 +62,7 @@ class BreedControllerTest {
         // when
         BreedListResponseDTO response =
                 given()
-                        .header("Authorization", accessToken)
+                        .header("Authorization","Bearer " +  accessToken)
                         .when()
                         .get("/api/v2/breeds")
                         .then()
@@ -92,7 +91,7 @@ class BreedControllerTest {
         // when
         BreedAiDetectionResponseDTO response =
                 given()
-                        .header("Authorization", accessToken)
+                        .header("Authorization", "Bearer " +accessToken)
                         .contentType(ContentType.JSON)
                         .body(request)
                         .when()
@@ -122,7 +121,7 @@ class BreedControllerTest {
 
         // when & then
         given()
-                .header("Authorization", accessToken)
+                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
