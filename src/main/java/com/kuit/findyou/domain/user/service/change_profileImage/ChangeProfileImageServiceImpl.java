@@ -26,8 +26,7 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
     @Override
     @Transactional
     public void changeProfileImage(Long userId, ChangeProfileImageRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        User user = userRepository.getReferenceById(userId);
 
         String toSave;
         if (request.profileImageFile() != null && !request.profileImageFile().isEmpty()) {
