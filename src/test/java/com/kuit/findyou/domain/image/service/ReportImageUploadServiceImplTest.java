@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.image.service;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -28,6 +30,12 @@ public class ReportImageUploadServiceImplTest {
 
     @InjectMocks
     ReportImageUploadServiceImpl sut;
+
+    @BeforeEach
+    void setup() {
+        ReflectionTestUtils.setField(sut, "maxFileSizeValue", "30MB");
+    }
+
 
     @DisplayName("빈 files 업로드 시 빈 리스트 반환")
     @Test
