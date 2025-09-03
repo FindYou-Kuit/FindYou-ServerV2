@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.user.service.facade;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
-import com.kuit.findyou.domain.user.dto.request.ChangeProfileImageRequest;
 import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
+import com.kuit.findyou.domain.user.dto.request.ChangeProfileImageRequest;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;

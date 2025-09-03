@@ -20,6 +20,9 @@ public class ProfileImageChangeRequestValidator implements ConstraintValidator<V
         // 둘 다 있거나 둘 다 없는 경우 -> 잘못된 요청임
         if (hasFile == hasDefault) return false;
 
+        // 기본이미지 사용 -> enum값 검증
+        if (hasDefault) return DefaultProfileImage.validate(defaultName);
+
         return true;
     }
 }

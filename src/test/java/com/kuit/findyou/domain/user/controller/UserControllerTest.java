@@ -88,9 +88,9 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("lastId", Long.MAX_VALUE)
-                .when()
+        .when()
                 .get("/api/v2/users/me/viewed-animals")
-                .then()
+        .then()
                 .statusCode(200)
                 .body("data.cards[0].reportId", equalTo(2))
                 .body("data.cards[0].thumbnailImageUrl", equalTo("https://img.com/missing.png"))
@@ -119,18 +119,18 @@ class UserControllerTest {
         // when
         RegisterUserResponse response = given()
 //                    .log().all()
-                .contentType(ContentType.MULTIPART)
-                .multiPart(multipartText("defaultProfileImageName", "default"))
-                .multiPart(multipartText("nickname", NICKNAME))
-                .multiPart(multipartText("kakaoId", "123456"))
-                .multiPart(multipartText("deviceId", "device-001"))
+                    .contentType(ContentType.MULTIPART)
+                    .multiPart(multipartText("defaultProfileImageName", "default"))
+                    .multiPart(multipartText("nickname", NICKNAME))
+                    .multiPart(multipartText("kakaoId", "123456"))
+                    .multiPart(multipartText("deviceId", "device-001"))
                 .when()
-                .post("/api/v2/users")
+                    .post("/api/v2/users")
                 .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getObject("data", RegisterUserResponse.class);
+                    .statusCode(200)
+                    .extract()
+                    .jsonPath()
+                    .getObject("data", RegisterUserResponse.class);
 
         // then
         Role role = jwtUtil.getRole(response.accessToken());
@@ -141,7 +141,7 @@ class UserControllerTest {
 
     @DisplayName("GET /api/v2/users/me/interest-animals : 유저가 관심동물을 가지고 있으면 반환한다")
     @Test
-    void should_ReturnInterestAnimals_When_UserHasInterestAnimals() {
+    void should_ReturnInterestAnimals_When_UserHasInterestAnimals(){
         // given
         User user = testInitializer.userWith3InterestAnimals();
 
@@ -440,7 +440,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("관심동물이 존재하면 삭제에 성공한다")
-    void shouldSucceedToDeleteInterestAnimal_WhenItExists() {
+    void shouldSucceedToDeleteInterestAnimal_WhenItExists(){
         // given
         User user = testInitializer.createTestUser();
         User reportWriter = testInitializer.createTestUser();
@@ -596,7 +596,7 @@ class UserControllerTest {
                 .statusCode(200)
                 .body("success", equalTo(false))
                 .body("code", equalTo(BAD_REQUEST.getCode()))
-                .body("message", equalTo(BAD_REQUEST.getMessage()));
+                .body("message", equalTo("Invalid request"));
     }
 
     @Test
