@@ -10,8 +10,12 @@ import com.kuit.findyou.global.infrastructure.ImageUploader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
@@ -23,6 +27,9 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
     private final UserRepository userRepository;
     private final ImageUploader imageUploader;
 
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxFileSizeValue;
+
     @Override
     @Transactional
     public void changeProfileImage(Long userId, ChangeProfileImageRequest request) {
@@ -30,6 +37,11 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
 
         String toSave;
         if (request.profileImageFile() != null) {
+            long maxFileSizeBytes = DataSize.parse(maxFileSizeValue).toBytes();
+            if (request.profileImageFile().getSize() > maxFileSizeBytes) {
+                throw new CustomException(IMAGE_SIZE_EXCEEDED);
+            }
+
             try {
                 toSave = imageUploader.upload(request.profileImageFile());
             } catch (FileUploadingFailedException e) {
@@ -43,6 +55,23 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
                     .orElseThrow(() -> new CustomException(BAD_REQUEST))
                     .getName();
         }
+        String oldImageUrl = user.getProfileImageUrl();
         user.changeProfileImage(toSave);
+        if (isUploadedFile(oldImageUrl)) {
+            String imageKey = extractImageKeyFromUrl(oldImageUrl);
+            imageUploader.delete(imageKey);
+        }
+    }
+    private boolean isUploadedFile(String url) {
+        if (url == null) return false;
+        return Arrays.stream(DefaultProfileImage.values())
+                .noneMatch(defaultImage -> defaultImage.getName().equalsIgnoreCase(url));
+    }
+    private String extractImageKeyFromUrl(String url) {
+        try {
+            return new URI(url).getPath().substring(1);
+        } catch (URISyntaxException e) {
+            throw new CustomException(BAD_REQUEST);
+        }
     }
 }
