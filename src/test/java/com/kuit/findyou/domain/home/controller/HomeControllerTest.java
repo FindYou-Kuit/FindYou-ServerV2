@@ -7,6 +7,7 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
 import com.kuit.findyou.global.config.RedisTestContainersConfig;
+import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -57,6 +56,9 @@ class HomeControllerTest {
 
     }
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
         // 외부 API url 덮어 쓰기
@@ -88,18 +90,6 @@ class HomeControllerTest {
         redisTemplate.getConnectionFactory().getConnection().flushAll();
     }
 
-    @DisplayName("통합테스트용 레디스 컨테이너가 실행되면 로그가 출력된다")
-    @Test
-    void checkRedisConnectionHost() {
-        if (redisConnectionFactory instanceof LettuceConnectionFactory lettuceFactory) {
-            RedisStandaloneConfiguration config = lettuceFactory.getStandaloneConfiguration();
-            System.out.println("Connected Redis host: " + config.getHostName());
-            System.out.println("Connected Redis port: " + config.getPort());
-        } else {
-            System.out.println("RedisConnectionFactory is not LettuceConnectionFactory");
-        }
-    }
-
     @DisplayName("요청의 위도 경도가 올바르면 홈화면 조회에 성공한다")
     @Test
     void should_Succeed_When_RequestWithCorrectCoordinate(){
@@ -124,8 +114,12 @@ class HomeControllerTest {
             testInitializer.createTestWitnessReportWithImage(testUser);
         });
 
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+
         // when
         GetHomeResponse response = given()
+                .header("Authorization","Bearer " + accessToken)
                 .queryParam("lat", lat)
                 .queryParam("lng", lng)
                 .when()
@@ -144,10 +138,6 @@ class HomeControllerTest {
         assertThat(response.statistics().recent1Year().rescuedAnimalCount()).isEqualTo(String.valueOf(rescuedAnimalCount));
         assertThat(response.protectingAnimals()).hasSize(10);
         assertThat(response.witnessedOrMissingAnimals()).hasSize(10);
-
-//        WireMock.getAllServeEvents().forEach(event -> {
-//            System.out.println(" 요청 URL: " + event.getRequest().getUrl());
-//        });
     }
 
     private void mockLossInfoServer(int totalCount) {
@@ -301,8 +291,12 @@ class HomeControllerTest {
             testInitializer.createTestWitnessReportWithImage(testUser);
         });
 
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+
         // when
         GetHomeResponse response = given()
+                .header("Authorization","Bearer " + accessToken)
                 .when()
                 .get("api/v2/home")
                 .then()
@@ -336,8 +330,11 @@ class HomeControllerTest {
             testInitializer.createTestWitnessReportWithImage(testUser);
         });
 
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
         // when
         GetHomeResponse response = given()
+                .header("Authorization","Bearer " + accessToken)
                 .when()
                 .get("api/v2/home")
                 .then()

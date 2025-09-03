@@ -7,7 +7,6 @@ import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class InquiryController {
             summary = "문의사항 추가 API",
             description = "문의사항 추가 기능을 수행합니다."
     )
-    @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "API 엑세스 토큰", example = "Bearer asdf1234")
     @CustomExceptionDescription(DEFAULT)
     @PostMapping
     public BaseResponse<Void> addInquiry(@Parameter(hidden = true) @LoginUserId Long userId,

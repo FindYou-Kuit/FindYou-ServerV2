@@ -27,8 +27,8 @@ public class SecurityConfig {
         return new MDCLoggingFilter();
     }
 
-    private final String[] PERMIT_URL = {
-            "/api/v2/auth/**", "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
+    private final String[] SWAGGER_URL = {
+            "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
             "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html",
     };
 
@@ -44,18 +44,20 @@ public class SecurityConfig {
         http
                 .httpBasic((auth)->auth.disable());
 
-        // todo 인증 비활성화
-        // 토큰 기반 인증 비활성화
-        http
-                .authorizeHttpRequests((auth)-> auth
-                        .anyRequest().permitAll());
 
-        // 토큰 기반 인증 활성화
+        // 토큰 기반 인증 비활성화
 //        http
 //                .authorizeHttpRequests((auth)-> auth
-//                        .requestMatchers(PERMIT_URL).permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
-//                        .anyRequest().authenticated());
+//                        .anyRequest().permitAll());
+
+        // 토큰 기반 인증 활성화
+        http
+                .authorizeHttpRequests((auth)-> auth
+                        .requestMatchers(SWAGGER_URL).permitAll()
+                        .requestMatchers("/api/v2/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v2/users/check/duplicate-nickname").permitAll()
+                        .anyRequest().authenticated());
 
         // 토큰 검증 필터 추가
         http
