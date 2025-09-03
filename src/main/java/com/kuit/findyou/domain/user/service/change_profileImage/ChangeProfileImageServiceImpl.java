@@ -27,7 +27,7 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
     private final UserRepository userRepository;
     private final ImageUploader imageUploader;
 
-    @Value("${spring.servlet.multipart.max-file-size}")
+    @Value("${spring.servlet.multipart.max-file-size:30MB}")
     private String maxFileSizeValue;
 
     @Override

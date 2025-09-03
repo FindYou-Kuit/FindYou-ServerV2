@@ -19,7 +19,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class ReportImageUploadServiceImpl implements ReportImageUploadService{
     private final ImageUploader imageUploader;
 
-    @Value("${spring.servlet.multipart.max-file-size}")
+    @Value("${spring.servlet.multipart.max-file-size:30MB}")
     private String maxFileSizeValue;
 
     @Override
