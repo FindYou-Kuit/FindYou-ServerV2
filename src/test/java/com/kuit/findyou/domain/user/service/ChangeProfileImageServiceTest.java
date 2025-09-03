@@ -8,6 +8,8 @@ import com.kuit.findyou.domain.user.service.change_profileImage.ChangeProfileIma
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-
-import java.util.Optional;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.IMAGE_UPLOAD_FAILED;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.USER_NOT_FOUND;
@@ -34,6 +35,10 @@ public class ChangeProfileImageServiceTest {
     @Mock
     ImageUploader imageUploader;
 
+    @BeforeEach
+    void setup() {
+        ReflectionTestUtils.setField(service, "maxFileSizeValue", "30MB");
+    }
     @Test
     @DisplayName("기본 프로필(enum)로 변경 성공")
     void changeToDefaultProfileImage_Success() {
@@ -41,7 +46,7 @@ public class ChangeProfileImageServiceTest {
         User user = User.builder()
                 .id(1L).name("유저").role(Role.USER).deviceId("1234").build();
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.getReferenceById(1L)).thenReturn(user);
 
         ChangeProfileImageRequest req = new ChangeProfileImageRequest(null, "chick");
 
@@ -59,7 +64,7 @@ public class ChangeProfileImageServiceTest {
         User user = User.builder()
                 .id(1L).name("유저").role(Role.USER).deviceId("dev").build();
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.getReferenceById(1L)).thenReturn(user);
         when(imageUploader.upload(any())).thenReturn("https://cdn.test/uploaded.jpg");
 
         MockMultipartFile file = new MockMultipartFile(
@@ -76,7 +81,7 @@ public class ChangeProfileImageServiceTest {
     @Test
     @DisplayName("존재하지 않는 사용자이면 USER_NOT_FOUND")
     void userNotFound_Throws() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        when(userRepository.getReferenceById(99L)).thenThrow(new EntityNotFoundException());
         ChangeProfileImageRequest req = new ChangeProfileImageRequest(null, "puppy");
 
         assertThatThrownBy(() -> service.changeProfileImage(99L, req))
@@ -89,7 +94,7 @@ public class ChangeProfileImageServiceTest {
     void uploadFailed_Throws() {
         User user = User.builder()
                 .id(1L).name("유저").role(Role.USER).deviceId("1234").build();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.getReferenceById(1L)).thenReturn(user);
         when(imageUploader.upload(any())).thenThrow(new FileUploadingFailedException("S3 업로드 실패"));
 
         MockMultipartFile file = new MockMultipartFile(
