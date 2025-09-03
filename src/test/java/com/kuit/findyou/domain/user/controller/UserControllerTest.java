@@ -26,22 +26,22 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.time.LocalDate;
 import java.util.Map;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.DUPLICATE_INTEREST_REPORT;
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.SUCCESS;
+import static com.kuit.findyou.domain.user.constant.DefaultProfileImage.PUPPY;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 import static com.kuit.findyou.global.common.util.RestAssuredUtils.multipartText;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -595,8 +595,8 @@ class UserControllerTest {
                 .then()
                 .statusCode(200)
                 .body("success", equalTo(false))
-                .body("code", equalTo(400))
-                .body("message", equalTo("Invalid request"));
+                .body("code", equalTo(BAD_REQUEST.getCode()))
+                .body("message", equalTo(BAD_REQUEST.getMessage()));
     }
 
     @Test
@@ -716,5 +716,55 @@ class UserControllerTest {
 
         // === 반환된 URL이 CDN 주소 형식을 따르는지 확인 ===
         assertThat(profileImageUrl).startsWith("base-url");
+    }
+
+    @Test
+    @DisplayName("프로필 - 기본이미지 -> 업로드 변경 시, 삭제 호출 없음")
+    void changeProfileImage_DefaultToUploaded_NoDelete() {
+        User user = testInitializer.createUserWithDefaultProfileImage(PUPPY);
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().build());
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(200)
+                .body("success", equalTo(true));
+
+        verify(s3Client, times(0)).deleteObject(any(DeleteObjectRequest.class));
+    }
+
+    @Test
+    @DisplayName("프로필 - 업로드된 파일 -> 새 업로드 변경 시, 기존 파일 삭제 호출됨")
+    void changeProfileImage_FileToFile_DeleteOldFile() {
+        // given
+        //기존 프로필 이미지 존재
+        User user = testInitializer.createUserWithUploadedProfileImage("base-url/old_profile.jpg");
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(PutObjectResponse.builder().build());
+
+        // when
+        //새 프로필 업로드
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("profileImageFile", "new.jpg", "fake".getBytes(), "image/jpeg")
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(200)
+                .body("success", equalTo(true));
+
+        // then
+        verify(s3Client, times(1)).deleteObject(any(DeleteObjectRequest.class));
     }
 }
