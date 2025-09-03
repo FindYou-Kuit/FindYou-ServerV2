@@ -26,7 +26,7 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @RestController
 @Slf4j
 @RequestMapping("/api/v2/reports")
-@Tag(name = "Report", description = "글 조회 API")
+@Tag(name = "Report", description = "글 관련 API")
 @RequiredArgsConstructor
 public class ReportController {
 
