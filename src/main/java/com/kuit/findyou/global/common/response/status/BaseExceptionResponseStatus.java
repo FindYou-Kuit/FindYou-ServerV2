@@ -50,6 +50,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     // 글 이미지 - ReportImage
     IMAGE_UPLOAD_LIMIT_EXCEEDED(400, "이미지는 최대 5개까지 업로드할 수 있습니다."),
     INVALID_IMAGE_FORMAT(400, "잘못된 이미지 형식입니다."),
+    IMAGE_SIZE_EXCEEDED(400, "파일 크기를 초과하였습니다. 한 파일당 최대 30MB의 크기가 허용됩니다."),
 
 
     // 추천 컨텐츠 - Recommendation

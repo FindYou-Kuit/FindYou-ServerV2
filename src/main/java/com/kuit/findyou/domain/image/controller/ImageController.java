@@ -6,6 +6,7 @@ import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.DEFAULT;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.IMAGE_UPLOAD;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
-@RequestMapping("api/v2/reports/images")
+@RequestMapping("api/v2/images")
+@Tag(name = "User", description = "이미지 관련 API")
 @RequiredArgsConstructor
 public class ImageController {
     private final ReportImageUploadService imageUploadService;

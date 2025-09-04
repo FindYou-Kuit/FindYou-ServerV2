@@ -17,6 +17,7 @@ import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
+import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
@@ -420,5 +421,22 @@ public class TestInitializer {
                         .build()
         );
         sigunguRepository.save(Sigungu.builder().name("해운대구").sido(busan).build());
+    }
+
+    public User createUserWithDefaultProfileImage(DefaultProfileImage img) {
+        User user = createTestUser();
+        user.changeProfileImage(img.getName());
+        return userRepository.save(user);
+    }
+
+    public User createUserWithUploadedProfileImage(String imageUrl) {
+        User user = User.builder()
+                .name("홍길동")
+                .role(Role.USER)
+                .deviceId("device-uploaded")
+                .profileImageUrl(imageUrl)
+                .build();
+
+        return userRepository.save(user);
     }
 }
