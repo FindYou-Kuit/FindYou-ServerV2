@@ -28,8 +28,6 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
     private final UserRepository userRepository;
     private final ImageUploader imageUploader;
 
-    @Value("${spring.servlet.multipart.max-file-size:30MB}")
-    private String maxFileSizeValue;
 
     @Override
     @Transactional
@@ -39,11 +37,6 @@ public class ChangeProfileImageServiceImpl implements ChangeProfileImageService 
 
             String toSave;
             if (request.profileImageFile() != null) {
-                long maxFileSizeBytes = DataSize.parse(maxFileSizeValue).toBytes();
-                if (request.profileImageFile().getSize() > maxFileSizeBytes) {
-                    throw new CustomException(IMAGE_SIZE_EXCEEDED);
-                }
-
                 try {
                     toSave = imageUploader.upload(request.profileImageFile());
                 } catch (FileUploadingFailedException e) {
