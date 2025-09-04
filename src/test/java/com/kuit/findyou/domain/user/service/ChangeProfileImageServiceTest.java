@@ -35,10 +35,6 @@ public class ChangeProfileImageServiceTest {
     @Mock
     ImageUploader imageUploader;
 
-    @BeforeEach
-    void setup() {
-        ReflectionTestUtils.setField(service, "maxFileSizeValue", "30MB");
-    }
     @Test
     @DisplayName("기본 프로필(enum)로 변경 성공")
     void changeToDefaultProfileImage_Success() {
