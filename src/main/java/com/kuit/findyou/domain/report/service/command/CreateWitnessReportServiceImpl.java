@@ -3,21 +3,18 @@ package com.kuit.findyou.domain.report.service.command;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
-import com.kuit.findyou.domain.report.model.MissingReport;
-import com.kuit.findyou.domain.report.model.Report;
-import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.model.Sex;
-import com.kuit.findyou.domain.report.repository.MissingReportRepository;
+import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
+import com.kuit.findyou.domain.report.model.*;
+import com.kuit.findyou.domain.report.repository.WitnessReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,36 +25,34 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 
 @Service
 @RequiredArgsConstructor
-public class CreateMissingReportServiceImpl implements CreateMissingReportService {
-    private final MissingReportRepository missingReportRepository;
+public class CreateWitnessReportServiceImpl implements CreateWitnessReportService {
+
+    private final WitnessReportRepository witnessReportRepository;
     private final ReportImageRepository reportImageRepository;
     private final UserRepository userRepository;
     private final KakaoCoordinateClient kakaoCoordinateClient;
 
     @Transactional
     @Override
-    public void createMissingReport(CreateMissingReportRequest req, Long userId) {
+    public void createWitnessReport(CreateWitnessReportRequest req, Long userId) {
         User user = userRepository.getReferenceById(userId);
-        MissingReport report = createMissingReportFromRequest(req, user);
-        missingReportRepository.save(report); //신고글 저장
-        saveReportImages(req.imgUrls(), report);//이미지 entity 생성 및 연결
+        WitnessReport report = createWitnessReportFromRequest(req, user);
+        witnessReportRepository.save(report); // 목격글 저장
+        saveReportImages(req.imgUrls(), report); // 이미지 저장
     }
 
-
-    private MissingReport createMissingReportFromRequest(CreateMissingReportRequest req, User user) {
+    private WitnessReport createWitnessReportFromRequest(CreateWitnessReportRequest req, User user) {
 
         KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(req.location());
 
         // 형식 변환
-        Sex sex = mapSexStrict(req.sex());
         BigDecimal lat = coordinate.latitude();
         BigDecimal lng = coordinate.longitude();
 
-        return MissingReport.createMissingReport(
-                req.breed(), req.species(), ReportTag.MISSING, req.missingDate(),
+        return WitnessReport.createWitnessReport(
+                req.breed(), req.species(), ReportTag.WITNESS, req.foundDate(),
                 req.location(), user,
-                sex, req.rfid(), req.age(),
-                req.furColor(), req.significant(),
+                req.furColor(), req.significant(), user.getName(),
                 req.landmark(), lat, lng
         );
     }
@@ -74,11 +69,5 @@ public class CreateMissingReportServiceImpl implements CreateMissingReportServic
                 .collect(Collectors.toList());
 
         reportImageRepository.saveAll(images);
-    }
-    private Sex mapSexStrict(String input) {
-        String s = input.trim();
-        if (s.equals("남자")) return Sex.M;
-        if (s.equals("여자")) return Sex.F;
-        throw new CustomException(BAD_REQUEST);
     }
 }

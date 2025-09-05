@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.report.controller;
 
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
+import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
@@ -288,7 +289,7 @@ class ReportControllerTest {
         // breed 필드가 없는 요청 생성
         var request = new CreateMissingReportRequest(
                 List.of(), "개", null, "3살", "남자", null, "흰색",
-                "2025.08.30", null, "서울시", "건대"
+                LocalDate.of(2025, 8, 30), null, "서울시", "건대"
         );
 
         // when & then
@@ -304,6 +305,60 @@ class ReportControllerTest {
                 .statusCode(200)
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
-                .body("message", containsString("유효하지 않은 요청입니다."));
+                .body("message", containsString("품종은 필수 입력 항목입니다."));
+    }
+
+    @DisplayName("POST /api/v2/reports/new-witness-reports: 목격 신고글 등록 성공")
+    @Test
+    void createWitnessReport_Success() {
+        // given
+        User testUser = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+        CreateWitnessReportRequest request = testInitializer.createBasicWitnessReportRequest();
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v2/reports/new-witness-reports")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200))
+                .body("data", is(nullValue()));
+    }
+
+    @Test
+    @DisplayName("POST /api/v2/reports/new-witness-reports: 실패 - 필수 필드(종) 누락")
+    void createWitnessReport_Fail_MissingSpecies() {
+        // given
+        User testUser = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+        // species 필드가 없는 요청 생성
+        var request = new CreateWitnessReportRequest(
+                List.of("url"), null, "코리안숏헤어", "치즈태비", LocalDate.of(2025, 9, 5),
+                "특이사항", "서울시 성동구", "서울숲"
+        );
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v2/reports/new-witness-reports")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(false))
+                .body("code", equalTo(400))
+                .body("message", containsString("축종은 필수 입력 항목입니다."));
     }
 }

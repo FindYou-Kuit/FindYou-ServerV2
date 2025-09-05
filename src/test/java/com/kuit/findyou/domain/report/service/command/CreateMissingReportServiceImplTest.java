@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.report.service.command;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
+import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.repository.MissingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
@@ -18,6 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
+
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.math.BigDecimal;
@@ -63,7 +67,7 @@ public class CreateMissingReportServiceImplTest {
     private CreateMissingReportRequest createValidRequest(List<String> imgUrls) {
         return new CreateMissingReportRequest(
                 imgUrls, "개", "포메라니안", "3살", "남자", "1234", "흰색",
-                "2025.08.30", "특이사항 없음", "서울시 광진구", "건대입구"
+                LocalDate.of(2025, 8, 30), "특이사항 없음", "서울시 광진구", "건대입구"
         );
     }
 
@@ -116,48 +120,63 @@ public class CreateMissingReportServiceImplTest {
         verifyNoInteractions(reportImageRepository);
     }
 
-    @DisplayName("필수 필드가 null이면 CustomException")
+
+
+    @DisplayName("성별이 '여자'일 때 성공적으로 변환")
     @Test
-    void createMissingReport_whenBreedIsNull_thenThrowsException() {
+    void createMissingReport_withFemaleSex_Success() {
         // given
+        // mapSexStrict 메서드 분기 테스트
         CreateMissingReportRequest request = new CreateMissingReportRequest(
-                List.of(), "개", null, "3살", "남자", "1234", "흰색",
-                "2025.08.30", "특이사항", "서울시", "건대입구"
+                List.of(), "개", "푸들", "3살", "여자", "1234", "흰색",
+                LocalDate.of(2025, 8, 30), "특이사항", "서울시", "건대입구"
         );
         when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
+                .thenReturn(new KakaoCoordinateClient.Coordinate(BigDecimal.ONE, BigDecimal.ONE));
+
+        // when
+        createMissingReportService.createMissingReport(request, userId);
+
+        // then
+        verify(missingReportRepository, times(1)).save(reportCaptor.capture());
+        assertThat(reportCaptor.getValue().getSex()).isEqualTo(com.kuit.findyou.domain.report.model.Sex.F);
+    }
+
+    @DisplayName("성별이 유효하지 않은 값이면 CustomException 발생")
+    @Test
+    void createMissingReport_whenSexIsInvalid_thenThrowsException() {
+        // given
+        // mapSexStrict 메서드 예외 발생 분기 테스트
+        CreateMissingReportRequest request = new CreateMissingReportRequest(
+                List.of(), "개", "푸들", "3살", "알수없음", "1234", "흰색",
+                LocalDate.of(2025, 8, 30),"특이사항", "서울시", "건대입구"
+        );
+        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
+                .thenReturn(new KakaoCoordinateClient.Coordinate(BigDecimal.ONE, BigDecimal.ONE));
 
         // when & then
         assertThatThrownBy(() -> createMissingReportService.createMissingReport(request, userId))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining("유효하지 않은 요청입니다.");
+                .isInstanceOf(CustomException.class);
+    }
 
-        // 예외가 발생했으므로, DB에 저장하는 로직은 호출되면 안 됨
-        verify(missingReportRepository, never()).save(any());
+    @DisplayName("이미지 URL 리스트가 null일 때 성공")
+    @Test
+    void createMissingReport_whenImageUrlListIsNull_Success() {
+        // given
+        //imageUrls == null
+        CreateMissingReportRequest request = createValidRequest(null);
+        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
+                .thenReturn(new KakaoCoordinateClient.Coordinate(BigDecimal.ONE, BigDecimal.ONE));
+
+        // when
+        createMissingReportService.createMissingReport(request, userId);
+
+        // then
+        verify(missingReportRepository, times(1)).save(any(MissingReport.class));
         verifyNoInteractions(reportImageRepository);
     }
 
-
-    @DisplayName("날짜 형식이 'yyyy.MM.dd'가 아니면 CustomException이 발생한다")
-    @Test
-    void createMissingReport_whenDateFormatIsInvalid_thenThrowsException() {
-        // given
-        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
-        // when
-        var request = new CreateMissingReportRequest(
-                List.of("url"), "개", "말티즈", "3살", "남자", "1234", "흰색",
-                "2025-08-30", // "yyyy.MM.dd" 형식이 아님
-                "특이사항", "서울시", "건대입구"
-        );
-
-        // then
-        assertThatThrownBy(() -> createMissingReportService.createMissingReport(request, userId))
-                .isInstanceOf(CustomException.class)
-                .satisfies(exception -> {
-                    CustomException customException = (CustomException) exception;
-                    assertThat(customException.getExceptionStatus()).isEqualTo(BAD_REQUEST);
-                });
-
-        //예외 발생 -> DB 저장 로직은 호출 X
-        verifyNoInteractions(missingReportRepository, reportImageRepository);
-    }
 }
