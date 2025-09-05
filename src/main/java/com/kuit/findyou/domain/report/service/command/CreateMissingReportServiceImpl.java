@@ -93,16 +93,10 @@ public class CreateMissingReportServiceImpl implements CreateMissingReportServic
     private void requireText(String v) {
         if (v == null || v.trim().isEmpty()) throw new CustomException(BAD_REQUEST);
     }
-    private void requireNotNull(Object v) {
-        if (v == null) throw new CustomException(BAD_REQUEST);
-    }
 
-    private LocalDate parseDotDate(String s) {
-        try { return LocalDate.parse(s, DOT_DATE); }
+    private LocalDate parseDotDate(String date) {
+        try { return LocalDate.parse(date, DOT_DATE); }
         catch (DateTimeParseException e) { throw new CustomException(BAD_REQUEST); }
-    }
-    private BigDecimal toScale(Double v) {
-        return v == null ? null : BigDecimal.valueOf(v).setScale(6, RoundingMode.HALF_UP);
     }
     private Sex mapSexStrict(String input) {
         String s = input.trim();
