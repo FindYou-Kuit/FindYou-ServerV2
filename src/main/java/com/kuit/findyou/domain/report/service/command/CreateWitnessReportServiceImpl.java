@@ -45,13 +45,6 @@ public class CreateWitnessReportServiceImpl implements CreateWitnessReportServic
     }
 
     private WitnessReport createWitnessReportFromRequest(CreateWitnessReportRequest req, User user) {
-        // 필수값 검증
-        requireText(req.species());
-        requireText(req.breed());
-        requireText(req.foundDate());
-        requireText(req.location());
-        requireText(req.landmark());
-        requireText(req.furColor());
 
         KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(req.location());
 
@@ -80,13 +73,6 @@ public class CreateWitnessReportServiceImpl implements CreateWitnessReportServic
                 .collect(Collectors.toList());
 
         reportImageRepository.saveAll(images);
-    }
-
-    // 헬퍼 메서드
-    private void requireText(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new CustomException(BAD_REQUEST);
-        }
     }
 
     private LocalDate parseDotDate(String date) {

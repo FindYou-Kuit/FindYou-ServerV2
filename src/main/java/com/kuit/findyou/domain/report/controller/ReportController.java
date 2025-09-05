@@ -15,6 +15,7 @@ import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -95,7 +96,7 @@ public class ReportController {
     @Operation(summary = "목격 신고글 등록 API", description = "목격 신고글 등록에 필요한 내용들을 포함해 등록하는 API")
     @CustomExceptionDescription(DEFAULT)
     @PostMapping("/new-witness-reports")
-    public BaseResponse<Void> createWitnessReport(@RequestBody CreateWitnessReportRequest request,
+    public BaseResponse<Void> createWitnessReport(@Valid @RequestBody CreateWitnessReportRequest request,
                                                   @Parameter(hidden = true) @LoginUserId Long userId) {
         reportServiceFacade.createWitnessReport(request, userId);
         return BaseResponse.ok(null);
