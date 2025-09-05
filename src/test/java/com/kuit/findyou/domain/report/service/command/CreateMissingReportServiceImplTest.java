@@ -119,26 +119,6 @@ public class CreateMissingReportServiceImplTest {
         verifyNoInteractions(reportImageRepository);
     }
 
-    @DisplayName("필수 필드가 null이면 CustomException")
-    @Test
-    void createMissingReport_whenBreedIsNull_thenThrowsException() {
-        // given
-        CreateMissingReportRequest request = new CreateMissingReportRequest(
-                List.of(), "개", null, "3살", "남자", "1234", "흰색",
-                "2025.08.30", "특이사항", "서울시", "건대입구"
-        );
-        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
-
-        // when & then
-        assertThatThrownBy(() -> createMissingReportService.createMissingReport(request, userId))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining("유효하지 않은 요청입니다.");
-
-        // 예외가 발생했으므로, DB에 저장하는 로직은 호출되면 안 됨
-        verify(missingReportRepository, never()).save(any());
-        verifyNoInteractions(reportImageRepository);
-    }
-
 
     @DisplayName("날짜 형식이 'yyyy.MM.dd'가 아니면 CustomException이 발생한다")
     @Test

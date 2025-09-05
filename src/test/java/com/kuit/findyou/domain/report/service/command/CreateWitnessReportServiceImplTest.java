@@ -115,25 +115,6 @@ public class CreateWitnessReportServiceImplTest {
         verifyNoInteractions(reportImageRepository);
     }
 
-    @DisplayName("필수 필드가 null이면 CustomException 발생")
-    @Test
-    void createWitnessReport_whenLocationIsNull_thenThrowsException() {
-        // given
-        CreateWitnessReportRequest request = new CreateWitnessReportRequest(
-                List.of(), "고양이", "코리안숏헤어", "치즈태비", "2025.09.05",
-                "특이사항", null, "서울숲" // location is null
-        );
-        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
-
-        // when & then
-        assertThatThrownBy(() -> createWitnessReportService.createWitnessReport(request, userId))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining("유효하지 않은 요청입니다.");
-
-        verify(witnessReportRepository, never()).save(any());
-        verifyNoInteractions(reportImageRepository);
-    }
-
     @DisplayName("날짜 형식이 'yyyy.MM.dd'가 아니면 CustomException 발생")
     @Test
     void createWitnessReport_whenDateFormatIsInvalid_thenThrowsException() {
@@ -153,22 +134,6 @@ public class CreateWitnessReportServiceImplTest {
                 });
 
         verifyNoInteractions(witnessReportRepository, reportImageRepository);
-    }
-
-    @DisplayName("필수 필드가 공백 문자열이면 CustomException 발생")
-    @Test
-    void createWitnessReport_whenRequiredFieldIsBlank_thenThrowsException() {
-        // given
-        // null이 아닌 공백으로 테스트
-        CreateWitnessReportRequest request = new CreateWitnessReportRequest(
-                List.of(), "고양이", "코리안숏헤어", "치즈태비", "2025.09.05",
-                "특이사항", "서울시 성동구", "   "
-        );
-        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
-
-        // when & then
-        assertThatThrownBy(() -> createWitnessReportService.createWitnessReport(request, userId))
-                .isInstanceOf(CustomException.class);
     }
 
     @DisplayName("이미지 URL 리스트가 null일 때 성공")

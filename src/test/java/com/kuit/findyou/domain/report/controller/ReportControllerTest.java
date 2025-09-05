@@ -305,7 +305,7 @@ class ReportControllerTest {
                 .statusCode(200)
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
-                .body("message", containsString("유효하지 않은 요청입니다."));
+                .body("message", containsString("품종은 필수 입력 항목입니다."));
     }
 
     @DisplayName("POST /api/v2/reports/new-witness-reports: 목격 신고글 등록 성공")
@@ -359,6 +359,6 @@ class ReportControllerTest {
                 .statusCode(200)
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
-                .body("message", containsString("유효하지 않은 요청입니다."));
+                .body("message", containsString("축종은 필수 입력 항목입니다."));
     }
 }
