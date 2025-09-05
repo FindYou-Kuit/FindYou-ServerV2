@@ -25,7 +25,7 @@ public class DeleteReportServiceImpl implements DeleteReportService {
     @Override
     @Transactional
     public void deleteReport(Long reportId, Long userId) {
-        Report report = reportRepository.findById(reportId)
+        Report report = reportRepository.findByIdWithUserAndImages(reportId)
                 .orElseThrow(() -> new CustomException(REPORT_NOT_FOUND));
 
         if(!report.getUser().getId().equals(userId)){
