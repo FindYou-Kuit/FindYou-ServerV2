@@ -289,7 +289,7 @@ class ReportControllerTest {
         // breed 필드가 없는 요청 생성
         var request = new CreateMissingReportRequest(
                 List.of(), "개", null, "3살", "남자", null, "흰색",
-                "2025.08.30", null, "서울시", "건대"
+                LocalDate.of(2025, 8, 30), null, "서울시", "건대"
         );
 
         // when & then
@@ -342,7 +342,7 @@ class ReportControllerTest {
 
         // species 필드가 없는 요청 생성
         var request = new CreateWitnessReportRequest(
-                List.of("url"), null, "코리안숏헤어", "치즈태비", "2025.09.05",
+                List.of("url"), null, "코리안숏헤어", "치즈태비", LocalDate.of(2025, 9, 5),
                 "특이사항", "서울시 성동구", "서울숲"
         );
 

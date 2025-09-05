@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class CreateWitnessReportServiceImplTest {
     private CreateWitnessReportRequest createValidRequest(List<String> imgUrls) {
         return new CreateWitnessReportRequest(
                 imgUrls, "개", "포메라니안", "갈색",
-                "2025.08.30", "특이사항 없음", "서울시 광진구", "건대입구"
+                LocalDate.of(2025, 8, 30),"특이사항 없음", "서울시 광진구", "건대입구"
         );
     }
 
@@ -113,27 +114,6 @@ public class CreateWitnessReportServiceImplTest {
         // then
         verify(witnessReportRepository, times(1)).save(any(WitnessReport.class));
         verifyNoInteractions(reportImageRepository);
-    }
-
-    @DisplayName("날짜 형식이 'yyyy.MM.dd'가 아니면 CustomException 발생")
-    @Test
-    void createWitnessReport_whenDateFormatIsInvalid_thenThrowsException() {
-        // given
-        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
-        var request = new CreateWitnessReportRequest(
-                List.of(), "고양이", "코리안숏헤어", "치즈태비", "2025-09-05", // Invalid format
-                "특이사항", "서울시 성동구", "서울숲"
-        );
-
-        // when & then
-        assertThatThrownBy(() -> createWitnessReportService.createWitnessReport(request, userId))
-                .isInstanceOf(CustomException.class)
-                .satisfies(exception -> {
-                    CustomException customException = (CustomException) exception;
-                    assertThat(customException.getExceptionStatus()).isEqualTo(BAD_REQUEST);
-                });
-
-        verifyNoInteractions(witnessReportRepository, reportImageRepository);
     }
 
     @DisplayName("이미지 URL 리스트가 null일 때 성공")

@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +67,7 @@ public class CreateMissingReportServiceImplTest {
     private CreateMissingReportRequest createValidRequest(List<String> imgUrls) {
         return new CreateMissingReportRequest(
                 imgUrls, "개", "포메라니안", "3살", "남자", "1234", "흰색",
-                "2025.08.30", "특이사항 없음", "서울시 광진구", "건대입구"
+                LocalDate.of(2025, 8, 30), "특이사항 없음", "서울시 광진구", "건대입구"
         );
     }
 
@@ -120,30 +121,6 @@ public class CreateMissingReportServiceImplTest {
     }
 
 
-    @DisplayName("날짜 형식이 'yyyy.MM.dd'가 아니면 CustomException이 발생한다")
-    @Test
-    void createMissingReport_whenDateFormatIsInvalid_thenThrowsException() {
-        // given
-        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
-        // when
-        var request = new CreateMissingReportRequest(
-                List.of("url"), "개", "말티즈", "3살", "남자", "1234", "흰색",
-                "2025-08-30", // "yyyy.MM.dd" 형식이 아님
-                "특이사항", "서울시", "건대입구"
-        );
-
-        // then
-        assertThatThrownBy(() -> createMissingReportService.createMissingReport(request, userId))
-                .isInstanceOf(CustomException.class)
-                .satisfies(exception -> {
-                    CustomException customException = (CustomException) exception;
-                    assertThat(customException.getExceptionStatus()).isEqualTo(BAD_REQUEST);
-                });
-
-        //예외 발생 -> DB 저장 로직은 호출 X
-        verifyNoInteractions(missingReportRepository, reportImageRepository);
-    }
-
 
     @DisplayName("성별이 '여자'일 때 성공적으로 변환")
     @Test
@@ -152,7 +129,7 @@ public class CreateMissingReportServiceImplTest {
         // mapSexStrict 메서드 분기 테스트
         CreateMissingReportRequest request = new CreateMissingReportRequest(
                 List.of(), "개", "푸들", "3살", "여자", "1234", "흰색",
-                "2025.08.30", "특이사항", "서울시", "건대입구"
+                LocalDate.of(2025, 8, 30), "특이사항", "서울시", "건대입구"
         );
         when(userRepository.getReferenceById(userId)).thenReturn(testUser);
         when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
@@ -173,7 +150,7 @@ public class CreateMissingReportServiceImplTest {
         // mapSexStrict 메서드 예외 발생 분기 테스트
         CreateMissingReportRequest request = new CreateMissingReportRequest(
                 List.of(), "개", "푸들", "3살", "알수없음", "1234", "흰색",
-                "2025.08.30", "특이사항", "서울시", "건대입구"
+                LocalDate.of(2025, 8, 30),"특이사항", "서울시", "건대입구"
         );
         when(userRepository.getReferenceById(userId)).thenReturn(testUser);
         when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
