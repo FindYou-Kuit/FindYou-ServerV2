@@ -52,13 +52,12 @@ public class CreateMissingReportServiceImpl implements CreateMissingReportServic
         KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(req.location());
 
         // 형식 변환
-        LocalDate date = parseDotDate(req.missingDate());
         Sex sex = mapSexStrict(req.sex());
         BigDecimal lat = coordinate.latitude();
         BigDecimal lng = coordinate.longitude();
 
         return MissingReport.createMissingReport(
-                req.breed(), req.species(), ReportTag.MISSING, date,
+                req.breed(), req.species(), ReportTag.MISSING, req.missingDate(),
                 req.location(), user,
                 sex, req.rfid(), req.age(),
                 req.furColor(), req.significant(),
@@ -78,11 +77,6 @@ public class CreateMissingReportServiceImpl implements CreateMissingReportServic
                 .collect(Collectors.toList());
 
         reportImageRepository.saveAll(images);
-    }
-
-    private LocalDate parseDotDate(String date) {
-        try { return LocalDate.parse(date, DOT_DATE); }
-        catch (DateTimeParseException e) { throw new CustomException(BAD_REQUEST); }
     }
     private Sex mapSexStrict(String input) {
         String s = input.trim();
