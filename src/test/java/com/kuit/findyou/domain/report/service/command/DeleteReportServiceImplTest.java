@@ -55,13 +55,13 @@ public class DeleteReportServiceImplTest {
     @DisplayName("이미지가 없는 신고글을 성공적으로 삭제")
     void deleteReport_WithoutImages_Success() {
         // given
-        when(reportRepository.findById(reportId)).thenReturn(Optional.of(reportWithoutImages));
+        when(reportRepository.findByIdWithUserAndImages(reportId)).thenReturn(Optional.of(reportWithoutImages));
 
         // when
         deleteReportService.deleteReport(reportId, userId);
 
         // then
-        verify(reportRepository, times(1)).findById(reportId);
+        verify(reportRepository, times(1)).findByIdWithUserAndImages(reportId);
         verify(imageUploader, never()).delete(anyString());
         verify(reportRepository, times(1)).delete(reportWithoutImages);
     }
@@ -70,13 +70,13 @@ public class DeleteReportServiceImplTest {
     @DisplayName("이미지가 있는 신고글을 성공적으로 삭제")
     void deleteReport_WithImages_Success() {
         // given
-        when(reportRepository.findById(reportId)).thenReturn(Optional.of(reportWithImages));
+        when(reportRepository.findByIdWithUserAndImages(reportId)).thenReturn(Optional.of(reportWithImages));
 
         // when
         deleteReportService.deleteReport(reportId, userId);
 
         // then
-        verify(reportRepository, times(1)).findById(reportId);
+        verify(reportRepository, times(1)).findByIdWithUserAndImages(reportId);
         // imageUploader의 delete가 1번 호출되었는지 검증
         verify(imageUploader, times(1)).delete(anyString());
         verify(reportRepository, times(1)).delete(reportWithImages);
@@ -87,7 +87,7 @@ public class DeleteReportServiceImplTest {
     void deleteReport_Fail_ReportNotFound() {
         // given
 
-        when(reportRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(reportRepository.findByIdWithUserAndImages(anyLong())).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> deleteReportService.deleteReport(reportId, userId))
@@ -105,7 +105,7 @@ public class DeleteReportServiceImplTest {
         // given
         Long otherUserId = 2L; //글 작성자와 다른 유저
 
-        when(reportRepository.findById(reportId)).thenReturn(Optional.of(reportWithoutImages));
+        when(reportRepository.findByIdWithUserAndImages(reportId)).thenReturn(Optional.of(reportWithoutImages));
 
         // when & then
         //다른 유저 ID로 deleteReport 메서드 실행
