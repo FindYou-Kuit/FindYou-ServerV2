@@ -48,15 +48,6 @@ public class CreateMissingReportServiceImpl implements CreateMissingReportServic
 
 
     private MissingReport createMissingReportFromRequest(CreateMissingReportRequest req, User user) {
-        // 필수값 검증
-        requireText(req.species());
-        requireText(req.breed());
-        requireText(req.sex());
-        requireText(req.age());
-        requireText(req.missingDate());
-        requireText(req.location());
-        requireText(req.landmark());
-        requireText(req.furColor());
 
         KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(req.location());
 
@@ -87,11 +78,6 @@ public class CreateMissingReportServiceImpl implements CreateMissingReportServic
                 .collect(Collectors.toList());
 
         reportImageRepository.saveAll(images);
-    }
-
-    //헬퍼 메서드들
-    private void requireText(String v) {
-        if (v == null || v.trim().isEmpty()) throw new CustomException(BAD_REQUEST);
     }
 
     private LocalDate parseDotDate(String date) {

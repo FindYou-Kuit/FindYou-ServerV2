@@ -87,7 +87,7 @@ public class ReportController {
     @Operation(summary = "실종 신고글 등록 API", description = "실종 신고글 등록에 필요한 내용들을 포함해 등록하는 API")
     @CustomExceptionDescription(DEFAULT)
     @PostMapping("/new-missing-reports")
-    public BaseResponse<Void> createMissingReport(@RequestBody CreateMissingReportRequest request,
+    public BaseResponse<Void> createMissingReport(@Valid @RequestBody CreateMissingReportRequest request,
                                                   @Parameter(hidden = true) @LoginUserId Long userId) {
         reportServiceFacade.createMissingReport(request, userId);
         return BaseResponse.ok(null);
