@@ -10,8 +10,6 @@ public record CreateWitnessReportRequest(
         String foundDate,  //"yyyy.MM.dd"
         String significant,
         String location,
-        Double latitude,
-        Double longitude,
         String landmark
 ) {
 }
