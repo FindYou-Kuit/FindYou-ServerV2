@@ -6,14 +6,19 @@ import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.infrastructure.ImageUploader;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +30,9 @@ import static org.hamcrest.Matchers.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 class ReportControllerTest {
+
+    @MockitoBean
+    private ImageUploader imageUploader;
 
     @LocalServerPort
     int port;
@@ -360,5 +368,66 @@ class ReportControllerTest {
                 .body("success", equalTo(false))
                 .body("code", equalTo(400))
                 .body("message", containsString("축종은 필수 입력 항목입니다."));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v2/reports/{reportId}: 본인의 신고글 삭제 성공")
+    void deleteReport_Success() {
+        // given
+        User reportWriter = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+        String accessToken = jwtUtil.createAccessJwt(reportWriter.getId(), reportWriter.getRole());
+        long reportIdToDelete = 2L;
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .delete("/api/v2/reports/" + reportIdToDelete)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v2/reports/{reportId}: 다른 사람의 글 삭제 실패")
+    void deleteReport_Fail_UserMismatch() {
+        // given
+        testInitializer.userWith3InterestReportsAnd2ViewedReports();
+        User anotherUser = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(anotherUser.getId(), anotherUser.getRole());
+        long reportIdToDelete = 2L;
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .delete("/api/v2/reports/" + reportIdToDelete)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(false))
+                .body("code", equalTo(404));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v2/reports/{reportId}: 존재하지 않는 글 삭제 실패")
+    void deleteReport_Fail_ReportNotFound() {
+        // given
+        User user = testInitializer.createTestUser();
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+        long nonExistentReportId = 9999L;
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .delete("/api/v2/reports/" + nonExistentReportId)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(false))
+                .body("code", equalTo(404));
     }
 }
