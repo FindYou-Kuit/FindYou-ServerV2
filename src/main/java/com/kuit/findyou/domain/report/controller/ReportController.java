@@ -102,5 +102,16 @@ public class ReportController {
         return BaseResponse.ok(null);
     }
 
+    @Operation(summary = "신고글 삭제 API", description = "자신이 작성한 신고글(실종/목격)을 삭제합니다.")
+    @CustomExceptionDescription(DELETE_REPORT)
+    @DeleteMapping("/{reportId}")
+    public BaseResponse<Void> deleteReport(
+            @Parameter(description = "삭제할 신고글의 ID") @PathVariable("reportId") Long reportId,
+            @Parameter(hidden = true) @LoginUserId Long userId
+    ) {
+        reportServiceFacade.deleteReport(reportId, userId);
+        return BaseResponse.ok(null);
+    }
+
 }
 
