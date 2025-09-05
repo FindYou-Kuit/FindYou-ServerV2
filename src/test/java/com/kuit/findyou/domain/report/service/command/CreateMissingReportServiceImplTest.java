@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.report.service.command;
 import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
+import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.repository.MissingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
@@ -18,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.math.BigDecimal;
@@ -160,4 +163,63 @@ public class CreateMissingReportServiceImplTest {
         //예외 발생 -> DB 저장 로직은 호출 X
         verifyNoInteractions(missingReportRepository, reportImageRepository);
     }
+
+
+    @DisplayName("성별이 '여자'일 때 성공적으로 변환")
+    @Test
+    void createMissingReport_withFemaleSex_Success() {
+        // given
+        // mapSexStrict 메서드 분기 테스트
+        CreateMissingReportRequest request = new CreateMissingReportRequest(
+                List.of(), "개", "푸들", "3살", "여자", "1234", "흰색",
+                "2025.08.30", "특이사항", "서울시", "건대입구"
+        );
+        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
+                .thenReturn(new KakaoCoordinateClient.Coordinate(BigDecimal.ONE, BigDecimal.ONE));
+
+        // when
+        createMissingReportService.createMissingReport(request, userId);
+
+        // then
+        verify(missingReportRepository, times(1)).save(reportCaptor.capture());
+        assertThat(reportCaptor.getValue().getSex()).isEqualTo(com.kuit.findyou.domain.report.model.Sex.F);
+    }
+
+    @DisplayName("성별이 유효하지 않은 값이면 CustomException 발생")
+    @Test
+    void createMissingReport_whenSexIsInvalid_thenThrowsException() {
+        // given
+        // mapSexStrict 메서드 예외 발생 분기 테스트
+        CreateMissingReportRequest request = new CreateMissingReportRequest(
+                List.of(), "개", "푸들", "3살", "알수없음", "1234", "흰색",
+                "2025.08.30", "특이사항", "서울시", "건대입구"
+        );
+        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
+                .thenReturn(new KakaoCoordinateClient.Coordinate(BigDecimal.ONE, BigDecimal.ONE));
+
+        // when & then
+        assertThatThrownBy(() -> createMissingReportService.createMissingReport(request, userId))
+                .isInstanceOf(CustomException.class);
+    }
+
+    @DisplayName("이미지 URL 리스트가 null일 때 성공")
+    @Test
+    void createMissingReport_whenImageUrlListIsNull_Success() {
+        // given
+        //imageUrls == null
+        CreateMissingReportRequest request = createValidRequest(null);
+        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
+                .thenReturn(new KakaoCoordinateClient.Coordinate(BigDecimal.ONE, BigDecimal.ONE));
+
+        // when
+        createMissingReportService.createMissingReport(request, userId);
+
+        // then
+        verify(missingReportRepository, times(1)).save(any(MissingReport.class));
+        verifyNoInteractions(reportImageRepository);
+    }
+
 }

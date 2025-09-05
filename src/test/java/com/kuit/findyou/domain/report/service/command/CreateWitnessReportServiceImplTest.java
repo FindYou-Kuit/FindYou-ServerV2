@@ -154,4 +154,38 @@ public class CreateWitnessReportServiceImplTest {
 
         verifyNoInteractions(witnessReportRepository, reportImageRepository);
     }
+
+    @DisplayName("필수 필드가 공백 문자열이면 CustomException 발생")
+    @Test
+    void createWitnessReport_whenRequiredFieldIsBlank_thenThrowsException() {
+        // given
+        // null이 아닌 공백으로 테스트
+        CreateWitnessReportRequest request = new CreateWitnessReportRequest(
+                List.of(), "고양이", "코리안숏헤어", "치즈태비", "2025.09.05",
+                "특이사항", "서울시 성동구", "   "
+        );
+        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+
+        // when & then
+        assertThatThrownBy(() -> createWitnessReportService.createWitnessReport(request, userId))
+                .isInstanceOf(CustomException.class);
+    }
+
+    @DisplayName("이미지 URL 리스트가 null일 때 성공")
+    @Test
+    void createWitnessReport_whenImageUrlListIsNull_Success() {
+        // given
+        // saveReportImages의 imageUrls == null 분기테스트
+        CreateWitnessReportRequest request = createValidRequest(null);
+        when(userRepository.getReferenceById(userId)).thenReturn(testUser);
+        when(kakaoCoordinateClient.requestCoordinateOrDefault(anyString()))
+                .thenReturn(new KakaoCoordinateClient.Coordinate(BigDecimal.ONE, BigDecimal.ONE));
+
+        // when
+        createWitnessReportService.createWitnessReport(request, userId);
+
+        // then
+        verify(witnessReportRepository, times(1)).save(any(WitnessReport.class));
+        verifyNoInteractions(reportImageRepository);
+    }
 }
