@@ -5,18 +5,14 @@ import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.service.command.WitnessReportCommandService;
+import com.kuit.findyou.domain.report.service.command.CreateWitnessReportService;
 import com.kuit.findyou.domain.report.service.command.CreateMissingReportService;
 import com.kuit.findyou.domain.report.service.detail.ReportDetailService;
 import com.kuit.findyou.domain.report.service.retrieve.ReportRetrieveService;
-import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +20,7 @@ public class ReportServiceFacade {
 
     private final ReportDetailService reportDetailService;
     private final ReportRetrieveService reportRetrieveService;
-    private final WitnessReportCommandService witnessReportCommandService;
+    private final CreateWitnessReportService createWitnessReportService;
     private final CreateMissingReportService createMissingReportService;
 
     public <DTO_TYPE> DTO_TYPE getReportDetail(
@@ -53,7 +49,7 @@ public class ReportServiceFacade {
     }
 
     public void createWitnessReport(CreateWitnessReportRequest req, Long userId) {
-        witnessReportCommandService.createWitnessReport(req, userId);
+        createWitnessReportService.createWitnessReport(req, userId);
     }
 }
 
