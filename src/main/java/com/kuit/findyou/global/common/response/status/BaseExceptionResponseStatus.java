@@ -46,6 +46,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     WITNESS_REPORT_NOT_FOUND(404, "존재하지 않는 목격 신고글입니다."),
     ILLEGAL_TAG(500, "잘못된 태그값입니다."),
     IMAGE_UPLOAD_HTTPS_REQUIRED(500, "이미지 URL은 https만 허용됩니다."),
+    MISMATCH_REPORT_USER(404, "글 작성자와 삭제 요청자가 동일하지 않습니다."),
+
 
     // 글 이미지 - ReportImage
     IMAGE_UPLOAD_LIMIT_EXCEEDED(400, "이미지는 최대 5개까지 업로드할 수 있습니다."),

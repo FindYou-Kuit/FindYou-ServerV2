@@ -78,6 +78,12 @@ public enum SwaggerResponseDescription {
             BAD_REQUEST
     ))),
 
+    DELETE_REPORT(new LinkedHashSet<>(Set.of(
+            MISMATCH_REPORT_USER,
+            REPORT_NOT_FOUND,
+            BAD_REQUEST
+    ))),
+
     DEFAULT(new LinkedHashSet<>());
 
 
