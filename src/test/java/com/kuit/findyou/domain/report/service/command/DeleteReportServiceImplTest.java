@@ -43,11 +43,13 @@ public class DeleteReportServiceImplTest {
     @BeforeEach
     void setUp() {
         user = User.builder().id(userId).build();
-        reportWithoutImages = MissingReport.builder().user(user).build();
 
         //이미지 없는 신고글
+        reportWithoutImages = MissingReport.builder().user(user).build();
+
+        //이미지 있는 신고글
         reportWithImages = MissingReport.builder().user(user).build();
-        ReportImage image = ReportImage.createReportImage("https://cdn.findyou.store/image.jpg", reportWithImages);
+        ReportImage.createReportImage("https://cdn.findyou.store/image.jpg", reportWithImages);
     }
     @Test
     @DisplayName("이미지가 없는 신고글을 성공적으로 삭제")
@@ -60,7 +62,6 @@ public class DeleteReportServiceImplTest {
 
         // then
         verify(reportRepository, times(1)).findById(reportId);
-        // ▼▼▼▼▼ [추가] imageUploader가 호출되지 않았음을 검증 ▼▼▼▼▼
         verify(imageUploader, never()).delete(anyString());
         verify(reportRepository, times(1)).delete(reportWithoutImages);
     }
@@ -95,6 +96,7 @@ public class DeleteReportServiceImplTest {
 
         //delete 메서드는 호출되지 않아야 함
         verify(reportRepository, never()).delete(any());
+        verify(imageUploader, never()).delete(anyString());
     }
 
     @Test
@@ -113,5 +115,6 @@ public class DeleteReportServiceImplTest {
 
         //delete 메서드는 호출되지 않아야 함
         verify(reportRepository, never()).delete(any());
+        verify(imageUploader, never()).delete(anyString());
     }
 }
