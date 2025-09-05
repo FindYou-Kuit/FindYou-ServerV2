@@ -32,9 +32,6 @@ public class CreateWitnessReportServiceImpl implements CreateWitnessReportServic
     private final UserRepository userRepository;
     private final KakaoCoordinateClient kakaoCoordinateClient;
 
-
-    private static final DateTimeFormatter DOT_DATE = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-
     @Transactional
     @Override
     public void createWitnessReport(CreateWitnessReportRequest req, Long userId) {
@@ -49,12 +46,11 @@ public class CreateWitnessReportServiceImpl implements CreateWitnessReportServic
         KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(req.location());
 
         // 형식 변환
-        LocalDate date = parseDotDate(req.foundDate());
         BigDecimal lat = coordinate.latitude();
         BigDecimal lng = coordinate.longitude();
 
         return WitnessReport.createWitnessReport(
-                req.breed(), req.species(), ReportTag.WITNESS, date,
+                req.breed(), req.species(), ReportTag.WITNESS, req.foundDate(),
                 req.location(), user,
                 req.furColor(), req.significant(), user.getName(),
                 req.landmark(), lat, lng
@@ -73,13 +69,5 @@ public class CreateWitnessReportServiceImpl implements CreateWitnessReportServic
                 .collect(Collectors.toList());
 
         reportImageRepository.saveAll(images);
-    }
-
-    private LocalDate parseDotDate(String date) {
-        try {
-            return LocalDate.parse(date, DOT_DATE);
-        } catch (DateTimeParseException e) {
-            throw new CustomException(BAD_REQUEST);
-        }
     }
 }

@@ -2,9 +2,10 @@ package com.kuit.findyou.domain.report.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record CreateWitnessReportRequest(
@@ -24,10 +25,9 @@ public record CreateWitnessReportRequest(
         @NotBlank(message = "털색은 필수 입력 항목입니다.")
         String furColor,
 
-        @Schema(description = "동물을 발견한 날짜", example = "2025.09.05")
-        @NotBlank(message = "목격 날짜는 필수 입력 항목입니다.")
-        @Pattern(regexp = "^\\d{4}\\.\\d{2}\\.\\d{2}$", message = "날짜 형식은 yyyy.MM.dd 여야 합니다.")
-        String foundDate,
+        @Schema(description = "목격 날짜 (yyyy-MM-dd 형식)", example = "2025-09-05")
+        @NotNull(message = "목격 날짜는 필수 입력 항목입니다.")
+        LocalDate foundDate,
 
         @Schema(description = "특이 사항", example = "예쁘게 생겼음")
         String significant,

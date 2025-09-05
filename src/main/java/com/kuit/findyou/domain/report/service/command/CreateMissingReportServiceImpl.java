@@ -34,9 +34,6 @@ public class CreateMissingReportServiceImpl implements CreateMissingReportServic
     private final UserRepository userRepository;
     private final KakaoCoordinateClient kakaoCoordinateClient;
 
-
-    private static final DateTimeFormatter DOT_DATE = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-
     @Transactional
     @Override
     public void createMissingReport(CreateMissingReportRequest req, Long userId) {
