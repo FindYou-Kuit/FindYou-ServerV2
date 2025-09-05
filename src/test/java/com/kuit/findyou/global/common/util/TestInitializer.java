@@ -15,6 +15,7 @@ import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
+import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
@@ -438,5 +439,18 @@ public class TestInitializer {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public CreateWitnessReportRequest createBasicWitnessReportRequest() {
+        return new CreateWitnessReportRequest(
+                List.of("https://cdn.findyou.store/my_cat.jpg"),
+                "고양이",
+                "코리안숏헤어",
+                "갈색",
+                "2025.09.04",
+                "파란색 목줄을 하고 있습니다.",
+                "서울시 광진구 능동로 120",
+                "건국대학교"
+        );
     }
 }
