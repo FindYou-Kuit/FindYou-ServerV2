@@ -1,7 +1,9 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.user.dto.request.*;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
+import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
@@ -134,5 +136,43 @@ public class UserController {
                                                    @Parameter(name = "삭제할 동물신고글 식별자") @PathVariable Long reportId){
         userServiceFacade.deleteInterestAnimal(userId, reportId);
         return BaseResponse.ok(null);
+    }
+
+    @Operation(
+            summary = "프로필 이미지 변경 API",
+            description = "프로필 이미지 변경을 수행합니다. 기본이미지는 enum값 이름으로 저장, 사용자 업로드 이미지는 cdn url로 저장됩니다."
+    )
+    @CustomExceptionDescription(CHANGE_PROFILE_IMAGE)
+    @PatchMapping(value = "/me/profile-image", consumes = MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<Void> changeProfileImage(
+            @LoginUserId Long userId,
+            @Valid @ModelAttribute ChangeProfileImageRequest req
+    ) {
+        userServiceFacade.changeProfileImage(userId, req);
+        return BaseResponse.ok(null);
+    }
+
+    @Operation(
+            summary = "신고 내역 조회 API",
+            description = """
+신고 내역 조회 기능을 수행합니다. 
+커서페이징을 지원합니다. 직전 응답의 lastId를 요청에 포함해야 합니다. 처음에는 Long 타입의 MAX_VALUE를 전달합니다.
+    """
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @GetMapping("/me/reports")
+    public BaseResponse<CardResponseDTO> retrieveUserReports(@Parameter(hidden = true) @LoginUserId Long userId,
+                                                             @Parameter(name = "lastId") @RequestParam(required = true) Long lastId){
+        return BaseResponse.ok(userServiceFacade.retrieveUserReports(userId, lastId));
+    }
+
+    @Operation(
+            summary = "마이페이지 프로필 조회 API",
+            description = "마이페이지 프로필 조회 기능을 수행합니다."
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @GetMapping("/me")
+    public BaseResponse<GetUserProfileResponse> getUserProfile(@Parameter(hidden = true) @LoginUserId Long userId){
+        return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
     }
 }

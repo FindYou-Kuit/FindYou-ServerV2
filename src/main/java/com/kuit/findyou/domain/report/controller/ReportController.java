@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.report.controller;
 
+import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
@@ -26,7 +27,7 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @RestController
 @Slf4j
 @RequestMapping("/api/v2/reports")
-@Tag(name = "Report", description = "글 조회 API")
+@Tag(name = "Report", description = "글 관련 API")
 @RequiredArgsConstructor
 public class ReportController {
 
@@ -80,6 +81,15 @@ public class ReportController {
     ) {
         CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(type, startDate, endDate, species, breeds, address, lastId, userId);
         return BaseResponse.ok(result);
+    }
+
+    @Operation(summary = "실종 신고글 등록 API", description = "실종 신고글 등록에 필요한 내용들을 포함해 등록하는 API")
+    @CustomExceptionDescription(DEFAULT)
+    @PostMapping("/new-missing-reports")
+    public BaseResponse<Void> createMissingReport(@RequestBody CreateMissingReportRequest request,
+                                                  @Parameter(hidden = true) @LoginUserId Long userId) {
+        reportServiceFacade.createMissingReport(request, userId);
+        return BaseResponse.ok(null);
     }
 
     @Operation(summary = "목격 신고글 등록 API", description = "목격 신고글 등록에 필요한 내용들을 포함해 등록하는 API")

@@ -2,7 +2,10 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
+
+apply from: "$rootDir/jacoco.gradle"
 
 group = 'com.kuit'
 version = '0.0.1-SNAPSHOT'
@@ -61,6 +64,7 @@ dependencies {
 
 	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.7.0")
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
@@ -94,8 +98,11 @@ dependencies {
 
 	// Jackson xml parsing
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
+	// Spring Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Prometheus
+	implementation('io.micrometer:micrometer-registry-prometheus')
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}

@@ -15,6 +15,32 @@ public class ProtectingAnimalParser {
     private static final String UNKNOWN = "미상";
     private static final LocalDate UNKNOWN_DATE = LocalDate.of(2000, 1, 1);
 
+    private static final String JEONBUK_OLD = "전라북도";
+    private static final String JEONBUK_NEW = "전북특별자치도";
+    private static final String GANGWON_OLD = "강원도";
+    private static final String GANGWON_NEW = "강원특별자치도";
+
+    /**
+     * 주소 문자열의 광역자치단체 명칭을 최신 표기로 정규화
+     * 예) 전라북도 김제시 하나아파트 -> 전북특별자치도 김제시 하나아파트 / 강원도 고성군 -> 강원특별자치도 고성군
+     *
+     * null/blank 는 "미상" 반환
+     * 이미 "전북특별자치도" / "강원특별자치도" 인 경우 그대로 유지
+     * 선행 공백 후 시작하는 "전라북도" / "강원도" 도 치환
+     *
+     * @param address 구조동물 공공데이터가 제공하는 주소 정보
+     * @return 파싱된 주소
+     */
+    public static String parseAddress(String address) {
+        if (address == null || address.isBlank()) return UNKNOWN;
+
+        // "전라북도"를 "전북특별자치도"로 치환
+        // "강원도"를 "강원특별자치도"로 치환
+        return address
+                .replace(JEONBUK_OLD, JEONBUK_NEW)
+                .replace(GANGWON_OLD, GANGWON_NEW);
+    }
+
     /**
      * "yyyyMMdd" 형식의 날짜 문자열을 LocalDate 로 변환.
      * 예: "20240718" → LocalDate.of(2024, 7, 18)

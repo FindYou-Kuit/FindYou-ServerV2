@@ -64,6 +64,20 @@ public enum SwaggerResponseDescription {
             SIDO_NOT_FOUND
     ))),
 
+    IMAGE_UPLOAD(new LinkedHashSet<>(Set.of(
+            IMAGE_UPLOAD_LIMIT_EXCEEDED,
+            INVALID_IMAGE_FORMAT,
+            IMAGE_UPLOAD_FAILED,
+            IMAGE_SIZE_EXCEEDED
+    ))),
+
+    CHANGE_PROFILE_IMAGE(new LinkedHashSet<>(Set.of(
+            USER_NOT_FOUND,
+            IMAGE_UPLOAD_FAILED,
+            IMAGE_SIZE_EXCEEDED,
+            BAD_REQUEST
+    ))),
+
     DEFAULT(new LinkedHashSet<>());
 
 

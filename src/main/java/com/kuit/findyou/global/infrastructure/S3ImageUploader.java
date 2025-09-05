@@ -1,12 +1,13 @@
 package com.kuit.findyou.global.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class S3ImageUploader implements ImageUploader {
@@ -26,6 +28,7 @@ public class S3ImageUploader implements ImageUploader {
     @Value("${cloud.aws.s3.base-url}")
     private String s3baseUrl;
 
+    @Override
     public String upload(MultipartFile file) throws FileUploadingFailedException{
         if(file.isEmpty() || file == null){
             throw new IllegalArgumentException("업로드할 파일이 비어 있을 수 없습니다");
@@ -54,6 +57,27 @@ public class S3ImageUploader implements ImageUploader {
             throw new FileUploadingFailedException("S3 업로드 실패: " + e.awsErrorDetails().errorMessage());
         }
     }
+
+    @Override
+    public void delete(String s3ObjectKey) {
+        if (s3ObjectKey == null || s3ObjectKey.isBlank()) {
+            throw new IllegalArgumentException("S3에서 삭제할 객체 키가 없습니다.");
+        }
+        try {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder() //삭제 요청 객체
+                    .bucket(bucket)
+                    .key(s3ObjectKey)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest); //삭제 요청
+            log.info("S3에서 이미지 삭제 성공: key={}", s3ObjectKey);
+
+        } catch (S3Exception e) {
+            //S3 이미지 삭제에 실패 시, 전체 로직이 멈추면 안되므로 로그만
+            log.error("S3 이미지 삭제 실패: key={}, error={}", s3ObjectKey, e.awsErrorDetails().errorMessage(), e);
+        }
+    }
+
 
     private String getFileUrl(String fileName) {
         return s3baseUrl + "/" + fileName;

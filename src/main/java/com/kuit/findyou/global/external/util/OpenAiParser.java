@@ -1,11 +1,14 @@
 package com.kuit.findyou.global.external.util;
 
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.exception.OpenAiParsingException;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 
 public class OpenAiParser {
 
@@ -25,7 +28,7 @@ public class OpenAiParser {
         String species = cleanString(parts.get(0));
 
         if (!VALID_SPECIES.contains(species)) {
-            throw new OpenAiParsingException("유효하지 않은 축종입니다.");
+            throw new OpenAiParsingException(OPENAI_PARSER_SPECIES_INVALID);
         }
 
         return species;
@@ -48,12 +51,12 @@ public class OpenAiParser {
         List<String> validBreeds = breedGroup.get(species);
 
         if (validBreeds == null || validBreeds.isEmpty()) {
-            throw new OpenAiParsingException("해당 축종에 대한 품종 정보가 없습니다");
+            throw new OpenAiParsingException(OPENAI_PARSER_BREED_GROUP_EMPTY);
         }
 
         // 유효하지 않은 품종인 경우
         if (!validBreeds.contains(breed)) {
-            throw new OpenAiParsingException("유효하지 않은 품종입니다.");
+            throw new OpenAiParsingException(OPENAI_PARSER_BREED_INVALID);
         }
 
         return breed;
@@ -72,7 +75,7 @@ public class OpenAiParser {
                 .toList();
 
         if (validColors.isEmpty()) {
-            throw new OpenAiParsingException("유효한 색상이 없습니다.");
+            throw new OpenAiParsingException(OPENAI_PARSER_COLORS_EMPTY);
         }
 
         return validColors;
@@ -83,14 +86,14 @@ public class OpenAiParser {
      */
     private static List<String> parseParts(String input) {
         if (input == null || input.isBlank()) {
-            throw new OpenAiParsingException("입력이 null 이거나 비어 있습니다.");
+            throw new OpenAiParsingException(OPENAI_PARSER_INPUT_NULL_OR_BLANK);
         }
 
         // GPT 응답 정제
         String cleanedInput = cleanResponse(input);
 
         if (!cleanedInput.contains(",")) {
-            throw new OpenAiParsingException("입력에 쉼표(,) 구분자가 없습니다. 잘못된 포맷입니다: ");
+            throw new OpenAiParsingException(OPENAI_PARSER_NO_COMMA_DELIMITER);
         }
 
         List<String> parts = Arrays.stream(cleanedInput.split(","))
@@ -99,7 +102,7 @@ public class OpenAiParser {
                 .toList();
 
         if (parts.size() < 3) {
-            throw new OpenAiParsingException("입력 항목이 부족합니다. 최소 3개(축종, 품종, 색상)가 필요합니다.");
+            throw new OpenAiParsingException(OPENAI_PARSER_PARTS_TOO_FEW);
         }
 
         return parts;
@@ -110,7 +113,7 @@ public class OpenAiParser {
      */
     private static String cleanResponse(String input) {
         if (input == null) {
-            throw new OpenAiParsingException("정제할 입력이 null 입니다.");
+            throw new OpenAiParsingException(OPENAI_PARSER_INPUT_NULL_OR_BLANK);
         }
 
         String result = input
@@ -121,7 +124,7 @@ public class OpenAiParser {
                 .trim();
 
         if (result.isBlank()) {
-            throw new OpenAiParsingException("정제 후 입력이 비어있습니다. 원본 입력: " + input);
+            throw new OpenAiParsingException(OPENAI_PARSER_INPUT_NULL_OR_BLANK);
         }
 
         return result;
@@ -132,7 +135,7 @@ public class OpenAiParser {
      */
     private static String cleanString(String input) {
         if (input == null) {
-            throw new OpenAiParsingException("정제할 문자열이 null입니다.");
+            throw new OpenAiParsingException(OPENAI_PARSER_INPUT_NULL_OR_BLANK);
         }
 
         String result = input
@@ -142,7 +145,7 @@ public class OpenAiParser {
                 .trim();
 
         if (result.isBlank()) {
-            throw new OpenAiParsingException("정제 후 문자열이 비어있습니다. 원본 입력: " + input);
+            throw new OpenAiParsingException(OPENAI_PARSER_INPUT_NULL_OR_BLANK);
         }
 
         return result;

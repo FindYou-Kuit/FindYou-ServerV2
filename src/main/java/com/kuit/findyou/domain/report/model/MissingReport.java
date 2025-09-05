@@ -59,8 +59,7 @@ public class MissingReport extends Report {
 
     public static MissingReport createMissingReport(String breed, String species, ReportTag tag, LocalDate date,
                                                     String address, User user, Sex sex, String rfid, String age,
-                                                    String furColor, String significant,
-                                                    String reporterName, String reporterTel, String landmark, BigDecimal latitude, BigDecimal longitude) {
+                                                    String furColor, String significant, String landmark, BigDecimal latitude, BigDecimal longitude) {
         MissingReport report = MissingReport.builder()
                 .breed(breed)
                 .species(species)
@@ -75,8 +74,6 @@ public class MissingReport extends Report {
                 .age(age)
                 .furColor(furColor)
                 .significant(significant)
-                .reporterName(reporterName)
-                .reporterTel(reporterTel)
                 .landmark(landmark)
                 .build();
 

@@ -15,6 +15,10 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
   flyway:
     enabled: false
+  servlet:
+    multipart:
+      max-file-size: 30MB      # 파일 하나당 최대 30MB
+      max-request-size: 150MB   # 요청당 총 크기를 150MB로
 
 findyou:
   jwt:
