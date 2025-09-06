@@ -124,7 +124,7 @@ spring:
           temperature: 0
           max-tokens: 100
     retry:
-      max-attempts: 3
+      max-attempts: 2
       backoff:
         initial-interval: 2s
         multiplier: 2
