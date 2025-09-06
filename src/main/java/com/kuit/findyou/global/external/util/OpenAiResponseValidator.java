@@ -53,7 +53,7 @@ public class OpenAiResponseValidator {
                 .collect(Collectors.toList());
 
         if (validColors.isEmpty()) {
-            throw new OpenAiResponseValidatingException(OPENAI_VALIDATOR_COLORS_EMPTY);
+            throw new OpenAiResponseValidatingException(OPENAI_VALIDATOR_COLORS_INVALID);
         }
 
         return new BreedAiDetectionResponseDTO(species, breed, validColors);
