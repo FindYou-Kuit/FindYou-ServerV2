@@ -35,13 +35,8 @@ public class BreedAiDetectionServiceImpl implements BreedAiDetectionService{
             Map<String, List<String>> breedGroup = BreedGroupingUtil.getGroupedBreedNamesBySpecies(breeds);
 
             String prompt = OpenAiPromptBuilder.buildBreedDetectionPrompt(breedGroup);
-            String aiResponse =  openAiClient.analyzeImage(imageUrl, prompt);
 
-            String species = OpenAiParser.parseSpecies(aiResponse);
-            String breed = OpenAiParser.parseBreed(aiResponse, species, breedGroup);
-            List<String> colors = OpenAiParser.parseColors(aiResponse);
-
-            return new BreedAiDetectionResponseDTO(species, breed, colors);
+            return openAiClient.analyzeImage(imageUrl, prompt);
         } catch (OpenAiClientException | OpenAiParsingException e) {
             log.warn("품종 판별 실패: {}", e.getMessage());
             throw new CustomException(BREED_ANALYSIS_FAILED);
