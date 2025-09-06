@@ -36,6 +36,6 @@ public record RetrieveReportRequestDTO(
         String address,
 
         @NotNull(message = "lastId는 필수입니다.")
-        @Schema(description = "커서 페이징 기준 ID(처음 요청 시 0 사용)", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")
+        @Schema(description = "커서 페이징 기준 ID(최초 요청 시 Long 의 최대값을 전달할 것)", requiredMode = Schema.RequiredMode.REQUIRED, example = "1000")
         Long lastId
 ) {}
