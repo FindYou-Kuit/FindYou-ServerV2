@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.report.controller;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.dto.request.RetrieveReportRequestDTO;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.MissingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
@@ -71,16 +72,10 @@ public class ReportController {
     @GetMapping
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<CardResponseDTO> retrieveReportsWithFilters(
-            @RequestParam ReportViewType type,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(required = false) String species,
-            @RequestParam(required = false) String breeds,
-            @RequestParam(required = false) String address,
-            @RequestParam Long lastId,
+            @ModelAttribute RetrieveReportRequestDTO request,
             @Parameter(hidden = true) @LoginUserId Long userId
     ) {
-        CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(type, startDate, endDate, species, breeds, address, lastId, userId);
+        CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(request, userId);
         return BaseResponse.ok(result);
     }
 
