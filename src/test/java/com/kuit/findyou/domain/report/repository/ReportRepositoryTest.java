@@ -47,6 +47,12 @@ class ReportRepositoryTest {
     private ReportRepository reportRepository;
 
     @Autowired
+    private InterestReportRepository interestReportRepository;
+
+    @Autowired
+    private ViewedReportRepository viewedReportRepository;
+
+    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -353,5 +359,59 @@ class ReportRepositoryTest {
         assertThat(firstReport.getReportId()).isEqualTo(21L);
         ReportProjection lastReport = slices.getContent().get(slices.getNumberOfElements() - 1);
         assertThat(lastReport.getReportId()).isEqualTo(2L);
+    }
+
+
+    @Test
+    @DisplayName("CASCADE 검증 - Report 삭제 시 Interest/Viewed 삭제 - 단일 유저")
+    void deleteReport_Cascade_SingleUser() {
+        // given
+        User writer = testInitializer.createTestUser();
+        Report report = testInitializer.createTestMissingReportWithImage(writer);
+        testInitializer.createTestInterestReport(writer, report);
+        testInitializer.createTestViewedReport(writer, report);
+
+        assertThat(reportRepository.count()).isEqualTo(1L);
+        assertThat(interestReportRepository.count()).isEqualTo(1L);
+        assertThat(viewedReportRepository.count()).isEqualTo(1L);
+
+        // when
+        reportRepository.deleteById(report.getId());
+        em.flush();
+        em.clear();
+
+        // then
+        assertThat(reportRepository.findById(report.getId())).isEmpty();
+        assertThat(interestReportRepository.count()).isEqualTo(0L);
+        assertThat(viewedReportRepository.count()).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("CASCADE 검증 - Report 삭제 시 모든 유저의 Interest/Viewed 삭제 - 다중 유저")
+    void deleteReport_Cascade_MultiUser() {
+        // given
+        User writer = testInitializer.createTestUser();
+        User other  = testInitializer.createTestUser();
+
+        Report report = testInitializer.createTestMissingReportWithImage(writer);
+
+        //두 유저가 관심, 조회 남김
+        testInitializer.createTestInterestReport(writer, report);
+        testInitializer.createTestInterestReport(other,  report);
+        testInitializer.createTestViewedReport(writer,  report);
+        testInitializer.createTestViewedReport(other,   report);
+
+        assertThat(interestReportRepository.count()).isEqualTo(2L);
+        assertThat(viewedReportRepository.count()).isEqualTo(2L);
+
+        // when
+        reportRepository.deleteById(report.getId());
+        em.flush();
+        em.clear();
+
+        // then
+        assertThat(reportRepository.findById(report.getId())).isEmpty();
+        assertThat(interestReportRepository.count()).isEqualTo(0L);
+        assertThat(viewedReportRepository.count()).isEqualTo(0L);
     }
 }
