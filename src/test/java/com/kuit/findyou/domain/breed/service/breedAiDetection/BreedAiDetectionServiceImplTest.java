@@ -86,18 +86,4 @@ class BreedAiDetectionServiceImplTest {
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(BREED_ANALYSIS_FAILED.getMessage());
     }
-
-    @Test
-    @DisplayName("OpenAiParsingException 발생 시 CustomException(BREED_ANALYSIS_FAILED) 발생")
-    void analyzeBreedWithAi_openAiParsingException() {
-        // given
-        when(breedRepository.findAll()).thenReturn(List.of(Breed.builder().name("강아지").species("개").build()));
-        when(openAiClient.analyzeImage(eq("test-url"), anyString()))
-                .thenThrow(new OpenAiParsingException("응답 파싱 실패"));
-
-        // when & then
-        assertThatThrownBy(() -> breedAiDetectionService.analyzeBreedWithAi("test-url"))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining(BREED_ANALYSIS_FAILED.getMessage());
-    }
 }

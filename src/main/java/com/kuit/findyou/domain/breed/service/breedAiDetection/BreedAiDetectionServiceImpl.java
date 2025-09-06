@@ -8,7 +8,6 @@ import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.client.OpenAiClient;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
 import com.kuit.findyou.global.external.exception.OpenAiParsingException;
-import com.kuit.findyou.global.external.util.OpenAiParser;
 import com.kuit.findyou.global.external.util.OpenAiPromptBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
