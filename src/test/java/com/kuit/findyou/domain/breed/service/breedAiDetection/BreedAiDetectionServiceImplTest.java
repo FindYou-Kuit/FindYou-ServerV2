@@ -53,7 +53,7 @@ class BreedAiDetectionServiceImplTest {
         // OpenAI 정상 응답 mocking
         String aiOk = "강아지,치와와,하얀색,갈색";
         when(openAiClient.analyzeImage(eq("test-url"), anyString()))
-                .thenReturn(aiOk);
+                .thenReturn(new BreedAiDetectionResponseDTO("강아지", "치와와", List.of("하얀색", "갈색")));
 
         // when
         BreedAiDetectionResponseDTO dto = breedAiDetectionService.analyzeBreedWithAi("test-url");

@@ -18,6 +18,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.List;
+
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BREED_ANALYSIS_FAILED;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,7 +86,7 @@ class BreedControllerTest {
 
         // given
         when(openAiClient.analyzeImage(eq("https://img"), anyString()))
-                .thenReturn("강아지,포메라니안,하얀색,갈색");
+                .thenReturn(new BreedAiDetectionResponseDTO("강아지", "포메라니안", List.of("하얀색", "갈색")));
 
         ImageUrlRequestDTO request = new ImageUrlRequestDTO("https://img");
 
