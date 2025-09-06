@@ -7,8 +7,9 @@ import com.kuit.findyou.domain.breed.util.BreedGroupingUtil;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.client.OpenAiClient;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
-import com.kuit.findyou.global.external.exception.OpenAiParsingException;
+import com.kuit.findyou.global.external.exception.OpenAiResponseValidatingException;
 import com.kuit.findyou.global.external.util.OpenAiPromptBuilder;
+import com.kuit.findyou.global.external.util.OpenAiResponseValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,8 @@ public class BreedAiDetectionServiceImpl implements BreedAiDetectionService{
 
             String prompt = OpenAiPromptBuilder.buildBreedDetectionPrompt(breedGroup);
 
-            return openAiClient.analyzeImage(imageUrl, prompt);
-        } catch (OpenAiClientException | OpenAiParsingException e) {
+            return OpenAiResponseValidator.validateOpenAiResponse(openAiClient.analyzeImage(imageUrl, prompt), breedGroup);
+        } catch (OpenAiClientException | OpenAiResponseValidatingException e) {
             log.warn("품종 판별 실패: {}", e.getMessage());
             throw new CustomException(BREED_ANALYSIS_FAILED);
         }
