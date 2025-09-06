@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.report.service.retrieve;
 
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.dto.request.RetrieveReportRequestDTO;
 import com.kuit.findyou.domain.report.dto.response.Card;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
@@ -81,10 +82,10 @@ class ReportRetrieveServiceImplTest {
 
         // when
         CardResponseDTO result = reportRetrieveService.retrieveReportsWithFilters(
-                ReportViewType.REPORTING,
+                new RetrieveReportRequestDTO(ReportViewType.REPORTING,
                 null, null,
                 null, null, null,
-                Long.MAX_VALUE,
+                Long.MAX_VALUE),
                 userId
         );
 
@@ -123,7 +124,7 @@ class ReportRetrieveServiceImplTest {
 
         // when
         CardResponseDTO result = reportRetrieveService.retrieveReportsWithFilters(
-                ReportViewType.ALL, null, null, null, null, null, 0L, 1L
+                new RetrieveReportRequestDTO(ReportViewType.ALL, null, null, null, null, null, 0L), 1L
         );
 
         // then
@@ -152,7 +153,7 @@ class ReportRetrieveServiceImplTest {
                 .thenReturn(expected);
 
         CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
-                ReportViewType.PROTECTING, null,null,null,null,null, 0L, 1L
+                new RetrieveReportRequestDTO(ReportViewType.PROTECTING, null,null,null,null,null, 0L), 1L
         );
 
         assertThat(res).isEqualTo(expected);
@@ -186,12 +187,13 @@ class ReportRetrieveServiceImplTest {
                 .thenReturn(expected);
 
         CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
+                new RetrieveReportRequestDTO(
                 ReportViewType.REPORTING,
                 LocalDate.of(2025,8,1), LocalDate.of(2025,8,31),
                 "강아지",
                 "치와와,  진돗개 , , 포메라니안",
                 "서울",
-                999L, 7L
+                999L), 7L
         );
 
         assertThat(res).isEqualTo(expected);
@@ -222,7 +224,7 @@ class ReportRetrieveServiceImplTest {
                 .thenReturn(expected);
 
         CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
-                ReportViewType.REPORTING, null,null, null, "   ", null, 0L, 1L
+                new RetrieveReportRequestDTO(ReportViewType.REPORTING, null,null, null, "   ", null, 0L), 1L
         );
 
         assertThat(res).isEqualTo(expected);
@@ -251,7 +253,7 @@ class ReportRetrieveServiceImplTest {
                 .thenReturn(expected);
 
         CardResponseDTO res = reportRetrieveService.retrieveReportsWithFilters(
-                ReportViewType.ALL, null,null, null,null,null, 0L, 77L
+                new RetrieveReportRequestDTO(ReportViewType.ALL, null,null, null,null,null, 0L), 77L
         );
 
         assertThat(res).isEqualTo(expected);
