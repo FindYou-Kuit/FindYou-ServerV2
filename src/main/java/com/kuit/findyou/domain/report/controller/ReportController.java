@@ -72,7 +72,7 @@ public class ReportController {
     @GetMapping
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<CardResponseDTO> retrieveReportsWithFilters(
-            @ModelAttribute RetrieveReportRequestDTO request,
+            @Valid @ModelAttribute RetrieveReportRequestDTO request,
             @Parameter(hidden = true) @LoginUserId Long userId
     ) {
         CardResponseDTO result = reportServiceFacade.retrieveReportsWithFilters(request, userId);
