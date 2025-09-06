@@ -10,8 +10,10 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.ResponseFormat;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
@@ -21,26 +23,26 @@ import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage
 public class OpenAiClient {
 
     private static final String BREED_DETECTION_SCHEMA = """
-        {
-          "type": "object",
-          "properties": {
-            "species": {
-              "type": "string",
-              "enum": ["강아지", "고양이", "기타"]
-            },
-            "breed": { "type": "string" },
-            "furColors": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": ["검은색","노란색","점박이","하얀색","갈색","회색","적색","기타"]
-              }
+            {
+              "type": "object",
+              "properties": {
+                "species": {
+                  "type": "string",
+                  "enum": ["강아지", "고양이", "기타"]
+                },
+                "breed": { "type": "string" },
+                "furColors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["검은색","노란색","점박이","하얀색","갈색","회색","적색","기타"]
+                  }
+                }
+              },
+              "required": ["species", "breed", "furColors"],
+              "additionalProperties": false
             }
-          },
-          "required": ["species", "breed", "furColors"],
-          "additionalProperties": false
-        }
-        """;
+            """;
 
     private final ChatClient chatClient;
 
@@ -55,7 +57,7 @@ public class OpenAiClient {
                     .media(List.of(
                             Media.builder()
                                     .mimeType(guessImageMediaType(imageUrl))
-                                    .data(URI.create(imageUrl))
+                                    .data(safeCreateUri(imageUrl))
                                     .build()
                     ))
                     .build();
@@ -65,7 +67,7 @@ public class OpenAiClient {
                     .messages(user)
                     .options(OpenAiChatOptions.builder()
                             .model("gpt-4o")
-                            .maxTokens(50)
+                            .maxTokens(100)
                             .temperature(0.0)
                             .responseFormat(new ResponseFormat(
                                     ResponseFormat.Type.JSON_SCHEMA, BREED_DETECTION_SCHEMA))
@@ -84,8 +86,7 @@ public class OpenAiClient {
         } catch (OpenAiClientException e) {
             log.error("OpenAI Vision API 응답이 비어있습니다.", e);
             throw new OpenAiClientException(OPENAI_CLIENT_EMPTY_RESPONSE);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("OpenAI Vision API 호출 중 오류 발생", e);
             throw new OpenAiClientException(OPENAI_CLIENT_CALL_FAILED, e);
         }
@@ -95,13 +96,29 @@ public class OpenAiClient {
         String url = inputUrl.toLowerCase();
 
         if (url.endsWith(".jpg") || url.endsWith(".jpeg")) return MediaType.IMAGE_JPEG;
-        if (url.endsWith(".png"))  return MediaType.IMAGE_PNG;
-        if (url.endsWith(".gif"))  return MediaType.IMAGE_GIF;
+        if (url.endsWith(".png")) return MediaType.IMAGE_PNG;
+        if (url.endsWith(".gif")) return MediaType.IMAGE_GIF;
         if (url.endsWith(".webp")) return MediaType.valueOf("image/webp");
-        if (url.endsWith(".bmp"))  return MediaType.valueOf("image/bmp");
+        if (url.endsWith(".bmp")) return MediaType.valueOf("image/bmp");
         if (url.endsWith(".tif") || url.endsWith(".tiff")) return MediaType.valueOf("image/tiff");
 
         // 기본값 - 대부분의 사진이 jpeg 이므로 안전한 default
         return MediaType.IMAGE_JPEG;
     }
+
+    /**
+     * 대괄호/공백/괄호 등 path/query 의 불법 문자를 안전하게 퍼센트 인코딩해서 URI 생성
+     */
+    private URI safeCreateUri(String rawUrl) {
+        try {
+            return UriComponentsBuilder
+                    .fromUriString(rawUrl)
+                    .encode(StandardCharsets.UTF_8)
+                    .build()
+                    .toUri();
+        } catch (Exception e) {
+            throw new OpenAiClientException(OPENAI_CLIENT_CALL_FAILED, e);
+        }
+    }
 }
+
