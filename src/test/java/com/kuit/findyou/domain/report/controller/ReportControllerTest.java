@@ -408,7 +408,8 @@ class ReportControllerTest {
                 .log().all()
                 .statusCode(200)
                 .body("success", equalTo(false))
-                .body("code", equalTo(404));
+                .body("code", equalTo(404))
+                .body("message", containsString("글 작성자와 삭제 요청자가 동일하지 않습니다."));
     }
 
     @Test
@@ -428,6 +429,7 @@ class ReportControllerTest {
                 .log().all()
                 .statusCode(200)
                 .body("success", equalTo(false))
-                .body("code", equalTo(404));
+                .body("code", equalTo(404))
+                .body("message", containsString("존재하지 않는 신고글입니다."));
     }
 }
