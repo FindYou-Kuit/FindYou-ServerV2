@@ -66,9 +66,6 @@ public class OpenAiClient {
                     .prompt()
                     .messages(user)
                     .options(OpenAiChatOptions.builder()
-                            .model("gpt-4o")
-                            .maxTokens(100)
-                            .temperature(0.0)
                             .responseFormat(new ResponseFormat(
                                     ResponseFormat.Type.JSON_SCHEMA, BREED_DETECTION_SCHEMA))
                             .build())
