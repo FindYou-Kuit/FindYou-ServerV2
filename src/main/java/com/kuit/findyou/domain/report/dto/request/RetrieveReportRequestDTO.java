@@ -24,7 +24,7 @@ public record RetrieveReportRequestDTO(
 
         @Schema(description = "축종(강아지/고양이/기타)", example = "강아지")
         @Pattern(
-                regexp = "^(강아지|고양이|기타)?$",
+                regexp = "^(강아지|고양이|기타)$",
                 message = "species 는 강아지, 고양이, 기타 중 하나여야 합니다."
         )
         String species,

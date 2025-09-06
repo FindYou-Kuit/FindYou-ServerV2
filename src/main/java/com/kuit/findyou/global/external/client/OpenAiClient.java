@@ -75,7 +75,7 @@ public class OpenAiClient {
                     .call()
                     .entity(BreedAiDetectionResponseDTO.class);
 
-            log.info("OpenAI Vision API 응답: {}", response);
+            log.info("OpenAI Chat Completion API 응답: {}", response);
 
             if (response == null) {
                 throw new OpenAiClientException(OPENAI_CLIENT_EMPTY_RESPONSE);
@@ -84,10 +84,10 @@ public class OpenAiClient {
             return response;
 
         } catch (OpenAiClientException e) {
-            log.error("OpenAI Vision API 응답이 비어있습니다.", e);
-            throw new OpenAiClientException(OPENAI_CLIENT_EMPTY_RESPONSE);
+            log.warn("OpenAI Chat Completion API 예외 전파: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("OpenAI Vision API 호출 중 오류 발생", e);
+            log.error("OpenAI Chat Completion API 호출 중 오류 발생", e);
             throw new OpenAiClientException(OPENAI_CLIENT_CALL_FAILED, e);
         }
     }
