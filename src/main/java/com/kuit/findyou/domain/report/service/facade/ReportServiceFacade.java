@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.report.service.facade;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.dto.request.RetrieveReportRequestDTO;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.service.command.CreateWitnessReportService;
@@ -34,16 +35,10 @@ public class ReportServiceFacade {
     }
 
     public CardResponseDTO retrieveReportsWithFilters(
-            ReportViewType reportViewType,
-            LocalDate startDate,
-            LocalDate endDate,
-            String species,
-            String breeds,
-            String location,
-            Long lastReportId,
+            RetrieveReportRequestDTO request,
             Long userId
     ) {
-        return reportRetrieveService.retrieveReportsWithFilters(reportViewType, startDate, endDate, species, breeds, location, lastReportId, userId);
+        return reportRetrieveService.retrieveReportsWithFilters(request, userId);
     }
 
     public void createMissingReport(CreateMissingReportRequest req, Long userId) {

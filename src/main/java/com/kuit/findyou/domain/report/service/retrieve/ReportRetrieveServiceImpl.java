@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.report.service.retrieve;
 
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.dto.request.RetrieveReportRequestDTO;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.factory.CardFactory;
@@ -30,22 +31,16 @@ public class ReportRetrieveServiceImpl implements ReportRetrieveService {
 
     @Override
     public CardResponseDTO retrieveReportsWithFilters(
-            ReportViewType reportViewType,
-            LocalDate startDate,
-            LocalDate endDate,
-            String species,
-            String breeds,
-            String location,
-            Long lastReportId,
+            RetrieveReportRequestDTO request,
             Long userId
     ) {
-        List<String> breedList = parseBreeds(breeds);
+        List<String> breedList = parseBreeds(request.breeds());
 
         // ReportViewType에 따라 필터링할 tag 목록 생성
-        List<ReportTag> tags = createTagList(reportViewType);
+        List<ReportTag> tags = createTagList(request.type());
 
         Slice<ReportProjection> reportSlice = reportRepository.findReportsWithFilters(
-                tags, startDate, endDate, species, breedList, location, lastReportId, PageRequest.of(0, 20)
+                tags, request.startDate(), request.endDate(), request.species(), breedList, request.address(), request.lastId(), PageRequest.of(0, 20)
         );
 
         Long lastId = findLastId(reportSlice);
