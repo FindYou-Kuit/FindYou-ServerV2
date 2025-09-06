@@ -7,6 +7,7 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.service.command.CreateWitnessReportService;
 import com.kuit.findyou.domain.report.service.command.CreateMissingReportService;
+import com.kuit.findyou.domain.report.service.command.DeleteReportService;
 import com.kuit.findyou.domain.report.service.detail.ReportDetailService;
 import com.kuit.findyou.domain.report.service.retrieve.ReportRetrieveService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ReportServiceFacade {
     private final ReportRetrieveService reportRetrieveService;
     private final CreateWitnessReportService createWitnessReportService;
     private final CreateMissingReportService createMissingReportService;
+    private final DeleteReportService deleteReportService;
 
     public <DTO_TYPE> DTO_TYPE getReportDetail(
             ReportTag tag,
@@ -50,6 +52,10 @@ public class ReportServiceFacade {
 
     public void createWitnessReport(CreateWitnessReportRequest req, Long userId) {
         createWitnessReportService.createWitnessReport(req, userId);
+    }
+
+    public void deleteReport(Long reportId, Long userId) {
+        deleteReportService.deleteReport(reportId, userId);
     }
 }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
@@ -110,5 +111,11 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
         ORDER BY r.id DESC
     """)
     Slice<ReportProjection> findUserReportsByCursor(@Param("userId") Long userId, @Param("lastId") Long lastId, Pageable pageable);
+
+    @Query("SELECT r FROM Report r " +
+            "LEFT JOIN FETCH r.user " +
+            "LEFT JOIN FETCH r.reportImages " +
+            "WHERE r.id = :reportId")
+    Optional<Report> findByIdWithUserAndImages(@Param("reportId") Long reportId);
 }
 
