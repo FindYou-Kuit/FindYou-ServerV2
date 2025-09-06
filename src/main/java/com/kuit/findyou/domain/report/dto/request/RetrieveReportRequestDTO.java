@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public record RetrieveReportRequestDTO(
 
         @NotNull(message = "type 은 필수입니다.")
-        @Schema(description = "조회 타입 (ALL / PROTECTING / REPORT)", requiredMode = Schema.RequiredMode.REQUIRED, example = "ALL")
+        @Schema(description = "조회 타입 (ALL / PROTECTING / REPORTING)", requiredMode = Schema.RequiredMode.REQUIRED, example = "ALL")
         ReportViewType type,
 
         @Schema(description = "시작일(YYYY-MM-DD)", example = "2025-01-01")
