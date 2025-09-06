@@ -19,6 +19,14 @@ spring:
     multipart:
       max-file-size: 30MB      # 파일 하나당 최대 30MB
       max-request-size: 150MB   # 요청당 총 크기를 150MB로
+  ai:
+    openai:
+      api-key: test
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0
+          max-tokens: 50
 
 findyou:
   jwt:
@@ -49,9 +57,6 @@ openapi:
     api-key: test-key
   kakao:
     api-url: "https://dapi.kakao.com/v2/local/search/address.json"
-    api-key: test-key
-  openai:
-    api-url: "https://api.openai.com/v1/chat/completions"
     api-key: test-key
   volunteer-work:
     api-url: http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrSearchWordList
