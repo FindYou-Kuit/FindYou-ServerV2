@@ -8,6 +8,7 @@ import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
 import com.kuit.findyou.global.external.client.OpenAiClient;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
+import com.kuit.findyou.global.external.exception.OpenAiResponseValidatingException;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.List;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BREED_ANALYSIS_FAILED;
 import static io.restassured.RestAssured.given;
@@ -84,7 +87,7 @@ class BreedControllerTest {
 
         // given
         when(openAiClient.analyzeImage(eq("https://img"), anyString()))
-                .thenReturn("강아지,포메라니안,하얀색,갈색");
+                .thenReturn(new BreedAiDetectionResponseDTO("강아지", "포메라니안", List.of("하얀색", "갈색")));
 
         ImageUrlRequestDTO request = new ImageUrlRequestDTO("https://img");
 
@@ -127,6 +130,29 @@ class BreedControllerTest {
                 .when()
                 .post("/api/v2/breeds/ai-detection")
         .then()
+                .body("code", equalTo(BREED_ANALYSIS_FAILED.getCode()))
+                .body("message", equalTo(BREED_ANALYSIS_FAILED.getMessage()));
+    }
+
+    @Test
+    @DisplayName("POST /api/v2/breeds/ai-detection - OpenAiResponseValidatingException 발생 시 CustomException 매핑")
+    void aiDetection_openAiResponseValidatingException() {
+        String accessToken = jwtUtil.createAccessJwt(1L, Role.USER);
+
+        // given
+        when(openAiClient.analyzeImage(eq("https://img"), anyString()))
+                .thenThrow(new OpenAiResponseValidatingException("API 호출 실패"));
+
+        ImageUrlRequestDTO request = new ImageUrlRequestDTO("https://img");
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v2/breeds/ai-detection")
+                .then()
                 .body("code", equalTo(BREED_ANALYSIS_FAILED.getCode()))
                 .body("message", equalTo(BREED_ANALYSIS_FAILED.getMessage()));
     }

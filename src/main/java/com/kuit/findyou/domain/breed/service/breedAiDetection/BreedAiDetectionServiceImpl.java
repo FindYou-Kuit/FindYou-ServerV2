@@ -7,9 +7,9 @@ import com.kuit.findyou.domain.breed.util.BreedGroupingUtil;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.client.OpenAiClient;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
-import com.kuit.findyou.global.external.exception.OpenAiParsingException;
-import com.kuit.findyou.global.external.util.OpenAiParser;
+import com.kuit.findyou.global.external.exception.OpenAiResponseValidatingException;
 import com.kuit.findyou.global.external.util.OpenAiPromptBuilder;
+import com.kuit.findyou.global.external.util.OpenAiResponseValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,14 +35,9 @@ public class BreedAiDetectionServiceImpl implements BreedAiDetectionService{
             Map<String, List<String>> breedGroup = BreedGroupingUtil.getGroupedBreedNamesBySpecies(breeds);
 
             String prompt = OpenAiPromptBuilder.buildBreedDetectionPrompt(breedGroup);
-            String aiResponse =  openAiClient.analyzeImage(imageUrl, prompt);
 
-            String species = OpenAiParser.parseSpecies(aiResponse);
-            String breed = OpenAiParser.parseBreed(aiResponse, species, breedGroup);
-            List<String> colors = OpenAiParser.parseColors(aiResponse);
-
-            return new BreedAiDetectionResponseDTO(species, breed, colors);
-        } catch (OpenAiClientException | OpenAiParsingException e) {
+            return OpenAiResponseValidator.validateOpenAiResponse(openAiClient.analyzeImage(imageUrl, prompt), breedGroup);
+        } catch (OpenAiClientException | OpenAiResponseValidatingException e) {
             log.warn("품종 판별 실패: {}", e.getMessage());
             throw new CustomException(BREED_ANALYSIS_FAILED);
         }

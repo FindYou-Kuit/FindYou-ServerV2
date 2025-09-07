@@ -17,7 +17,6 @@ import java.util.List;
 @EnableConfigurationProperties({
         ProtectingAnimalApiProperties.class,
         KakaoAddressApiProperties.class,
-        OpenAiApiProperties.class,
         RescueAnimalStatsApiProperties.class,
         LossAnimalInfoProperties.class,
         VolunteerWorkByKeywordProperties.class
@@ -47,20 +46,6 @@ public class OpenApiConfig {
                 .defaultHeader("Authorization", "KakaoAK " + props.apiKey())
                 .build();
     }
-
-    @Bean
-    public RestClient openAiRestClient(OpenAiApiProperties props) {
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(props.apiUrl());
-        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
-
-        return RestClient.builder()
-                .uriBuilderFactory(factory)
-                .baseUrl(props.apiUrl())
-                .defaultHeader("Authorization", "Bearer " + props.apiKey())
-                .defaultHeader("Content-Type", "application/json")
-                .build();
-    }
-
 
     @Bean
     public RestClient rescueAnimalStatsRestClient(RescueAnimalStatsApiProperties props) {

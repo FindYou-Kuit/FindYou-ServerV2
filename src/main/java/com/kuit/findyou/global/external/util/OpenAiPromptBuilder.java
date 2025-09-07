@@ -18,25 +18,30 @@ public class OpenAiPromptBuilder {
         String etcBreeds = String.join(",", groupedBreeds.getOrDefault(Species.ETC.getValue(), List.of()));
 
         return String.format("""
-                        Generate a response in the following EXACT format:
-                        Species,Breed,Color1,Color2,Color3,...
+                You are a veterinary vision assistant. Analyze the provided image and extract information for exactly one primary animal.
+                The server enforces a JSON schema (species, breed, furColors). Output JSON only—no extra text.
 
-                        STRICT RULES:
-                        1. The species must be EXACTLY one of: "강아지", "고양이", "기타"
-                        2. The breed must be exactly one from the appropriate category:
-                           - For "강아지": %s
-                           - For "고양이": %s
-                           - For "기타": %s
-                        3. Colors must be one or more from ONLY this list: %s
-                        4. NO extra characters, spaces around commas, newlines, or backslashes
-                        5. Return ONLY the comma-separated format
+                [System rules]
+                - The final output must match the server-enforced JSON schema 100%% and must not contain any text outside the JSON.
+                - Never invent values outside the allowed lists (species/breed/colors).
 
-                        Valid Examples:
-                        강아지,골든 리트리버,노란색
-                        고양이,러시안 블루,회색,검은색
-                        기타,기타축종,하얀색
+                [Field constraints]
+                - species: exactly one of "강아지" | "고양이" | "기타".
+                - breed: choose exactly one from the allowed list for the detected species (no synonyms/typos):
+                  · Allowed for "강아지": %s
+                  · Allowed for "고양이": %s
+                  · Allowed for "기타": %s
+                  If uncertain, pick the closest item **within the list** only.
+                - furColors: choose 1–3 from: %s. List **without duplicates** in order of **visual dominance**.
 
-                        IMPORTANT: Your response must start directly with the species name, no other text.""",
+                [Decision guide]
+                - If multiple animals are visible, use the **largest or most central** one.
+                - species cues: (dogs) muzzle/ear shapes, body proportions; (cats) whisker pads, vertical pupils, facial contour.
+                - If occluded or lighting is unusual, choose the **largest visible** colors up to 3.
+
+                [Output]
+                - Return **only** the JSON that conforms to the schema (no prose, no backticks).
+                """,
                 dogBreeds, catBreeds, etcBreeds, FIXED_COLORS);
     }
 }
