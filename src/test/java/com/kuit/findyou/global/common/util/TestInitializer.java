@@ -191,7 +191,8 @@ public class TestInitializer {
         createTestAnimalCenters();
         return centerUser;
     }
-    public void createTestVolunteerWorks(int number){
+
+    public void createTestVolunteerWorks(int number) {
         IntStream.rangeClosed(1, number).forEach(i -> {
             VolunteerWork volunteerWork = VolunteerWork.builder()
                     .institution("보호센터" + i)
@@ -201,6 +202,8 @@ public class TestInitializer {
                     .volunteerStartAt(LocalDateTime.of(2025, 1, 3, 5, 0))
                     .volunteerEndAt(LocalDateTime.of(2025, 1, 3, 6, 0))
                     .webLink("www.web.link")
+                    .registerNumber(String.valueOf(i))
+                    .runId((long) i)
                     .build();
 
             volunteerWorkRepository.save(volunteerWork);
@@ -313,8 +316,8 @@ public class TestInitializer {
         protectingReportRepository.save(protectingReport);
     }
 
-    public Report createReportByLatLngAndTag(User testUser, Double lat, Double lng, ReportTag tag){
-        if (tag == ReportTag.MISSING){
+    public Report createReportByLatLngAndTag(User testUser, Double lat, Double lng, ReportTag tag) {
+        if (tag == ReportTag.MISSING) {
             MissingReport missingReport = MissingReport.createMissingReport(
                     "골든 리트리버",
                     "개",
@@ -333,8 +336,7 @@ public class TestInitializer {
             );
             missingReportRepository.save(missingReport);
             return missingReport;
-        }
-        else if(tag == ReportTag.WITNESS){
+        } else if (tag == ReportTag.WITNESS) {
             WitnessReport witnessReport = WitnessReport.createWitnessReport(
                     "믹스견",
                     "개",
@@ -351,8 +353,7 @@ public class TestInitializer {
             );
             witnessReportRepository.save(witnessReport);
             return witnessReport;
-        }
-        else if(tag == ReportTag.PROTECTING){
+        } else if (tag == ReportTag.PROTECTING) {
             ProtectingReport protectingReport = ProtectingReport.createProtectingReport(
                     "페르시안",
                     "고양이",
