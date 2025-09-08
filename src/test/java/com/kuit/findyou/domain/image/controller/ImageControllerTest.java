@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -36,6 +38,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@Import(TestDatabaseConfig.class)
 class ImageControllerTest {
 
     @LocalServerPort
@@ -58,6 +61,7 @@ class ImageControllerTest {
         databaseCleaner.execute();
         RestAssured.port = port;
     }
+
     @Test
     @DisplayName("여러 개의 이미지를 업로드하고 CDN URL 목록을 반환")
     void uploadImages_Success() throws Exception {

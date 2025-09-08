@@ -6,6 +6,7 @@ import com.kuit.findyou.domain.breed.dto.response.BreedListResponseDTO;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import com.kuit.findyou.global.external.client.OpenAiClient;
 import com.kuit.findyou.global.external.exception.OpenAiClientException;
 import com.kuit.findyou.global.external.exception.OpenAiResponseValidatingException;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
+@Import(TestDatabaseConfig.class)
 class BreedControllerTest {
 
     @LocalServerPort
