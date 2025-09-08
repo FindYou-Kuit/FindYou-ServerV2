@@ -9,13 +9,16 @@ import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.ProtectingReportDetailStrategy;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,8 @@ import static org.assertj.core.api.Assertions.*;
 @DataJpaTest
 @Transactional
 @ActiveProfiles("test")
+@Import(TestDatabaseConfig.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ProtectingReportDetailStrategyTest {
 
     @Autowired

@@ -6,11 +6,13 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +28,10 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
-@Import({ TestInitializer.class, DatabaseCleaner.class })
+@Import({ TestInitializer.class, DatabaseCleaner.class, TestDatabaseConfig.class})
 @Transactional
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ReportRepositoryTest {
 
     @Autowired
