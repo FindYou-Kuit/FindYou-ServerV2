@@ -33,7 +33,7 @@ public class ReportDetailServiceImpl implements ReportDetailService {
     private final InterestReportRepository interestReportRepository;
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     @SuppressWarnings("unchecked")
     public <REPORT_TYPE extends Report, DTO_TYPE> DTO_TYPE getReportDetail(ReportTag tag, Long reportId, Long userId) {
         ReportDetailStrategy<REPORT_TYPE, DTO_TYPE> strategy =
