@@ -2,10 +2,12 @@ package com.kuit.findyou.domain.information.repository;
 
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +25,9 @@ import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @Transactional
-@Import(DatabaseCleaner.class)
+@Import({DatabaseCleaner.class, TestDatabaseConfig.class})
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class VolunteerWorkRepositoryTest {
     @Autowired
     private VolunteerWorkRepository volunteerWorkRepository;
@@ -71,6 +74,8 @@ class VolunteerWorkRepositoryTest {
                 .volunteerStartAt(LocalDateTime.of(2025, 1, 3, 5, 0))
                 .volunteerEndAt(LocalDateTime.of(2025, 1, 4, 6, 0))
                 .webLink("www.web.link")
+                .registerNumber(String.valueOf(i))
+                .runId((long) i)
                 .build();
     }
 

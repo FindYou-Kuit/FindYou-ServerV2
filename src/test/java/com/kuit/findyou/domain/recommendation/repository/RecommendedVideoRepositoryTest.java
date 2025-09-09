@@ -2,10 +2,13 @@ package com.kuit.findyou.domain.recommendation.repository;
 
 import com.kuit.findyou.domain.information.model.RecommendedVideo;
 import com.kuit.findyou.domain.information.repository.RecommendedVideoRepository;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +19,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @DataJpaTest
 @Transactional
 @ActiveProfiles("test")
+@Import(TestDatabaseConfig.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class RecommendedVideoRepositoryTest {
     @Autowired
     private RecommendedVideoRepository videoRepository;

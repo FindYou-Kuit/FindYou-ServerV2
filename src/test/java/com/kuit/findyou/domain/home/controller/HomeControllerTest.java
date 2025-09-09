@@ -7,6 +7,7 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
 import com.kuit.findyou.global.config.RedisTestContainersConfig;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
@@ -26,7 +27,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Import(RedisTestContainersConfig.class)
+@Import({RedisTestContainersConfig.class, TestDatabaseConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")

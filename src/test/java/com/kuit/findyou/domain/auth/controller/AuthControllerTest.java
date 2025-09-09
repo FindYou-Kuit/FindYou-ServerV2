@@ -10,6 +10,7 @@ import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.response.BaseErrorResponse;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import com.kuit.findyou.global.jwt.util.JwtTokenType;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.GUEST_LOGIN_FAILED;
@@ -28,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
+@Import(TestDatabaseConfig.class)
 class AuthControllerTest {
     @LocalServerPort
     int port;

@@ -10,6 +10,10 @@ permissions:
   checks: write         # check-runs 작성 허용
   pull-requests: write  # PR 코멘트 작성 허용
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest     # OS 지정
@@ -20,6 +24,22 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      # Gradle 캐싱 추가
+      - name: 🚀 Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: 🐳 Verify Docker is available
+        run: |
+          docker --version
+          docker info
 
       - name: 👏🏻 grant execute permission for gradlew
         run: chmod +x gradlew

@@ -45,15 +45,19 @@ dependencies {
 	// Devtools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	// h2
-	runtimeOnly 'com.h2database:h2'
-
 	// MySQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Testcontainers BOM
+	testImplementation("org.testcontainers:testcontainers:1.20.2")
+	testImplementation("org.testcontainers:junit-jupiter:1.20.2")
+	testImplementation("org.testcontainers:mysql:1.20.2")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers:3.5.0")
+
 
 	// Mock
 	testImplementation 'org.mockito:mockito-core'
@@ -84,10 +88,6 @@ dependencies {
 
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-	// Testcontainer
-	testImplementation 'org.testcontainers:testcontainers:1.19.3'
-	testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
 
 	// Wiremock
 	testImplementation("org.wiremock:wiremock-standalone:3.2.0")

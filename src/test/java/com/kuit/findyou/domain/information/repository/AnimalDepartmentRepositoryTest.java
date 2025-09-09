@@ -3,11 +3,13 @@ package com.kuit.findyou.domain.information.repository;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.config.TestDatabaseConfig;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
@@ -21,8 +23,9 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @DataJpaTest
 @Transactional
-@Import({DatabaseCleaner.class, TestInitializer.class})
+@Import({DatabaseCleaner.class, TestInitializer.class, TestDatabaseConfig.class})
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class AnimalDepartmentRepositoryTest {
 
     @Autowired
