@@ -11,10 +11,7 @@ import org.springframework.ai.openai.api.ResponseFormat;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
