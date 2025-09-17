@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.breed.controller;
 
-import com.kuit.findyou.domain.breed.dto.request.ImageUrlRequestDTO;
+import com.kuit.findyou.domain.breed.dto.request.BreedAiDetectionRequestDTO;
 import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
 import com.kuit.findyou.domain.breed.dto.response.BreedListResponseDTO;
 import com.kuit.findyou.domain.user.model.Role;
@@ -92,7 +92,7 @@ class BreedControllerTest {
         when(openAiClient.analyzeImage(eq("https://img"), anyString()))
                 .thenReturn(new BreedAiDetectionResponseDTO("강아지", "포메라니안", List.of("하얀색", "갈색")));
 
-        ImageUrlRequestDTO request = new ImageUrlRequestDTO("https://img");
+        BreedAiDetectionRequestDTO request = new BreedAiDetectionRequestDTO("https://img");
 
         // when
         BreedAiDetectionResponseDTO response =
@@ -123,7 +123,7 @@ class BreedControllerTest {
         when(openAiClient.analyzeImage(eq("https://img"), anyString()))
                 .thenThrow(new OpenAiClientException("API 호출 실패"));
 
-        ImageUrlRequestDTO request = new ImageUrlRequestDTO("https://img");
+        BreedAiDetectionRequestDTO request = new BreedAiDetectionRequestDTO("https://img");
 
         // when & then
         given()
@@ -146,7 +146,7 @@ class BreedControllerTest {
         when(openAiClient.analyzeImage(eq("https://img"), anyString()))
                 .thenThrow(new OpenAiResponseValidatingException("API 호출 실패"));
 
-        ImageUrlRequestDTO request = new ImageUrlRequestDTO("https://img");
+        BreedAiDetectionRequestDTO request = new BreedAiDetectionRequestDTO("https://img");
 
         // when & then
         given()
