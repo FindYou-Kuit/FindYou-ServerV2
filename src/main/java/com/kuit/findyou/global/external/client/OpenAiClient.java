@@ -8,7 +8,6 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.ResponseFormat;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -59,7 +58,7 @@ public class OpenAiClient {
                     .media(List.of(
                             Media.builder()
                                     .mimeType(MediaType.IMAGE_JPEG)
-                                    .data(new ByteArrayResource(imageBytes))
+                                    .data(imageBytes)
                                     .build()
                     ))
                     .build();
