@@ -24,8 +24,10 @@ import org.springframework.test.context.DynamicPropertySource;
 import java.util.stream.IntStream;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @Import({RedisTestContainersConfig.class, TestDatabaseConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -132,7 +134,6 @@ class HomeControllerTest {
                 .getObject("data", GetHomeResponse.class);
 
         // then
-        System.out.println(response.statistics());
         assertThat(response.statistics().recent1Year().lostAnimalCount()).isEqualTo(String.valueOf(lostAnimalCount));
         assertThat(response.statistics().recent1Year().protectingAnimalCount()).isEqualTo(String.valueOf(protectingAnimalCount));
         assertThat(response.statistics().recent1Year().adoptedAnimalCount()).isEqualTo(String.valueOf(adoptedAnimalCount));
@@ -307,7 +308,6 @@ class HomeControllerTest {
                 .getObject("data", GetHomeResponse.class);
 
         // then
-        System.out.println(response.statistics());
         assertThat(response.statistics().recent1Year().lostAnimalCount()).isEqualTo(String.valueOf(lostAnimalCount));
         assertThat(response.statistics().recent1Year().protectingAnimalCount()).isEqualTo(String.valueOf(protectingAnimalCount));
         assertThat(response.statistics().recent1Year().adoptedAnimalCount()).isEqualTo(String.valueOf(adoptedAnimalCount));
@@ -345,12 +345,57 @@ class HomeControllerTest {
                 .getObject("data", GetHomeResponse.class);
 
         // then
-        System.out.println(response.statistics());
         assertThat(response.statistics().recent1Year().lostAnimalCount()).isEqualTo(unknown);
         assertThat(response.statistics().recent1Year().protectingAnimalCount()).isEqualTo(unknown);
         assertThat(response.statistics().recent1Year().adoptedAnimalCount()).isEqualTo(unknown);
         assertThat(response.statistics().recent1Year().rescuedAnimalCount()).isEqualTo(unknown);
         assertThat(response.protectingAnimals()).hasSize(10);
         assertThat(response.witnessedOrMissingAnimals()).hasSize(10);
+    }
+
+    @DisplayName("위도 경도 중 하나만 요청에 포함하면 요청에 실패한다")
+    @Test
+    void should_ReturnBadRequestResponse_When_RequestIncludesOnlyLatitudeOrLongitude(){
+        // given
+
+        User testUser = testInitializer.createTestUser();
+        double lat = 33.0;
+
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+        // when & then
+        given()
+                .header("Authorization","Bearer " + accessToken)
+                .queryParam("lat", lat)
+                .when()
+                .get("api/v2/home")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(BAD_REQUEST.getCode()))
+                .body("message", equalTo(BAD_REQUEST.getMessage()));
+    }
+
+    @DisplayName("위도 경도가 올바르지 않으면 요청에 실패한다")
+    @Test
+    void should_ReturnBadRequestResponse_When_LatitudeOrLongitudeIsInvalid(){
+        // given
+
+        User testUser = testInitializer.createTestUser();
+        double lat = 100.0;
+        double lng = 190.0;
+
+        String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
+
+        // when & then
+        given()
+                .header("Authorization","Bearer " + accessToken)
+                .queryParam("lat", lat)
+                .queryParam("lng", lng)
+                .when()
+                .get("api/v2/home")
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(BAD_REQUEST.getCode()))
+                .body("message", equalTo(BAD_REQUEST.getMessage()));
     }
 }
