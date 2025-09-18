@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.breed.controller;
 
 
-import com.kuit.findyou.domain.breed.dto.request.ImageUrlRequestDTO;
+import com.kuit.findyou.domain.breed.dto.request.BreedAiDetectionRequestDTO;
 import com.kuit.findyou.domain.breed.dto.response.BreedAiDetectionResponseDTO;
 import com.kuit.findyou.domain.breed.dto.response.BreedListResponseDTO;
 import com.kuit.findyou.domain.breed.service.facade.BreedServiceFacade;
@@ -34,7 +34,7 @@ public class BreedController {
     @Operation(summary = "품종 AI 판별 API", description = "AI를 활용해 품종을 판별하기 위한 API")
     @PostMapping("/ai-detection")
     @CustomExceptionDescription(BREED_AI_DETECTION)
-    public BaseResponse<BreedAiDetectionResponseDTO> analyzeBreedWithAi(@Valid @RequestBody ImageUrlRequestDTO request) {
-        return BaseResponse.ok(breedServiceFacade.analyzeBreedWithAi(request.imageUrl()));
+    public BaseResponse<BreedAiDetectionResponseDTO> analyzeBreedWithAi(@Valid @RequestBody BreedAiDetectionRequestDTO request) {
+        return BaseResponse.ok(breedServiceFacade.analyzeBreedWithAi(request.base64Image()));
     }
 }
