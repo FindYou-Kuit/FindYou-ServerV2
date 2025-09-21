@@ -16,7 +16,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CacheSnapshotService {
+public class HomeStatsCacheSnapshotService {
     private final CacheSnapshotRepository cacheSnapshotRepository;
     private final ObjectMapper objectMapper;
     private final String REDIS_CACHE_KEY = "home:statistics";
