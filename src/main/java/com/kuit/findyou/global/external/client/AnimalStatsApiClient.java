@@ -1,7 +1,7 @@
 package com.kuit.findyou.global.external.client;
 
-import com.kuit.findyou.domain.home.dto.ProtectingAndAdoptedAnimalCount;
-import com.kuit.findyou.domain.home.dto.RescueAnimalStatsServiceApiResponse;
+import com.kuit.findyou.global.external.dto.ProtectingAndAdoptedAnimalCount;
+import com.kuit.findyou.global.external.dto.RescueAnimalStatsServiceApiResponse;
 import com.kuit.findyou.global.external.properties.RescueAnimalStatsApiProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

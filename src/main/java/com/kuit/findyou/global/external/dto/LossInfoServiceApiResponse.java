@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.home.dto;
+package com.kuit.findyou.global.external.dto;
 
 public record LossInfoServiceApiResponse (
    Response response

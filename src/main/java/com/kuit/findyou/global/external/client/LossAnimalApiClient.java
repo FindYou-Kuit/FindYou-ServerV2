@@ -1,6 +1,6 @@
 package com.kuit.findyou.global.external.client;
 
-import com.kuit.findyou.domain.home.dto.LossInfoServiceApiResponse;
+import com.kuit.findyou.global.external.dto.LossInfoServiceApiResponse;
 import com.kuit.findyou.global.external.properties.LossAnimalInfoProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
