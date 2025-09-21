@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.user.service.query;
 
-import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
+import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.model.User;
