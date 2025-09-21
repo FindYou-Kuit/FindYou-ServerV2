@@ -25,7 +25,7 @@ public class HomeStatisticsService {
     private final AnimalStatsApiClient animalStatsApiClient;
     private final ProtectingAnimalApiClient protectingAnimalApiClient;
     private final LossAnimalApiClient lossAnimalApiClient;
-    private final CacheHomeStatisticsService cacheHomeStatsService;
+    private final CacheHomeStatsService cacheHomeStatsService;
     private final CacheSnapshotService homeStatsCacheSnapshotService;
     private final ExecutorService statisticsExecutor;
     private static final long CALL_TIMEOUT_SEC = 3;
