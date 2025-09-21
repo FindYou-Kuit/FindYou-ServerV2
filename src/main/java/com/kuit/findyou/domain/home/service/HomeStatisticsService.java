@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.home.service;
 
-import com.kuit.findyou.domain.home.dto.GetHomeResponse;
+import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.domain.home.dto.ProtectingAndAdoptedAnimalCount;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
 import com.kuit.findyou.global.external.client.AnimalStatsApiClient;

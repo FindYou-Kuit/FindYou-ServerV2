@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.home.validation;
 
-import com.kuit.findyou.domain.home.dto.GetHomeRequest;
+import com.kuit.findyou.domain.home.dto.request.GetHomeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,9 +1,9 @@
 package com.kuit.findyou.domain.home.service;
 
 
-import com.kuit.findyou.domain.home.dto.GetHomeResponse;
-import com.kuit.findyou.domain.home.dto.ProtectingAnimalPreview;
-import com.kuit.findyou.domain.home.dto.WitnessedOrMissingAnimalPreview;
+import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
+import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalPreview;
+import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalPreview;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
