@@ -1,9 +1,9 @@
 package com.kuit.findyou.domain.auth.controller;
 
-import com.kuit.findyou.domain.auth.dto.GuestLoginRequest;
-import com.kuit.findyou.domain.auth.dto.GuestLoginResponse;
-import com.kuit.findyou.domain.auth.dto.KakaoLoginRequest;
-import com.kuit.findyou.domain.auth.dto.KakaoLoginResponse;
+import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
+import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
+import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
+import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
 import com.kuit.findyou.domain.auth.service.AuthService;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
