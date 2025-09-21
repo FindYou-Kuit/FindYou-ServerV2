@@ -4,14 +4,11 @@ package com.kuit.findyou.domain.home.service;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
 import com.kuit.findyou.domain.home.dto.ProtectingAnimalPreview;
 import com.kuit.findyou.domain.home.dto.WitnessedOrMissingAnimalPreview;
-import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,8 +19,7 @@ public class HomeServiceFacade {
     public GetHomeResponse getHome(Double latitude, Double longitude) {
         // 통계 정보 조회
         // 레디스에 없으면 직접 외부 서버 호출
-        GetHomeResponse.TotalStatistics totalStatistics = homeStatisticsService.getCachedTotalStatistics()
-                .orElseGet(() -> homeStatisticsService.updateAndGet()); // lazy evaluation이라서 필요할 때만 실행됨
+        GetHomeResponse.TotalStatistics totalStatistics = homeStatisticsService.get();
 
         List<ProtectingAnimalPreview> protectingAnimals = null;
         List<WitnessedOrMissingAnimalPreview> witnessedOrMissingAnimals = null;

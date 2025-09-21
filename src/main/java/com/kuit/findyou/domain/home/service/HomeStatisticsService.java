@@ -1,221 +1,111 @@
 package com.kuit.findyou.domain.home.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.home.dto.GetHomeResponse;
-import com.kuit.findyou.domain.home.dto.LossInfoServiceApiResponse;
 import com.kuit.findyou.domain.home.dto.ProtectingAndAdoptedAnimalCount;
-import com.kuit.findyou.domain.home.dto.RescueAnimalStatsServiceApiResponse;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
-import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.external.dto.ProtectingAnimalApiFullResponse;
+import com.kuit.findyou.global.external.client.AnimalStatsApiClient;
+import com.kuit.findyou.global.external.client.LossAnimalApiClient;
+import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
 import java.util.Optional;
-
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INTERNAL_SERVER_ERROR;
-
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class HomeStatisticsService {
-    @Value("${openapi.protecting-animal.api-key}")
-    private String serviceKey;
-    private final RestClient rescueAnimalStatRestClient;
-    private final RestClient protectingAnimalRestClient;
-    private final RestClient lossAnimalInfoRestClient;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final AnimalStatsApiClient animalStatsApiClient;
+    private final ProtectingAnimalApiClient protectingAnimalApiClient;
+    private final LossAnimalApiClient lossAnimalApiClient;
+    private final CacheHomeStatisticsService cacheHomeStatsService;
+    private final CacheSnapshotService homeStatsCacheSnapshotService;
     private final ExecutorService statisticsExecutor;
-    private final ObjectMapper objectMapper;
-    private final String REDIS_KEY_FOR_CACHED_STATISTICS = "home:statistics";
-    public HomeStatisticsService(
-            @Qualifier("rescueAnimalStatsRestClient") RestClient rescueAnimalStatRestClient,
-            @Qualifier("protectingAnimalRestClient") RestClient protectingAnimalRestClient,
-            @Qualifier("lossAnimalInfoRestClient") RestClient lossAnimalInfoRestClient,
-            RedisTemplate redisTemplate,
-            ExecutorService executor,
-            ObjectMapper objectMapper
-    ){
-        this.rescueAnimalStatRestClient = rescueAnimalStatRestClient;
-        this.protectingAnimalRestClient = protectingAnimalRestClient;
-        this.lossAnimalInfoRestClient = lossAnimalInfoRestClient;
-        this.redisTemplate = redisTemplate;
-        this.statisticsExecutor = executor;
-        this.objectMapper = objectMapper;
-    }
+    private static final long CALL_TIMEOUT_SEC = 3;
 
-    public GetHomeResponse.TotalStatistics updateAndGet(){
-        try {
-            return updateTotalStatistics();
-        } catch (CacheUpdateFailedException e) {
-            cacheTotalStatistics(GetHomeResponse.TotalStatistics.empty());
-            return GetHomeResponse.TotalStatistics.empty();
+    public GetHomeResponse.TotalStatistics get() {
+        GetHomeResponse.TotalStatistics cached = cacheHomeStatsService.getCachedTotalStatistics();
+        if(cached != null){
+            return cached;
         }
+        return homeStatsCacheSnapshotService.find()
+                .orElse(GetHomeResponse.TotalStatistics.empty());
     }
 
-    public GetHomeResponse.TotalStatistics updateTotalStatistics() throws CacheUpdateFailedException {
-        log.info("[updateTotalStatistics] 캐시 업데이트 작업 시작");
+    public GetHomeResponse.TotalStatistics update() throws CacheUpdateFailedException {
+        log.info("[update] 캐시랑 스냅샷 갱신 시작");
 
         // 모든 통계 구하기
-        CompletableFuture<GetHomeResponse.Statistics> recent7DaysFuture = parseStatisticsAsync(7);
-        CompletableFuture<GetHomeResponse.Statistics> recent3MonthsFuture = parseStatisticsAsync(90);
-        CompletableFuture<GetHomeResponse.Statistics> recent1YearFuture = parseStatisticsAsync(365);
+        CompletableFuture<GetHomeResponse.Statistics> recent7DaysFuture = fetchStatisticsAsync(7);
+        CompletableFuture<GetHomeResponse.Statistics> recent3MonthsFuture = fetchStatisticsAsync(90);
+        CompletableFuture<GetHomeResponse.Statistics> recent1YearFuture = fetchStatisticsAsync(365);
 
         try{
-            GetHomeResponse.Statistics recent7DaysStatistics = recent7DaysFuture.get();
-            GetHomeResponse.Statistics recent3MonthsStatistics = recent3MonthsFuture.get();
-            GetHomeResponse.Statistics recent1YearStatistics = recent1YearFuture.get();
-            GetHomeResponse.TotalStatistics totalStatistics = new GetHomeResponse.TotalStatistics(recent7DaysStatistics, recent3MonthsStatistics, recent1YearStatistics);
+            CompletableFuture.allOf(recent7DaysFuture, recent3MonthsFuture, recent1YearFuture).join();
+            GetHomeResponse.TotalStatistics result = new GetHomeResponse.TotalStatistics(recent7DaysFuture.join(), recent3MonthsFuture.join(), recent1YearFuture.join());
 
-            // 레디스에 저장
-            cacheTotalStatistics(totalStatistics);
+            // 레디스와 DB에 저장
+            cacheHomeStatsService.cacheTotalStatistics(result);
+            homeStatsCacheSnapshotService.save(result);
 
-            log.info("[updateTotalStatistics] 캐시 업데이트 작업 완료");
+            log.info("[update] 캐시랑 스냅샷 저장 완료");
+            return result;
 
-            return totalStatistics;
-
-        } catch (ExecutionException | InterruptedException e) {
-            log.error("[updateTotalStatistics] 예외 발생", e);
+        } catch (Exception e) {
+            log.error("[update] 예외 발생", e);
             throw new CacheUpdateFailedException();
         }
     }
 
-    private CompletableFuture<GetHomeResponse.Statistics> parseStatisticsAsync(int dayOfPeriod) {
-        return CompletableFuture.supplyAsync(() -> parseStatistics(dayOfPeriod), statisticsExecutor);
-    }
-
-    public void cacheTotalStatistics(GetHomeResponse.TotalStatistics totalStats) {
-        try{
-            String json = objectMapper.writeValueAsString(totalStats);
-            redisTemplate.opsForValue().set(REDIS_KEY_FOR_CACHED_STATISTICS, json, Duration.ofHours(24));
-        }
-        catch (JsonProcessingException e){
-            throw new CustomException(INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public Optional<GetHomeResponse.TotalStatistics> getCachedTotalStatistics(){
-        try{
-            String json = redisTemplate.opsForValue().get(REDIS_KEY_FOR_CACHED_STATISTICS);
-            if(json == null){
-                log.info("[getCachedTotalStatistics] 캐시에 데이터 없음");
-                return Optional.empty();
+    public void extendCacheExpiration() {
+        GetHomeResponse.TotalStatistics cachedTotalStatistics = cacheHomeStatsService.getCachedTotalStatistics();
+        if(cachedTotalStatistics == null){
+            // 레디스 캐시에 통계 데이터가 없으면 DB의 내용을 연장하도록 시도
+            Optional<GetHomeResponse.TotalStatistics> snapshot = homeStatsCacheSnapshotService.find();
+            if(snapshot.isPresent()){
+                log.info("[extendCacheExpiration] DB에 있는 홈 통계 스냅샷을 연장");
+                cachedTotalStatistics = snapshot.get();
             }
-            log.info("[getCachedTotalStatistics] 캐시에 데이터 있음 json = {}", json);
-            return Optional.of(objectMapper.readValue(json, GetHomeResponse.TotalStatistics.class));
+            else{
+                log.error("[extendCacheExpiration] DB에 홈 통계 스냅샷 없음 -> 비어 있는 통계 정보를 캐싱");
+                cachedTotalStatistics = GetHomeResponse.TotalStatistics.empty();
+            }
         }
-        catch (JsonProcessingException e){
-            throw new CustomException(INTERNAL_SERVER_ERROR);
-        }
+        cacheHomeStatsService.cacheTotalStatistics(cachedTotalStatistics);
     }
 
-    private GetHomeResponse.Statistics parseStatistics(long daysOfPeriod) {
+    private CompletableFuture<GetHomeResponse.Statistics> fetchStatisticsAsync(int days){
         LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusDays(daysOfPeriod - 1);
+        LocalDate startDate = endDate.minusDays(days - 1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String bgnde =  startDate.format(formatter);
         String endde = endDate.format(formatter);
 
-        CompletableFuture<ProtectingAndAdoptedAnimalCount> protectingAndAdoptedFuture = parseProtectingAndAdoptedAnimalCountAsync(bgnde, endde);
-        CompletableFuture<String> rescuedFuture = parseRescuedAnimalCountAsync(bgnde, endde);
-        CompletableFuture<String> reportedFuture = parseReportedAnimalCountAsync(bgnde, endde);
+        CompletableFuture<ProtectingAndAdoptedAnimalCount> pna =
+                CompletableFuture.supplyAsync(() -> animalStatsApiClient.fetchProtectingAndAdoptedAnimalCount(bgnde, endde), statisticsExecutor)
+                        .orTimeout(CALL_TIMEOUT_SEC, TimeUnit.SECONDS);
 
-        try{
-            ProtectingAndAdoptedAnimalCount protectingAndAdoptedAnimalCount = protectingAndAdoptedFuture.get();
-            String protectingAnimalCount = protectingAndAdoptedAnimalCount.protectingAnimalCount();
-            String adoptedAnimalCount = protectingAndAdoptedAnimalCount.adoptedAnimalCount();
-            String reportedAnimalCount = reportedFuture.get();
-            String rescuedAnimalCount = rescuedFuture.get();
+        CompletableFuture<String> rescued =
+                CompletableFuture.supplyAsync(() -> protectingAnimalApiClient.fetchRescuedAnimalCount(bgnde, endde), statisticsExecutor)
+                        .orTimeout(CALL_TIMEOUT_SEC, TimeUnit.SECONDS);
 
-            log.info("파싱 결과 protectingAnimalCount = {} adoptedAnimalCount = {} lostAnimalCount = {} rescuedAnimalCount = {}", protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount, rescuedAnimalCount);
+        CompletableFuture<String> reported =
+                CompletableFuture.supplyAsync(() -> lossAnimalApiClient.fetchReportedAnimalCount(bgnde, endde), statisticsExecutor)
+                        .orTimeout(CALL_TIMEOUT_SEC, TimeUnit.SECONDS);
 
-            return new GetHomeResponse.Statistics(rescuedAnimalCount, protectingAnimalCount, adoptedAnimalCount, reportedAnimalCount);
-        } catch (ExecutionException | InterruptedException e) {
-            log.error("[parseStatistics] 예외 발생", e);
-            throw new CustomException(INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private CompletableFuture<String> parseReportedAnimalCountAsync(String bgnde, String endde) {
-        return CompletableFuture.supplyAsync(() -> parseReportedAnimalCount(bgnde, endde), statisticsExecutor);
-    }
-
-    private CompletableFuture<String> parseRescuedAnimalCountAsync(String bgnde, String endde) {
-        return CompletableFuture.supplyAsync(()-> parseRescuedAnimalCount(bgnde, endde), statisticsExecutor);
-    }
-
-    private CompletableFuture<ProtectingAndAdoptedAnimalCount> parseProtectingAndAdoptedAnimalCountAsync(String bgnde, String endde) {
-        return CompletableFuture.supplyAsync(()-> parseProtectingAndAdoptedAnimalCount(bgnde, endde), statisticsExecutor);
-    }
-
-    private String parseReportedAnimalCount(String bgnde, String endde) {
-        LossInfoServiceApiResponse response3 = lossAnimalInfoRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("serviceKey", serviceKey)
-                        .queryParam("bgnde", bgnde)
-                        .queryParam("endde", endde)
-                        .queryParam("_type", "json")
-                        .build())
-                .retrieve()
-                .body(LossInfoServiceApiResponse.class);
-
-        String reportedAnimalCount = response3.response().body().totalCount();
-        return reportedAnimalCount;
-    }
-
-    private String parseRescuedAnimalCount(String bgnde, String endde) {
-        ProtectingAnimalApiFullResponse response2 = protectingAnimalRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/abandonmentPublic_v2")
-                        .queryParam("serviceKey", serviceKey)
-                        .queryParam("bgnde", bgnde)
-                        .queryParam("endde", endde)
-                        .queryParam("_type", "json")
-                        .build())
-                .retrieve()
-                .body(ProtectingAnimalApiFullResponse.class);
-
-        String rescuedAnimalCount = response2.response().body().totalCount();
-        return rescuedAnimalCount;
-    }
-
-    private ProtectingAndAdoptedAnimalCount parseProtectingAndAdoptedAnimalCount(String bgnde, String endde) {
-        RescueAnimalStatsServiceApiResponse response1 = rescueAnimalStatRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("serviceKey", serviceKey)
-                        .queryParam("bgnde", bgnde)
-                        .queryParam("endde", endde)
-                        .queryParam("_type", "json")
-                        .build())
-                .retrieve()
-                .body(RescueAnimalStatsServiceApiResponse.class);
-
-        String protectingAnimalCount = "0";
-        String adoptedAnimalCount = "0";
-        for(RescueAnimalStatsServiceApiResponse.Item item : response1.response().body().items().item()){
-            if(isProtectingAnimalTotalCount(item)) protectingAnimalCount = item.total();
-            else if(isAdoptedAnimalCount(item)) adoptedAnimalCount = item.total();
-        }
-
-        return new ProtectingAndAdoptedAnimalCount(protectingAnimalCount, adoptedAnimalCount);
-    }
-
-    private static boolean isAdoptedAnimalCount(RescueAnimalStatsServiceApiResponse.Item item) {
-        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "입양".equals(item.prcesssName());
-    }
-
-    private static boolean isProtectingAnimalTotalCount(RescueAnimalStatsServiceApiResponse.Item item) {
-        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "보호중".equals(item.prcesssName());
+        return CompletableFuture.allOf(pna, rescued, reported)
+                .thenApply(v -> {
+                    ProtectingAndAdoptedAnimalCount count = pna.join();
+                    return new GetHomeResponse.Statistics(
+                            rescued.join(), count.protectingAnimalCount(), count.adoptedAnimalCount(), reported.join()
+                    );
+                });
     }
 }
