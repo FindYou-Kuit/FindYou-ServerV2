@@ -1,17 +1,14 @@
 package com.kuit.findyou.domain.information.service.animalCenter;
 
-import com.kuit.findyou.domain.information.dto.AnimalCenterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalCenterResponse;
+import com.kuit.findyou.domain.information.dto.response.AnimalCenterPagingResponse;
+import com.kuit.findyou.domain.information.dto.response.AnimalCenterResponse;
 import com.kuit.findyou.domain.information.model.AnimalCenter;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
-import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INVALID_CURSOR;
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.INVALID_SIZE;
 import static com.kuit.findyou.global.common.util.CalculateDistanceUtil.calculateDistance;
 
 @Service

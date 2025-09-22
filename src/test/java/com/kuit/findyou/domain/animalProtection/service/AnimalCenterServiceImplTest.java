@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.animalProtection.service;
 
-import com.kuit.findyou.domain.information.dto.AnimalCenterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalCenterResponse;
+import com.kuit.findyou.domain.information.dto.response.AnimalCenterPagingResponse;
+import com.kuit.findyou.domain.information.dto.response.AnimalCenterResponse;
 import com.kuit.findyou.domain.information.model.AnimalCenter;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
 import com.kuit.findyou.domain.information.service.animalCenter.AnimalCenterServiceImpl;

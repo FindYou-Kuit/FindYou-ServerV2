@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.dto;
+package com.kuit.findyou.domain.information.dto.request;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

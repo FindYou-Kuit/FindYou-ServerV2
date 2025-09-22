@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.information.model;
 
-import com.kuit.findyou.domain.information.dto.UpdateVolunteerWorkRequest;
+import com.kuit.findyou.domain.information.dto.request.UpdateVolunteerWorkRequest;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.dto;
+package com.kuit.findyou.domain.information.dto.response;
 
 import com.kuit.findyou.domain.information.model.AnimalCenter;
 import io.swagger.v3.oas.annotations.media.Schema;

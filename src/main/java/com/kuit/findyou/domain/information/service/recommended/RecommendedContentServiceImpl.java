@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.information.service.recommended;
 
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.response.RecommendedContentResponse;
 import com.kuit.findyou.domain.information.dto.ContentType;
 import com.kuit.findyou.domain.information.service.recommended.strategy.RecommendedContentStrategy;
 import lombok.RequiredArgsConstructor;

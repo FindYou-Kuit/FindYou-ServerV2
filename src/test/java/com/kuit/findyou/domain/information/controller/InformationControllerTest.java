@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.information.controller;
 
-import com.kuit.findyou.domain.information.dto.GetAnimalDepartmentsResponse;
-import com.kuit.findyou.domain.information.dto.GetVolunteerWorksResponse;
+import com.kuit.findyou.domain.information.dto.response.GetAnimalDepartmentsResponse;
+import com.kuit.findyou.domain.information.dto.response.GetVolunteerWorksResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
@@ -23,7 +23,6 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

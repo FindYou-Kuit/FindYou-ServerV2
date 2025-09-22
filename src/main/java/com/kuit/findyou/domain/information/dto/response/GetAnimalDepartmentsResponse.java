@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.information.dto;
+package com.kuit.findyou.domain.information.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
