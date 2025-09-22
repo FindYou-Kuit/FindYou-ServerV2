@@ -1,6 +1,5 @@
 package com.kuit.findyou.global.common.schedule;
 
-import com.kuit.findyou.domain.home.service.CacheHomeStatsService;
 import com.kuit.findyou.domain.information.service.volunteerWork.SyncVolunteerWorkService;
 import com.kuit.findyou.domain.report.service.sync.MissingReportSyncService;
 import com.kuit.findyou.domain.report.service.sync.ProtectingReportSyncService;

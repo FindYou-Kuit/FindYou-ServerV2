@@ -28,7 +28,7 @@ class HomeServiceFacadeTest {
     private HomeServiceFacade homeServiceFacade;
 
     @Mock
-    private HomeStatisticsService homeStatisticsService;
+    private HomeStatisticsServiceImpl homeStatisticsService;
 
     @Mock
     private RetrieveHomeSectionService retrieveHomeSectionService;

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HomeStatisticsServiceTest {
-    private HomeStatisticsService homeStatisticsService;
+    private HomeStatisticsServiceImpl homeStatisticsService;
     private AnimalStatsApiClient animalStatsApiClient = mock(AnimalStatsApiClient.class);
     private ProtectingAnimalApiClient protectingAnimalApiClient = mock(ProtectingAnimalApiClient.class);
     private LossAnimalApiClient lossAnimalApiClient = mock(LossAnimalApiClient.class);
@@ -31,7 +31,7 @@ class HomeStatisticsServiceTest {
 
     @BeforeEach
     void setUp(){
-        homeStatisticsService = new HomeStatisticsService(
+        homeStatisticsService = new HomeStatisticsServiceImpl(
                 animalStatsApiClient,
                 protectingAnimalApiClient,
                 lossAnimalApiClient,
