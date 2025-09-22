@@ -3,6 +3,8 @@ package com.kuit.findyou.domain.home.service;
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalPreview;
 import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalPreview;
+import com.kuit.findyou.domain.home.service.card.RetrieveHomeSectionServiceImpl;
+import com.kuit.findyou.domain.home.service.stats.HomeStatisticsServiceImpl;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

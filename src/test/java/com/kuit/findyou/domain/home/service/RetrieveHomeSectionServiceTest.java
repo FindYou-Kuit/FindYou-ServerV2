@@ -2,6 +2,7 @@ package com.kuit.findyou.domain.home.service;
 
 import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalPreview;
 import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalPreview;
+import com.kuit.findyou.domain.home.service.card.RetrieveHomeSectionServiceImpl;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.ReportRepository;

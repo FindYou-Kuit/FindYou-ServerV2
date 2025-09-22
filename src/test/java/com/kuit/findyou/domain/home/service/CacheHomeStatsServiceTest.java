@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.home.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
+import com.kuit.findyou.domain.home.service.stats.CacheHomeStatsService;
 import com.kuit.findyou.global.common.exception.CustomException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

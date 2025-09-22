@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.home.service;
+package com.kuit.findyou.domain.home.service.card;
 
 import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalPreview;
 import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalPreview;

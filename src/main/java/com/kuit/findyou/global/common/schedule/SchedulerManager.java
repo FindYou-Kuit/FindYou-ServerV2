@@ -4,7 +4,7 @@ import com.kuit.findyou.domain.information.service.volunteerWork.SyncVolunteerWo
 import com.kuit.findyou.domain.report.service.sync.MissingReportSyncService;
 import com.kuit.findyou.domain.report.service.sync.ProtectingReportSyncService;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
-import com.kuit.findyou.domain.home.service.HomeStatisticsService;
+import com.kuit.findyou.domain.home.service.stats.HomeStatisticsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

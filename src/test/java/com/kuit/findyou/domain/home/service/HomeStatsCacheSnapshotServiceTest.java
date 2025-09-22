@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.domain.home.repository.CacheSnapshotRepositoryImpl;
+import com.kuit.findyou.domain.home.service.stats.HomeStatsCacheSnapshotService;
 import com.kuit.findyou.global.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

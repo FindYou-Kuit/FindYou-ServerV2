@@ -1,4 +1,4 @@
-package com.kuit.findyou.domain.home.service;
+package com.kuit.findyou.domain.home.service.stats;
 
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;

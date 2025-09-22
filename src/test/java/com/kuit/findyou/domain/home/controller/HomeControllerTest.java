@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.home.controller;
 
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
-import com.kuit.findyou.domain.home.service.CacheHomeStatsService;
+import com.kuit.findyou.domain.home.service.stats.CacheHomeStatsService;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
