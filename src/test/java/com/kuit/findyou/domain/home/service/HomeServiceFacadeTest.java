@@ -31,7 +31,7 @@ class HomeServiceFacadeTest {
     private HomeStatisticsServiceImpl homeStatisticsService;
 
     @Mock
-    private RetrieveHomeSectionService retrieveHomeSectionService;
+    private RetrieveHomeSectionServiceImpl retrieveHomeSectionService;
 
     @DisplayName("요청의 위도 경도가 올바르면 홈화면 조회에 성공한다")
     @Test

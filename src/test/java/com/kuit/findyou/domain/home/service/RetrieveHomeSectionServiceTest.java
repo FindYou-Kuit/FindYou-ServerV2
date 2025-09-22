@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class RetrieveHomeSectionServiceTest {
     @InjectMocks
-    private RetrieveHomeSectionService service;
+    private RetrieveHomeSectionServiceImpl service;
 
     @Mock
     private ReportRepository reportRepository;
