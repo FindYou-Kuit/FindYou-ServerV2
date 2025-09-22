@@ -1,9 +1,9 @@
 package com.kuit.findyou.domain.home.service;
 
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
-import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalPreview;
-import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalPreview;
-import com.kuit.findyou.domain.home.service.card.RetrieveHomeSectionServiceImpl;
+import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalCard;
+import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalCard;
+import com.kuit.findyou.domain.home.service.card.RetrieveHomeAnimalCardServiceImpl;
 import com.kuit.findyou.domain.home.service.stats.HomeStatisticsServiceImpl;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class HomeServiceFacadeTest {
     private HomeStatisticsServiceImpl homeStatisticsService;
 
     @Mock
-    private RetrieveHomeSectionServiceImpl retrieveHomeSectionService;
+    private RetrieveHomeAnimalCardServiceImpl retrieveHomeAnimalCardService;
 
     @DisplayName("요청의 위도 경도가 올바르면 홈화면 조회에 성공한다")
     @Test
@@ -45,21 +45,21 @@ class HomeServiceFacadeTest {
 
         GetHomeResponse.TotalStatistics cachedTotalStatistics = mock(GetHomeResponse.TotalStatistics.class);
 
-        List<ProtectingAnimalPreview> protectingAnimals = LongStream.rangeClosed(1, 10)
+        List<ProtectingAnimalCard> protectingAnimals = LongStream.rangeClosed(1, 10)
                         .boxed()
                         .sorted(Comparator.reverseOrder())
-                        .map(i -> new ProtectingAnimalPreview(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
+                        .map(i -> new ProtectingAnimalCard(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
                         .collect(toList());
 
-        List<WitnessedOrMissingAnimalPreview> witnessedOrMissingAnimals = LongStream.rangeClosed(1, 10)
+        List<WitnessedOrMissingAnimalCard> witnessedOrMissingAnimals = LongStream.rangeClosed(1, 10)
                 .boxed()
                 .sorted(Comparator.reverseOrder())
-                .map(i -> new WitnessedOrMissingAnimalPreview(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
+                .map(i -> new WitnessedOrMissingAnimalCard(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
                 .collect(toList());
 
         when(homeStatisticsService.get()).thenReturn(cachedTotalStatistics);
-        when(retrieveHomeSectionService.retrieveProtectingReportPreviews(eq(lat), eq(lng), eq(limit))).thenReturn(protectingAnimals);
-        when(retrieveHomeSectionService.retrieveWitnessedOrMissingReportPreviews(eq(lat), eq(lng), eq(limit))).thenReturn(witnessedOrMissingAnimals);
+        when(retrieveHomeAnimalCardService.retrieveProtectingReportCards(eq(lat), eq(lng), eq(limit))).thenReturn(protectingAnimals);
+        when(retrieveHomeAnimalCardService.retrieveWitnessedOrMissingReportCards(eq(lat), eq(lng), eq(limit))).thenReturn(witnessedOrMissingAnimals);
 
         // when
         GetHomeResponse response = homeServiceFacade.getHome(lat, lng);
@@ -80,21 +80,21 @@ class HomeServiceFacadeTest {
 
         GetHomeResponse.TotalStatistics cachedTotalStatistics = mock(GetHomeResponse.TotalStatistics.class);
 
-        List<ProtectingAnimalPreview> protectingAnimals = LongStream.rangeClosed(1, 10)
+        List<ProtectingAnimalCard> protectingAnimals = LongStream.rangeClosed(1, 10)
                 .boxed()
                 .sorted(Comparator.reverseOrder())
-                .map(i -> new ProtectingAnimalPreview(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
+                .map(i -> new ProtectingAnimalCard(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
                 .collect(toList());
 
-        List<WitnessedOrMissingAnimalPreview> witnessedOrMissingAnimals = LongStream.rangeClosed(1, 10)
+        List<WitnessedOrMissingAnimalCard> witnessedOrMissingAnimals = LongStream.rangeClosed(1, 10)
                 .boxed()
                 .sorted(Comparator.reverseOrder())
-                .map(i -> new WitnessedOrMissingAnimalPreview(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
+                .map(i -> new WitnessedOrMissingAnimalCard(i, "image" + i + ".png", "title" + i, ReportTag.PROTECTING.getValue(), LocalDate.of(2025, 1, 1), "place"))
                 .collect(toList());
 
         when(homeStatisticsService.get()).thenReturn(cachedTotalStatistics);
-        when(retrieveHomeSectionService.retrieveProtectingReportPreviews(eq(limit))).thenReturn(protectingAnimals);
-        when(retrieveHomeSectionService.retrieveWitnessedOrMissingReportPreviews( eq(limit))).thenReturn(witnessedOrMissingAnimals);
+        when(retrieveHomeAnimalCardService.retrieveProtectingReportCards(eq(limit))).thenReturn(protectingAnimals);
+        when(retrieveHomeAnimalCardService.retrieveWitnessedOrMissingReportCards( eq(limit))).thenReturn(witnessedOrMissingAnimals);
 
         // when
         GetHomeResponse response = homeServiceFacade.getHome(null, null);

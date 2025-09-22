@@ -7,8 +7,8 @@ import java.util.List;
 @Schema(description = "홈화면 조회 응답 DTO")
 public record GetHomeResponse(
         TotalStatistics statistics,
-        List<ProtectingAnimalPreview> protectingAnimals,
-        List<WitnessedOrMissingAnimalPreview> witnessedOrMissingAnimals
+        List<ProtectingAnimalCard> protectingAnimals,
+        List<WitnessedOrMissingAnimalCard> witnessedOrMissingAnimals
 ) {
     @Schema(description = "전체 통계 정보")
     public record TotalStatistics(

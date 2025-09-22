@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 
-@Schema(description = "입양가능동물")
-public record ProtectingAnimalPreview(
+@Schema(description = "도움이 필요해요")
+public record WitnessedOrMissingAnimalCard(
             @Schema(description = "신고글 식별자", example = "1")
             Long reportId,
             @Schema(description = "썸네일 이미지", example = "image.png")
@@ -21,7 +21,7 @@ public record ProtectingAnimalPreview(
             @Schema(description = "보호 장소", example = "서울시 광진구")
             String careAddress
     ){
-    public static ProtectingAnimalPreview of(ReportProjection dto){
-        return new ProtectingAnimalPreview(dto.getReportId(), dto.getThumbnailImageUrl(), dto.getTitle(), ReportTag.valueOf(dto.getTag()).getValue(), dto.getDate(), dto.getAddress());
+    public static WitnessedOrMissingAnimalCard of(ReportProjection dto){
+        return new WitnessedOrMissingAnimalCard(dto.getReportId(), dto.getThumbnailImageUrl(), dto.getTitle(), ReportTag.valueOf(dto.getTag()).getValue(), dto.getDate(), dto.getAddress());
     }
 }

@@ -1,8 +1,8 @@
 package com.kuit.findyou.domain.home.service;
 
-import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalPreview;
-import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalPreview;
-import com.kuit.findyou.domain.home.service.card.RetrieveHomeSectionServiceImpl;
+import com.kuit.findyou.domain.home.dto.response.ProtectingAnimalCard;
+import com.kuit.findyou.domain.home.dto.response.WitnessedOrMissingAnimalCard;
+import com.kuit.findyou.domain.home.service.card.RetrieveHomeAnimalCardServiceImpl;
 import com.kuit.findyou.domain.report.dto.response.ReportProjection;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.ReportRepository;
@@ -25,9 +25,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RetrieveHomeSectionServiceTest {
+class RetrieveHomeAnimalCardServiceTest {
     @InjectMocks
-    private RetrieveHomeSectionServiceImpl service;
+    private RetrieveHomeAnimalCardServiceImpl service;
 
     @Mock
     private ReportRepository reportRepository;
@@ -45,20 +45,20 @@ class RetrieveHomeSectionServiceTest {
                 eq(List.of(ReportTag.PROTECTING)), eq(PageRequest.of(0, size))))
                 .thenReturn(List.of(p1, p2));
 
-        ProtectingAnimalPreview v1 = mock(ProtectingAnimalPreview.class);
-        ProtectingAnimalPreview v2 = mock(ProtectingAnimalPreview.class);
+        ProtectingAnimalCard v1 = mock(ProtectingAnimalCard.class);
+        ProtectingAnimalCard v2 = mock(ProtectingAnimalCard.class);
 
-        try (MockedStatic<ProtectingAnimalPreview> mocked = Mockito.mockStatic(ProtectingAnimalPreview.class)) {
-            mocked.when(() -> ProtectingAnimalPreview.of(p1)).thenReturn(v1);
-            mocked.when(() -> ProtectingAnimalPreview.of(p2)).thenReturn(v2);
+        try (MockedStatic<ProtectingAnimalCard> mocked = Mockito.mockStatic(ProtectingAnimalCard.class)) {
+            mocked.when(() -> ProtectingAnimalCard.of(p1)).thenReturn(v1);
+            mocked.when(() -> ProtectingAnimalCard.of(p2)).thenReturn(v2);
 
             // when
-            List<ProtectingAnimalPreview> result = service.retrieveProtectingReportPreviews(lat, lng, size);
+            List<ProtectingAnimalCard> result = service.retrieveProtectingReportCards(lat, lng, size);
 
             // then
             assertThat(result).containsExactly(v1, v2);
-            mocked.verify(() -> ProtectingAnimalPreview.of(p1));
-            mocked.verify(() -> ProtectingAnimalPreview.of(p2));
+            mocked.verify(() -> ProtectingAnimalCard.of(p1));
+            mocked.verify(() -> ProtectingAnimalCard.of(p2));
         }
     }
 
@@ -74,13 +74,13 @@ class RetrieveHomeSectionServiceTest {
                 eq(List.of(ReportTag.WITNESS, ReportTag.MISSING)), eq(PageRequest.of(0, size))))
                 .thenReturn(List.of(p));
 
-        WitnessedOrMissingAnimalPreview view = mock(WitnessedOrMissingAnimalPreview.class);
-        try (MockedStatic<WitnessedOrMissingAnimalPreview> mocked = Mockito.mockStatic(WitnessedOrMissingAnimalPreview.class)) {
-            mocked.when(() -> WitnessedOrMissingAnimalPreview.of(p)).thenReturn(view);
+        WitnessedOrMissingAnimalCard view = mock(WitnessedOrMissingAnimalCard.class);
+        try (MockedStatic<WitnessedOrMissingAnimalCard> mocked = Mockito.mockStatic(WitnessedOrMissingAnimalCard.class)) {
+            mocked.when(() -> WitnessedOrMissingAnimalCard.of(p)).thenReturn(view);
 
             // when
-            List<WitnessedOrMissingAnimalPreview> result =
-                    service.retrieveWitnessedOrMissingReportPreviews(lat, lng, size);
+            List<WitnessedOrMissingAnimalCard> result =
+                    service.retrieveWitnessedOrMissingReportCards(lat, lng, size);
 
             // then
             assertThat(result).containsExactly(view);
@@ -99,12 +99,12 @@ class RetrieveHomeSectionServiceTest {
                 eq(Long.MAX_VALUE), eq(PageRequest.of(0, size))))
                 .thenReturn(page);
 
-        ProtectingAnimalPreview view = mock(ProtectingAnimalPreview.class);
-        try (MockedStatic<ProtectingAnimalPreview> mocked = Mockito.mockStatic(ProtectingAnimalPreview.class)) {
-            mocked.when(() -> ProtectingAnimalPreview.of(any())).thenReturn(view);
+        ProtectingAnimalCard view = mock(ProtectingAnimalCard.class);
+        try (MockedStatic<ProtectingAnimalCard> mocked = Mockito.mockStatic(ProtectingAnimalCard.class)) {
+            mocked.when(() -> ProtectingAnimalCard.of(any())).thenReturn(view);
 
             // when
-            List<ProtectingAnimalPreview> result = service.retrieveProtectingReportPreviews(size);
+            List<ProtectingAnimalCard> result = service.retrieveProtectingReportCards(size);
 
             // then
             assertThat(result).containsExactly(view);
@@ -124,7 +124,7 @@ class RetrieveHomeSectionServiceTest {
                 .thenReturn(page);
 
         // when
-        List<WitnessedOrMissingAnimalPreview> result = service.retrieveWitnessedOrMissingReportPreviews(size);
+        List<WitnessedOrMissingAnimalCard> result = service.retrieveWitnessedOrMissingReportCards(size);
 
         // then
         assertThat(result).isEmpty();
