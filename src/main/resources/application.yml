@@ -159,6 +159,8 @@ findyou:
   cache:
     home-stats-key : ${CACHE_HOME_STATS_KEY}
     home-stats-ttl : ${CACHE_HOME_STATS_TTL}
+  home:
+    external-api-timeout : ${HOME_EXTERNAL_API_TIMEOUT}
 
 cloud:
   aws:
