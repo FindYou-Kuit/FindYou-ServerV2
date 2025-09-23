@@ -23,9 +23,9 @@ public record RescueAnimalStatsServiceApiResponse(
             @JsonProperty("se")
             String section,
             @JsonProperty("rgn")
-            String regoin,
+            String region,
             @JsonProperty("prcsNm")
-            String prcesssName,
+            String processName,
             @JsonProperty("tot")
             String total
     ){ }

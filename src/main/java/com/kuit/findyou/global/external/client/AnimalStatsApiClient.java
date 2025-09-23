@@ -41,10 +41,10 @@ public class AnimalStatsApiClient {
     }
 
     private static boolean isAdoptedAnimalCount(RescueAnimalStatsServiceApiResponse.Item item) {
-        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "입양".equals(item.prcesssName());
+        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.region()) && "입양".equals(item.processName());
     }
 
     private static boolean isProtectingAnimalTotalCount(RescueAnimalStatsServiceApiResponse.Item item) {
-        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.regoin()) && "보호중".equals(item.prcesssName());
+        return "chart1".equalsIgnoreCase(item.section()) && "전체 지역".equals(item.region()) && "보호중".equals(item.processName());
     }
 }
