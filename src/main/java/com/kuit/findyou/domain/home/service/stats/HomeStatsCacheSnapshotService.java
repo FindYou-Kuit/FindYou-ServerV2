@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.domain.home.repository.CacheSnapshotRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ public class HomeStatsCacheSnapshotService {
     private final CacheSnapshotRepository cacheSnapshotRepository;
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public void save(GetHomeResponse.TotalStatistics stats) {
         try{
             String json = objectMapper.writeValueAsString(stats);
