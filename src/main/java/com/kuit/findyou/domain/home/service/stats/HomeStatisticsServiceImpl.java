@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class HomeStatisticsServiceImpl implements HomeStatisticsService{
     @Value("${findyou.home.external-api-timeout}")
-    private long CALL_TIMEOUT_SEC;
+    private long CALL_TIMEOUT_SEC = 3;
     private final AnimalStatsApiClient animalStatsApiClient;
     private final ProtectingAnimalApiClient protectingAnimalApiClient;
     private final LossAnimalApiClient lossAnimalApiClient;

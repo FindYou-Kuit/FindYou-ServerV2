@@ -20,7 +20,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @RequiredArgsConstructor
 public class HomeStatsCacheSnapshotService {
     @Value("${findyou.cache.home-stats-key}")
-    private String REDIS_CACHE_KEY;
+    private String REDIS_CACHE_KEY = "home:statistics";
     private final CacheSnapshotRepository cacheSnapshotRepository;
     private final ObjectMapper objectMapper;
 

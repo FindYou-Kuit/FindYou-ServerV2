@@ -19,9 +19,9 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @RequiredArgsConstructor
 public class CacheHomeStatsService {
     @Value("${findyou.cache.home-stats-key}")
-    private String REDIS_CACHE_KEY;
+    private String REDIS_CACHE_KEY = "home:statistics";
     @Value("${findyou.cache.home-stats-ttl}")
-    private Duration HOME_STATS_TTL;
+    private Duration HOME_STATS_TTL = Duration.ofHours(24);
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
