@@ -156,6 +156,9 @@ findyou:
     access:
       expire-ms: ${JWT_ACCESS_EXPIRE_MS}
     secret-key : ${JWT_SECRET_KEY}
+  cache:
+    home-stats-key : ${CACHE_HOME_STATS_KEY}
+    home-stats-ttl : ${CACHE_HOME_STATS_TTL}
 
 cloud:
   aws:
