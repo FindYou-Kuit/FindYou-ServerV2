@@ -6,6 +6,7 @@ import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +18,19 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Service
 @RequiredArgsConstructor
 public class CacheHomeStatsService {
+    @Value("${findyou.cache.home-stats-key}")
+    private String REDIS_CACHE_KEY;
+    @Value("${findyou.cache.home-stats-ttl}")
+    private Duration HOME_STATS_TTL;
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
-    private final String REDIS_CACHE_KEY = "home:statistics";
+
 
     public void cacheTotalStatistics(GetHomeResponse.TotalStatistics totalStats) {
         try{
             // 레디스에 캐싱
             String json = objectMapper.writeValueAsString(totalStats);
-            redisTemplate.opsForValue().set(REDIS_CACHE_KEY, json, Duration.ofHours(24));
+            redisTemplate.opsForValue().set(REDIS_CACHE_KEY, json, HOME_STATS_TTL);
         }
         catch (JsonProcessingException e){
             log.error("[getCachedTotalStatistics] json 역직렬화 오류");
