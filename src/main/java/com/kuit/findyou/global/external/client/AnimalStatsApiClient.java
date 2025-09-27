@@ -55,7 +55,7 @@ public class AnimalStatsApiClient {
                 else if (isAdoptedAnimalCount(item)) adoptedAnimalCount = item.total();
             }
 
-            if (protectingAnimalCount == null || protectingAnimalCount == null) {
+            if (protectingAnimalCount == null || adoptedAnimalCount == null) {
                 throw new RuntimeException("외부 API 응답에서 값을 찾을 수 없습니다");
             }
 
