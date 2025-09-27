@@ -6,7 +6,6 @@ import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +17,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Service
 @RequiredArgsConstructor
 public class CacheHomeStatsService {
-    @Value("${findyou.cache.home-stats-key}")
     private String REDIS_CACHE_KEY = "home:statistics";
-    @Value("${findyou.cache.home-stats-ttl}")
     private Duration HOME_STATS_TTL = Duration.ofHours(24);
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;

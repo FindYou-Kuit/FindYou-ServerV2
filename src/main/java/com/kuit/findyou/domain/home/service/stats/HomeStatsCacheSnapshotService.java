@@ -8,7 +8,6 @@ import com.kuit.findyou.global.common.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,7 +18,6 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Service
 @RequiredArgsConstructor
 public class HomeStatsCacheSnapshotService {
-    @Value("${findyou.cache.home-stats-key}")
     private String REDIS_CACHE_KEY = "home:statistics";
     private final CacheSnapshotRepository cacheSnapshotRepository;
     private final ObjectMapper objectMapper;
