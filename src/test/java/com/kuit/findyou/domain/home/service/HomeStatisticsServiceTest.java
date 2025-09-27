@@ -3,7 +3,7 @@ package com.kuit.findyou.domain.home.service;
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.domain.home.service.stats.CacheHomeStatsService;
 import com.kuit.findyou.domain.home.service.stats.HomeStatisticsServiceImpl;
-import com.kuit.findyou.domain.home.service.stats.HomeStatsCacheSnapshotService;
+import com.kuit.findyou.domain.home.service.stats.HomeCacheSnapshotService;
 import com.kuit.findyou.global.external.dto.ProtectingAndAdoptedAnimalCount;
 import com.kuit.findyou.domain.home.exception.CacheUpdateFailedException;
 import com.kuit.findyou.global.common.util.DirectExecutorService;
@@ -30,7 +30,7 @@ class HomeStatisticsServiceTest {
     private ProtectingAnimalApiClient protectingAnimalApiClient = mock(ProtectingAnimalApiClient.class);
     private LossAnimalApiClient lossAnimalApiClient = mock(LossAnimalApiClient.class);
     private CacheHomeStatsService cacheHomeStatsService = mock(CacheHomeStatsService.class);
-    private HomeStatsCacheSnapshotService homeStatsCacheSnapshotService = mock(HomeStatsCacheSnapshotService.class);
+    private HomeCacheSnapshotService homeStatsCacheSnapshotService = mock(HomeCacheSnapshotService.class);
 
     @BeforeEach
     void setUp(){
@@ -64,7 +64,7 @@ class HomeStatisticsServiceTest {
         // given
         when(cacheHomeStatsService.getCachedTotalStatistics()).thenReturn(null);
         GetHomeResponse.TotalStatistics mockStats = mock(GetHomeResponse.TotalStatistics.class);
-        when(homeStatsCacheSnapshotService.find()).thenReturn(Optional.of(mockStats));
+        when(homeStatsCacheSnapshotService.findHomeStats()).thenReturn(Optional.of(mockStats));
 
         // when
         GetHomeResponse.TotalStatistics result = homeStatisticsService.get();
@@ -78,7 +78,7 @@ class HomeStatisticsServiceTest {
     void should_ReturnEmptyStats_When_CachedStatsAndPersistentStatsDontExist(){
         // given
         when(cacheHomeStatsService.getCachedTotalStatistics()).thenReturn(null);
-        when(homeStatsCacheSnapshotService.find()).thenReturn(Optional.empty());
+        when(homeStatsCacheSnapshotService.findHomeStats()).thenReturn(Optional.empty());
 
         // when
         GetHomeResponse.TotalStatistics result = homeStatisticsService.get();
@@ -103,7 +103,7 @@ class HomeStatisticsServiceTest {
 
         // then
         verify(cacheHomeStatsService).cacheTotalStatistics(eq(totalStats));
-        verify(homeStatsCacheSnapshotService).save(eq(totalStats));
+        verify(homeStatsCacheSnapshotService).saveHomeStats(eq(totalStats));
         assertThat(result).isEqualTo(totalStats);
     }
 
@@ -119,7 +119,7 @@ class HomeStatisticsServiceTest {
                 .isInstanceOf(CacheUpdateFailedException.class);
 
         verify(cacheHomeStatsService, never()).cacheTotalStatistics(any());
-        verify(homeStatsCacheSnapshotService, never()).save(any());
+        verify(homeStatsCacheSnapshotService, never()).saveHomeStats(any());
     }
 
     @DisplayName("캐시된 통계 데이터가 있으면 이 값을 캐시를 연장한다")
@@ -142,7 +142,7 @@ class HomeStatisticsServiceTest {
         // given
         GetHomeResponse.TotalStatistics totalStats = mock(GetHomeResponse.TotalStatistics.class);
         when(cacheHomeStatsService.getCachedTotalStatistics()).thenReturn(null);
-        when(homeStatsCacheSnapshotService.find()).thenReturn(Optional.of(totalStats));
+        when(homeStatsCacheSnapshotService.findHomeStats()).thenReturn(Optional.of(totalStats));
 
         // when
         homeStatisticsService.extendCacheExpiration();
@@ -157,7 +157,7 @@ class HomeStatisticsServiceTest {
         // given
         GetHomeResponse.TotalStatistics totalStats = mock(GetHomeResponse.TotalStatistics.class);
         when(cacheHomeStatsService.getCachedTotalStatistics()).thenReturn(null);
-        when(homeStatsCacheSnapshotService.find()).thenReturn(Optional.empty());
+        when(homeStatsCacheSnapshotService.findHomeStats()).thenReturn(Optional.empty());
 
         // when
         homeStatisticsService.extendCacheExpiration();
