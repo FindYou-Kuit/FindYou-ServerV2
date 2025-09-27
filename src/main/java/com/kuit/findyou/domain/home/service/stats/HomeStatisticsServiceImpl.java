@@ -29,7 +29,7 @@ public class HomeStatisticsServiceImpl implements HomeStatisticsService{
     private final ProtectingAnimalApiClient protectingAnimalApiClient;
     private final LossAnimalApiClient lossAnimalApiClient;
     private final CacheHomeStatsService cacheHomeStatsService;
-    private final HomeStatsCacheSnapshotService homeStatsCacheSnapshotService;
+    private final HomeCacheSnapshotService homeCacheSnapshotService;
     private final ExecutorService statisticsExecutor;
 
     public GetHomeResponse.TotalStatistics get() {
@@ -37,7 +37,7 @@ public class HomeStatisticsServiceImpl implements HomeStatisticsService{
         if(cached != null){
             return cached;
         }
-        return homeStatsCacheSnapshotService.find()
+        return homeCacheSnapshotService.findHomeStats()
                 .orElse(GetHomeResponse.TotalStatistics.empty());
     }
 
@@ -55,7 +55,7 @@ public class HomeStatisticsServiceImpl implements HomeStatisticsService{
 
             // 레디스와 DB에 저장
             cacheHomeStatsService.cacheTotalStatistics(result);
-            homeStatsCacheSnapshotService.save(result);
+            homeCacheSnapshotService.saveHomeStats(result);
 
             log.info("[update] 캐시랑 스냅샷 저장 완료");
             return result;
@@ -70,7 +70,7 @@ public class HomeStatisticsServiceImpl implements HomeStatisticsService{
         GetHomeResponse.TotalStatistics cachedTotalStatistics = cacheHomeStatsService.getCachedTotalStatistics();
         if(cachedTotalStatistics == null){
             // 레디스 캐시에 통계 데이터가 없으면 DB의 내용을 연장하도록 시도
-            Optional<GetHomeResponse.TotalStatistics> snapshot = homeStatsCacheSnapshotService.find();
+            Optional<GetHomeResponse.TotalStatistics> snapshot = homeCacheSnapshotService.findHomeStats();
             if(snapshot.isPresent()){
                 log.info("[extendCacheExpiration] DB에 있는 홈 통계 스냅샷을 연장");
                 cachedTotalStatistics = snapshot.get();
