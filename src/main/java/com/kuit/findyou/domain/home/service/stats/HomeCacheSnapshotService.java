@@ -3,8 +3,8 @@ package com.kuit.findyou.domain.home.service.stats;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
-import com.kuit.findyou.domain.home.repository.CacheSnapshotRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.global.common.service.CacheSnapshotService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,21 +17,16 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class HomeStatsCacheSnapshotService {
-    private String REDIS_CACHE_KEY = "home:statistics";
-    private final CacheSnapshotRepository cacheSnapshotRepository;
+public class HomeCacheSnapshotService {
+    private String HOME_STATS_CACHE_KEY = "home:statistics";
+    private final CacheSnapshotService cacheSnapshotService;
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public void save(GetHomeResponse.TotalStatistics stats) {
-        try{
+    public void saveHomeStats(GetHomeResponse.TotalStatistics stats) {
+        try {
             String json = objectMapper.writeValueAsString(stats);
-            // DB에도 캐싱
-            Optional<String> cache = cacheSnapshotRepository.find(REDIS_CACHE_KEY);
-            if(cache.isPresent()){
-                cacheSnapshotRepository.delete(REDIS_CACHE_KEY);
-            }
-            cacheSnapshotRepository.insert(REDIS_CACHE_KEY, json);
+            cacheSnapshotService.saveJsonCache(HOME_STATS_CACHE_KEY, json);
         }
         catch (JsonProcessingException e){
             log.error("[getCachedTotalStatistics] json 역직렬화 오류");
@@ -39,10 +34,9 @@ public class HomeStatsCacheSnapshotService {
         }
     }
 
-
-    public Optional<GetHomeResponse.TotalStatistics> find() {
+    public Optional<GetHomeResponse.TotalStatistics> findHomeStats() {
         try{
-            Optional<String> json = cacheSnapshotRepository.find(REDIS_CACHE_KEY);
+            Optional<String> json = cacheSnapshotService.findJsonCache(HOME_STATS_CACHE_KEY);
             if(json.isEmpty()){
                 return Optional.empty();
             }
