@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.information.service.animalDepartment;
 
-import com.kuit.findyou.domain.information.dto.GetAnimalDepartmentsResponse;
+import com.kuit.findyou.domain.information.dto.response.GetAnimalDepartmentsResponse;
 import com.kuit.findyou.domain.information.model.AnimalDepartment;
 import com.kuit.findyou.domain.information.repository.AnimalDepartmentRepository;
 import lombok.RequiredArgsConstructor;

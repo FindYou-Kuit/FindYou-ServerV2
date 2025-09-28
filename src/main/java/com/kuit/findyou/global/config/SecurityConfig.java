@@ -27,9 +27,10 @@ public class SecurityConfig {
         return new MDCLoggingFilter();
     }
 
-    private final String[] SWAGGER_URL = {
+    private final String[] PERMIT_URL = {
             "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
             "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html",
+            "/actuator/health", "/actuator/prometheus"
     };
 
     @Bean
@@ -53,7 +54,7 @@ public class SecurityConfig {
         // 토큰 기반 인증 활성화
         http
                 .authorizeHttpRequests((auth)-> auth
-                        .requestMatchers(SWAGGER_URL).permitAll()
+                        .requestMatchers(PERMIT_URL).permitAll()
                         .requestMatchers("/api/v2/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v2/users/check/duplicate-nickname").permitAll()

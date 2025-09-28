@@ -4,7 +4,9 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
-import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
+import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
+import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
@@ -770,4 +772,33 @@ class UserControllerTest {
         // then
         verify(s3Client, times(1)).deleteObject(any(DeleteObjectRequest.class));
     }
+
+    @Test
+    @DisplayName("닉네임이 같은 유저가 존재하면 true를 반환한다.")
+    void shouldReturnTrue_WhenUserWithSameNicknameExists() {
+        // given
+        User user = testInitializer.createTestUser();
+        final String nickname = user.getName();
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        CheckDuplicateNicknameResponse response = given()
+                .header("Authorization", "Bearer " + token)
+                .body(new CheckDuplicateNicknameRequest(nickname))
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .post("/api/v2/users/check/duplicate-nickname")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .jsonPath()
+                .getObject("data", CheckDuplicateNicknameResponse.class);
+
+        // then
+        assertThat(response.isDuplicate()).isTrue();
+    }
+
 }

@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.home.validation;
 
-import com.kuit.findyou.domain.home.dto.GetHomeRequest;
+import com.kuit.findyou.domain.home.dto.request.GetHomeRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

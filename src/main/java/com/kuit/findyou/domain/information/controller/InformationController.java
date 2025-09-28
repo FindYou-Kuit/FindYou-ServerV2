@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.information.controller;
 
 import com.kuit.findyou.domain.information.dto.*;
+import com.kuit.findyou.domain.information.dto.response.*;
 import com.kuit.findyou.domain.information.service.facade.InformationServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;

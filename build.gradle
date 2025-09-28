@@ -89,9 +89,6 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	// Wiremock
-	testImplementation("org.wiremock:wiremock-standalone:3.2.0")
-
 	// Flyway
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'

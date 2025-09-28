@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.information.service.facade;
 
 import com.kuit.findyou.domain.information.dto.*;
+import com.kuit.findyou.domain.information.dto.response.*;
 import com.kuit.findyou.domain.information.service.animalCenter.AnimalCenterService;
 import com.kuit.findyou.domain.information.service.animalDepartment.AnimalDepartmentService;
 import com.kuit.findyou.domain.information.service.recommended.RecommendedContentService;
