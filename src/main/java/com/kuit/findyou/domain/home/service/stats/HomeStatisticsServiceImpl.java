@@ -8,7 +8,6 @@ import com.kuit.findyou.global.external.client.LossAnimalApiClient;
 import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,8 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class HomeStatisticsServiceImpl implements HomeStatisticsService{
-    @Value("${findyou.home.external-api-timeout}")
-    private long CALL_TIMEOUT_SEC = 3;
+    private long CALL_TIMEOUT_SEC = 5;
     private final AnimalStatsApiClient animalStatsApiClient;
     private final ProtectingAnimalApiClient protectingAnimalApiClient;
     private final LossAnimalApiClient lossAnimalApiClient;
