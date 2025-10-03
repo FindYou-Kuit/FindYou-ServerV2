@@ -2,6 +2,7 @@ package com.kuit.findyou.global.external.client;
 
 import com.kuit.findyou.global.external.dto.MissingAnimalApiFullResponse;
 import com.kuit.findyou.global.external.dto.MissingAnimalItemDTO;
+import com.kuit.findyou.global.external.exception.MissingAnimalApiClientException;
 import com.kuit.findyou.global.external.properties.LossAnimalInfoProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,6 +11,8 @@ import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 
 @Component
 @Slf4j
@@ -38,7 +41,7 @@ public class MissingAnimalApiClient {
 
                 if (isEmptyResponse(response)) {
                     log.warn("[분실동물 공공데이터 응답이 비어있습니다] pageNo={}", pageNo);
-                    break;
+                    throw new MissingAnimalApiClientException(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE);
                 }
 
                 List<MissingAnimalItemDTO> currentPageItems = response.response().body().items().item();
@@ -52,7 +55,7 @@ public class MissingAnimalApiClient {
 
             } catch (Exception e) {
                 log.error("[분실동물 공공데이터 페이지 {} 조회 실패]", pageNo, e);
-                break;
+                throw new MissingAnimalApiClientException(MISSING_ANIMAL_API_CLIENT_CALL_FAILED);
             }
         }
 

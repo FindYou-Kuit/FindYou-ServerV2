@@ -9,6 +9,7 @@ import com.kuit.findyou.domain.report.dto.SyncResult;
 import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.repository.MissingReportRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.external.client.MissingAnimalApiClient;
 import com.kuit.findyou.global.external.dto.MissingAnimalItemDTO;
@@ -22,6 +23,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.MISSING_REPORT_SYNC_FAILED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,6 +55,7 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
             logSyncResult(syncResult, startTime);
         } catch (Exception e) {
             log.error("[분실 동물 데이터 동기화 실패]", e);
+            throw new CustomException(MISSING_REPORT_SYNC_FAILED);
         }
     }
 
