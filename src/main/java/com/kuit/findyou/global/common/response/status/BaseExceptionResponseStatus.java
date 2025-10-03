@@ -42,6 +42,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     // 글 - Report
     REPORT_NOT_FOUND(404, "존재하지 않는 신고글입니다."),
     PROTECTING_REPORT_NOT_FOUND(404, "존재하지 않는 보호글입니다."),
+    PROTECTING_REPORT_SYNC_FAILED(500, "구조동물 데이터 동기화에 실패하였습니다."),
     MISSING_REPORT_NOT_FOUND(404, "존재하지 않는 실종 신고글입니다."),
     WITNESS_REPORT_NOT_FOUND(404, "존재하지 않는 목격 신고글입니다."),
     ILLEGAL_TAG(500, "잘못된 태그값입니다."),

@@ -4,6 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum ExternalExceptionMessage {
+    PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE("구조 동물 데이터 응답이 비어있습니다."),
+    PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED("구조 동물 데이터 조회에 실패했습니다."),
+
     OPENAI_CLIENT_EMPTY_RESPONSE("OpenAI Vision API 응답이 비어있습니다."),
     OPENAI_CLIENT_CALL_FAILED("OpenAI Vision API 호출 중 오류가 발생했습니다."),
 
