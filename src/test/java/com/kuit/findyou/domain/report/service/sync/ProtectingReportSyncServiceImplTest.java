@@ -4,10 +4,12 @@ import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient.Coordinate;
 import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalItemDTO;
+import com.kuit.findyou.global.external.exception.ProtectingAnimalApiClientException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +20,9 @@ import org.springframework.test.context.ActiveProfiles;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -269,14 +273,17 @@ class ProtectingReportSyncServiceImplTest {
     }
 
     @Test
-    @DisplayName("API 예외 발생 시 catch 브랜치: 저장/삭제/좌표 모두 호출 안 됨")
-    void api_throw_is_caught_and_swallowed() {
+    @DisplayName("API 예외 발생 시: 예외 전파되고, 저장/삭제/좌표 모두 호출 안 됨")
+    void api_throw_is_propagated_and_no_side_effects() {
         // findAll 조차 안 불리게(= synchronizeData 진입 전) API에서 바로 예외
-        when(protectingAnimalApiClient.fetchAllProtectingAnimals()).thenThrow(new RuntimeException("boom"));
+        when(protectingAnimalApiClient.fetchAllProtectingAnimals())
+                .thenThrow(new ProtectingAnimalApiClientException(PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED));
 
-        // 실행해도 예외 전파되지 않아야 함
-        service.syncProtectingReports();
+        // 실행 시 예외가 전파되어야 함
+        assertThatThrownBy(() -> service.syncProtectingReports())
+                .isInstanceOf(CustomException.class);
 
+        // 부수효과 없음 검증
         verifyNoInteractions(protectingReportRepository, reportImageRepository, kakaoCoordinateClient);
     }
 
