@@ -59,9 +59,11 @@ public class ProtectingAnimalApiClient {
 
                 pageNo++;
 
+            } catch (ProtectingAnimalApiClientException e) {
+                throw e;
             } catch (Exception e) {
                 log.error("[구조동물 공공데이터 페이지 {} 조회 실패]", pageNo, e);
-                throw new ProtectingAnimalApiClientException(PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED);
+                throw new ProtectingAnimalApiClientException(PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED, e);
             }
         }
 

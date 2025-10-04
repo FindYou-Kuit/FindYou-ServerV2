@@ -53,6 +53,8 @@ public class MissingAnimalApiClient {
 
                 pageNo++;
 
+            } catch (MissingAnimalApiClientException e) {
+                throw e;
             } catch (Exception e) {
                 log.error("[분실동물 공공데이터 페이지 {} 조회 실패]", pageNo, e);
                 throw new MissingAnimalApiClientException(MISSING_ANIMAL_API_CLIENT_CALL_FAILED);
