@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.external.client;
 
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.dto.MissingAnimalApiFullResponse;
 import com.kuit.findyou.global.external.dto.MissingAnimalItemDTO;
 import com.kuit.findyou.global.external.exception.MissingAnimalApiClientException;
@@ -19,6 +20,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -106,7 +109,8 @@ class MissingAnimalApiClientTest {
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(empty);
 
         assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
-                .isInstanceOf(MissingAnimalApiClientException.class);
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -122,7 +126,8 @@ class MissingAnimalApiClientTest {
                 .thenThrow(new RuntimeException("timeout"));// 2페이지에서 예외
 
         assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
-                .isInstanceOf(MissingAnimalApiClientException.class);
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_CALL_FAILED.getValue());
     }
 
     @Test
@@ -135,7 +140,8 @@ class MissingAnimalApiClientTest {
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(full);
 
         assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
-                .isInstanceOf(MissingAnimalApiClientException.class);
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -145,7 +151,8 @@ class MissingAnimalApiClientTest {
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(null);
 
         assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
-                .isInstanceOf(MissingAnimalApiClientException.class);
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -158,7 +165,8 @@ class MissingAnimalApiClientTest {
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(full);
 
         assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
-                .isInstanceOf(MissingAnimalApiClientException.class);
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test

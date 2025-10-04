@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.external.client;
 
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalApiFullResponse;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalItemDTO;
 import com.kuit.findyou.global.external.exception.ProtectingAnimalApiClientException;
@@ -19,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -107,7 +109,8 @@ class ProtectingAnimalApiClientTest {
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(empty);
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
-                .isInstanceOf(ProtectingAnimalApiClientException.class);
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -123,7 +126,8 @@ class ProtectingAnimalApiClientTest {
                 .thenThrow(new RuntimeException("timeout"));// 2페이지 예외
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
-                .isInstanceOf(ProtectingAnimalApiClientException.class);
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED.getValue());
     }
 
     @Test
@@ -136,7 +140,8 @@ class ProtectingAnimalApiClientTest {
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(full);
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
-                .isInstanceOf(ProtectingAnimalApiClientException.class);
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -146,7 +151,8 @@ class ProtectingAnimalApiClientTest {
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(null);
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
-                .isInstanceOf(ProtectingAnimalApiClientException.class);
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
@@ -159,7 +165,8 @@ class ProtectingAnimalApiClientTest {
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(full);
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
-                .isInstanceOf(ProtectingAnimalApiClientException.class);
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
