@@ -20,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.MISSING_REPORT_SYNC_FAILED;
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.PROTECTING_REPORT_SYNC_FAILED;
 import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -281,7 +283,8 @@ class ProtectingReportSyncServiceImplTest {
 
         // 실행 시 예외가 전파되어야 함
         assertThatThrownBy(() -> service.syncProtectingReports())
-                .isInstanceOf(CustomException.class);
+                .isInstanceOf(CustomException.class)
+                .hasMessage(PROTECTING_REPORT_SYNC_FAILED.getMessage());
 
         // 부수효과 없음 검증
         verifyNoInteractions(protectingReportRepository, reportImageRepository, kakaoCoordinateClient);
