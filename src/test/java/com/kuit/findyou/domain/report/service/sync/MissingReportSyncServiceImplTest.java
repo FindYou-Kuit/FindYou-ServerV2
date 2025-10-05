@@ -5,6 +5,8 @@ import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.repository.MissingReportRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient;
 import com.kuit.findyou.global.external.client.MissingAnimalApiClient;
 import com.kuit.findyou.global.external.client.KakaoCoordinateClient.Coordinate;
@@ -18,7 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -154,5 +158,24 @@ class MissingReportSyncServiceImplTest {
         verify(reportImageRepository, never()).saveAll(anyList());
         verifyNoInteractions(kakaoCoordinateClient);
     }
+
+    @Test
+    @DisplayName("API 예외 발생 시: 예외 전파되고, 저장/좌표 호출 안 됨")
+    void api_throw_is_propagated_and_no_side_effects() {
+        // given: fetchAllMissingAnimals() 단계에서 바로 예외
+        stubEmptyBreeds();
+        when(missingAnimalApiClient.fetchAllMissingAnimals(anyString(), anyString()))
+                .thenThrow(new RuntimeException("boom"));
+
+        // when & then
+        assertThatThrownBy(() -> service.syncMissingReports())
+                .isInstanceOf(CustomException.class)
+                .hasMessage(MISSING_REPORT_SYNC_FAILED.getMessage());
+
+
+        // 부수효과 없음 검증
+        verifyNoInteractions(missingReportRepository, reportImageRepository, kakaoCoordinateClient);
+    }
+
 }
 

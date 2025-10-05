@@ -1,7 +1,9 @@
 package com.kuit.findyou.global.external.client;
 
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalApiFullResponse;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalItemDTO;
+import com.kuit.findyou.global.external.exception.ProtectingAnimalApiClientException;
 import com.kuit.findyou.global.external.properties.ProtectingAnimalApiProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +20,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -95,8 +99,8 @@ class ProtectingAnimalApiClientTest {
     }
 
     @Test
-    @DisplayName("빈 응답: items.item() == null → 즉시 종료, 빈 리스트 반환")
-    void fetchAll_emptyResponse_returnsEmptyList() {
+    @DisplayName("빈 응답: items.item() == null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_emptyResponse_throws() {
         stubChain();
 
         var empty = mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
@@ -104,62 +108,65 @@ class ProtectingAnimalApiClientTest {
 
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(empty);
 
-        var result = client.fetchAllProtectingAnimals();
-
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
-    @DisplayName("중간 예외: 1페이지 수집 후 2페이지에서 예외 → 누적분만 반환")
-    void fetchAll_exceptionOnSecondPage_returnsAccumulated() {
+    @DisplayName("중간 예외: 1페이지 수집 후 2페이지에서 예외 → ProtectingAnimalApiClientException(CALL_FAILED)")
+    void fetchAll_exceptionOnSecondPage_throws() {
         stubChain();
 
         var i1 = mock(ProtectingAnimalItemDTO.class);
         var page1 = deepResponse(List.of(i1), "2000"); // totalPages=2
 
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class))
-                .thenReturn(page1)                         // 1페이지 OK
-                .thenThrow(new RuntimeException("timeout")); // 2페이지 예외
+                .thenReturn(page1)                          // 1페이지 OK
+                .thenThrow(new RuntimeException("timeout"));// 2페이지 예외
 
-        var result = client.fetchAllProtectingAnimals();
-
-        assertThat(result).containsExactly(i1);
+        assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED.getValue());
     }
 
     @Test
-    @DisplayName("빈 응답: response()가 null → 즉시 종료, 빈 리스트")
-    void fetchAll_responseNull_returnsEmpty() {
+    @DisplayName("빈 응답: response()가 null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_responseNull_throws() {
         stubChain();
         var full = mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
         when(full.response()).thenReturn(null);
 
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(full);
 
-        var result = client.fetchAllProtectingAnimals();
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
-    @DisplayName("빈 응답: responseSpec.body(...) 자체가 null → 즉시 종료, 빈 리스트")
-    void fetchAll_bodyCallReturnsNull_returnsEmpty() {
+    @DisplayName("빈 응답: responseSpec.body(...) 자체가 null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_bodyCallReturnsNull_throws() {
         stubChain();
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(null);
 
-        var result = client.fetchAllProtectingAnimals();
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
-    @DisplayName("빈 응답: items()가 null → 즉시 종료, 빈 리스트")
-    void fetchAll_itemsNull_returnsEmpty() {
+    @DisplayName("빈 응답: items()가 null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_itemsNull_throws() {
         stubChain();
         var full = mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
         when(full.response().body().items()).thenReturn(null);
 
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(full);
 
-        var result = client.fetchAllProtectingAnimals();
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
+                .isInstanceOf(ProtectingAnimalApiClientException.class)
+                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test

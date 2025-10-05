@@ -1,8 +1,10 @@
 package com.kuit.findyou.global.external.client;
 
 import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalApiFullResponse;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalItemDTO;
+import com.kuit.findyou.global.external.exception.ProtectingAnimalApiClientException;
 import com.kuit.findyou.global.external.properties.ProtectingAnimalApiProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.HOME_STATISTICS_UPDATE_FAILED;
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
 
 @Component
 @Slf4j
@@ -44,7 +47,7 @@ public class ProtectingAnimalApiClient {
 
                 if (isEmptyResponse(response)) {
                     log.warn("[구조동물 공공데이터 응답이 비어있습니다] pageNo={}", pageNo);
-                    break;
+                    throw new ProtectingAnimalApiClientException(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE);
                 }
 
                 List<ProtectingAnimalItemDTO> currentPageItems = response.response().body().items().item();
@@ -56,9 +59,11 @@ public class ProtectingAnimalApiClient {
 
                 pageNo++;
 
+            } catch (ProtectingAnimalApiClientException e) {
+                throw e;
             } catch (Exception e) {
                 log.error("[구조동물 공공데이터 페이지 {} 조회 실패]", pageNo, e);
-                break;
+                throw new ProtectingAnimalApiClientException(PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED, e);
             }
         }
 

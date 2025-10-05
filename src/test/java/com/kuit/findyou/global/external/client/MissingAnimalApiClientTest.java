@@ -1,7 +1,9 @@
 package com.kuit.findyou.global.external.client;
 
+import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.dto.MissingAnimalApiFullResponse;
 import com.kuit.findyou.global.external.dto.MissingAnimalItemDTO;
+import com.kuit.findyou.global.external.exception.MissingAnimalApiClientException;
 import com.kuit.findyou.global.external.properties.LossAnimalInfoProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +20,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -95,8 +99,8 @@ class MissingAnimalApiClientTest {
     }
 
     @Test
-    @DisplayName("빈 응답: items.item() == null → 즉시 종료, 빈 리스트 반환")
-    void fetchAll_emptyResponse_returnsEmptyList() {
+    @DisplayName("빈 응답: items.item() == null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_emptyResponse_throws() {
         stubChain();
 
         var empty = mock(MissingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
@@ -104,73 +108,73 @@ class MissingAnimalApiClientTest {
 
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(empty);
 
-        var result = client.fetchAllMissingAnimals("20240101", "20240131");
-
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
-    @DisplayName("중간 예외: 1페이지 수집 후 2페이지에서 예외 → 누적분만 반환")
-    void fetchAll_exceptionOnSecondPage_returnsAccumulated() {
+    @DisplayName("중간 예외: 1페이지 수집 후 2페이지에서 예외 → MissingAnimalApiClientException(CALL_FAILED)")
+    void fetchAll_exceptionOnSecondPage_throws() {
         stubChain();
 
         var i1 = mock(MissingAnimalItemDTO.class);
         var page1 = deepResponse(List.of(i1), "2000"); // totalPages=2
 
         when(responseSpec.body(MissingAnimalApiFullResponse.class))
-                .thenReturn(page1)                          // 1페이지 OK
-                .thenThrow(new RuntimeException("timeout")); // 2페이지에서 예외
+                .thenReturn(page1)                         // 1페이지 OK
+                .thenThrow(new RuntimeException("timeout"));// 2페이지에서 예외
 
-        var result = client.fetchAllMissingAnimals("20240101", "20240131");
-
-        assertThat(result).containsExactly(i1);
+        assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_CALL_FAILED.getValue());
     }
 
     @Test
-    @DisplayName("빈 응답: body()가 아예 null → 즉시 종료, 빈 리스트")
-    void fetchAll_responseNull_returnsEmpty() {
+    @DisplayName("빈 응답: body()가 아예 null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_responseNull_throws() {
         stubChain();
-        MissingAnimalApiFullResponse full =
-                mock(MissingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
-        // 최상위 response()가 null
+        var full = mock(MissingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
         when(full.response()).thenReturn(null);
 
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(full);
 
-        var result = client.fetchAllMissingAnimals("20240101", "20240131");
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
-    @DisplayName("빈 응답: responseSpec.body(...) 자체가 null → 즉시 종료, 빈 리스트")
-    void fetchAll_bodyCallReturnsNull_returnsEmpty() {
+    @DisplayName("빈 응답: responseSpec.body(...) 자체가 null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_bodyCallReturnsNull_throws() {
         stubChain();
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(null);
 
-        var result = client.fetchAllMissingAnimals("20240101", "20240131");
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
-    @DisplayName("빈 응답: items()가 null → 즉시 종료, 빈 리스트")
-    void fetchAll_itemsNull_returnsEmpty() {
+    @DisplayName("빈 응답: items()가 null → 예외 발생(EMPTY_RESPONSE)")
+    void fetchAll_itemsNull_throws() {
         stubChain();
-        MissingAnimalApiFullResponse full =
-                mock(MissingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
+        var full = mock(MissingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
         when(full.response().body().items()).thenReturn(null);
 
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(full);
 
-        var result = client.fetchAllMissingAnimals("20240101", "20240131");
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> client.fetchAllMissingAnimals("20240101", "20240131"))
+                .isInstanceOf(MissingAnimalApiClientException.class)
+                .hasMessage(MISSING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
 
     @Test
-    @DisplayName("경계값: totalCount=0, items 빈 리스트 → 수집 없이 종료(while은 정상 경유)")
-    void fetchAll_totalCountZero_returnsEmptyButPassesLoop() {
+    @DisplayName("경계값: totalCount=0, items 빈 리스트 → 예외 없이 빈 리스트 반환")
+    void fetchAll_totalCountZero_returnsEmpty() {
         stubChain();
-        // items 빈 리스트 + totalCount=0 → isEmptyResponse=false, addAll(0), 마지막 페이지 즉시 종료
-        var page1 = deepResponse(List.of(), "0");
+        var page1 = deepResponse(List.of(), "0"); // 구조는 정상, 데이터만 없음
+
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(page1);
 
         var result = client.fetchAllMissingAnimals("20240101", "20240131");
@@ -182,12 +186,11 @@ class MissingAnimalApiClientTest {
     void fetchAll_totalCountExactPageSize_onePage() {
         stubChain();
         var i1 = mock(MissingAnimalItemDTO.class);
-        var page1 = deepResponse(List.of(i1), "1000"); // 페이지사이즈=1000 → totalPages=1
+        var page1 = deepResponse(List.of(i1), "1000");
 
         when(responseSpec.body(MissingAnimalApiFullResponse.class)).thenReturn(page1);
 
         var result = client.fetchAllMissingAnimals("20240101", "20240131");
         assertThat(result).containsExactly(i1);
     }
-
 }
