@@ -184,5 +184,27 @@ class ImageControllerTest {
                 .body("success", equalTo(false))
                 .body("code", equalTo(IMAGE_UPLOAD_FAILED.getCode()));
     }
+
+    @Test
+    @DisplayName("비회원은 신고글 이미지를 업로드할 수 없다")
+    void shouldDenyRequest_WhenGuestUploadsImage() throws IOException {
+        User guest = testInitializer.createTestGuest();
+        String accessToken = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        MockMultipartFile file1 = new MockMultipartFile("files", "image1.jpg", MediaType.IMAGE_JPEG_VALUE, "image1-content".getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile file2 = new MockMultipartFile("files", "image2.png", MediaType.IMAGE_PNG_VALUE, "image2-content".getBytes(StandardCharsets.UTF_8));
+
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .multiPart("files", file1.getOriginalFilename(), file1.getBytes(), file1.getContentType())
+                .multiPart("files", file2.getOriginalFilename(), file2.getBytes(), file2.getContentType())
+                .when()
+                .post("/api/v2/images/upload")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", equalTo(FORBIDDEN.getMessage()));
+    }
 }
 
