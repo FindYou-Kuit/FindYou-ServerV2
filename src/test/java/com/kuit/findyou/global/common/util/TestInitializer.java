@@ -14,8 +14,6 @@ import com.kuit.findyou.domain.information.model.AnimalCenter;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.AnimalCenterRepository;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
-import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
-import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.repository.*;
 import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
@@ -208,25 +206,6 @@ public class TestInitializer {
 
             volunteerWorkRepository.save(volunteerWork);
         });
-    }
-
-    public CreateMissingReportRequest createBasicMissingReportRequest() {
-        return new CreateMissingReportRequest(
-                List.of(
-                        "https://cdn.findyou.store/some-image1.jpg",
-                        "https://cdn.findyou.store/some-image2.jpg"
-                ),
-                "개",
-                "포메라니안",
-                "3살",
-                "남자",
-                "9900112233445566",
-                "흰색",
-                LocalDate.of(2025, 8, 30),
-                "왼쪽 앞발에 붉은 점이 있어요.",
-                "서울특별시 광진구 화양동",
-                "건국대학교"
-        );
     }
 
     public void createTestAnimalDepartments(String organization, int count) {
@@ -442,16 +421,13 @@ public class TestInitializer {
         return userRepository.save(user);
     }
 
-    public CreateWitnessReportRequest createBasicWitnessReportRequest() {
-        return new CreateWitnessReportRequest(
-                List.of("https://cdn.findyou.store/my_cat.jpg"),
-                "고양이",
-                "코리안숏헤어",
-                "갈색",
-                LocalDate.of(2025, 9, 4),
-                "파란색 목줄을 하고 있습니다.",
-                "서울시 광진구 능동로 120",
-                "건국대학교"
-        );
+    public User createTestGuest() {
+        User user = User.builder()
+                .name("게스트")
+                .profileImageUrl("http://example.com/profile.png")
+                .role(Role.GUEST)
+                .build();
+
+        return userRepository.save(user);
     }
 }
