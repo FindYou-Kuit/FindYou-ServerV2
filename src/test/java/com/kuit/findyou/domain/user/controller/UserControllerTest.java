@@ -865,4 +865,25 @@ class UserControllerTest {
                 .body("code", equalTo(FORBIDDEN.getCode()))
                 .body("message", equalTo(FORBIDDEN.getMessage()));
     }
+
+    @Test
+    @DisplayName("비회원은 프로필 이미지를 변경할 수 없다")
+    void shouldDenyRequest_WhenGuestChangesProfileImage() {
+        // given
+        User guest = testInitializer.createTestGuest();
+        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart(multipartText("defaultProfileImageName", "chick"))
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(403)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", equalTo(FORBIDDEN.getMessage()));
+    }
 }
