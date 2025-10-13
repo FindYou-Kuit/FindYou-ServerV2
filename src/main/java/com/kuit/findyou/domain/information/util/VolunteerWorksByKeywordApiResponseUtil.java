@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.information.util;
 
-import com.kuit.findyou.domain.information.dto.UpdateVolunteerWorkRequest;
+import com.kuit.findyou.domain.information.dto.request.UpdateVolunteerWorkRequest;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.global.external.dto.VolunteerWorksByKeywordApiResponse;
 import org.springframework.stereotype.Component;

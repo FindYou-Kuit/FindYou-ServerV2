@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.recommendation.service;
 
 import com.kuit.findyou.domain.information.dto.ContentType;
-import com.kuit.findyou.domain.information.dto.RecommendedContentResponse;
+import com.kuit.findyou.domain.information.dto.response.RecommendedContentResponse;
 import com.kuit.findyou.domain.information.service.recommended.RecommendedContentServiceImpl;
 import com.kuit.findyou.domain.information.service.recommended.strategy.RecommendedContentStrategy;
 import org.junit.jupiter.api.DisplayName;

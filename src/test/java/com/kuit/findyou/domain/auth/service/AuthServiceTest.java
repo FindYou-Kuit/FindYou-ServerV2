@@ -1,9 +1,9 @@
 package com.kuit.findyou.domain.auth.service;
 
-import com.kuit.findyou.domain.auth.dto.GuestLoginRequest;
-import com.kuit.findyou.domain.auth.dto.GuestLoginResponse;
-import com.kuit.findyou.domain.auth.dto.KakaoLoginRequest;
-import com.kuit.findyou.domain.auth.dto.KakaoLoginResponse;
+import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
+import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
+import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
+import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;

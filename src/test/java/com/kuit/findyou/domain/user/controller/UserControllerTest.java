@@ -4,7 +4,9 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
-import com.kuit.findyou.domain.user.dto.GetUserProfileResponse;
+import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
+import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
@@ -769,5 +771,119 @@ class UserControllerTest {
 
         // then
         verify(s3Client, times(1)).deleteObject(any(DeleteObjectRequest.class));
+    }
+
+    @Test
+    @DisplayName("닉네임이 같은 유저가 존재하면 true를 반환한다.")
+    void shouldReturnTrue_WhenUserWithSameNicknameExists() {
+        // given
+        User user = testInitializer.createTestUser();
+        final String nickname = user.getName();
+
+        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        // when
+        CheckDuplicateNicknameResponse response = given()
+                .header("Authorization", "Bearer " + token)
+                .body(new CheckDuplicateNicknameRequest(nickname))
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .post("/api/v2/users/check/duplicate-nickname")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract()
+                .jsonPath()
+                .getObject("data", CheckDuplicateNicknameResponse.class);
+
+        // then
+        assertThat(response.isDuplicate()).isTrue();
+    }
+
+    @Test
+    @DisplayName("비회원은 닉네임을 수정할 수 없다")
+    void shouldDenyRequest_WhenGuestChangesNickname(){
+        User guest = testInitializer.createTestGuest();
+
+        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(Map.of("newNickname", "스페셜게스트")) // {} : 본문은 있지만 newNickname 필드 누락
+        .when()
+                .patch("/api/v2/users/me/nickname")
+        .then()
+                .statusCode(403)
+                .contentType(ContentType.JSON)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", equalTo(FORBIDDEN.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비회원은 신고 내역을 조회할 수 없다")
+    void shouldDenyRequest_WhenGuestRetrievesUserReports(){
+        User guest = testInitializer.createTestGuest();
+
+        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .queryParam("lastId", 100)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .get("/api/v2/users/me/reports")
+                .then()
+                .statusCode(403)
+                .contentType(ContentType.JSON)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", equalTo(FORBIDDEN.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비회원은 계정을 삭제할 수 없다")
+    void shouldDenyRequest_WhenGuestDeletesAccount(){
+        User guest = testInitializer.createTestGuest();
+
+        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .delete("/api/v2/users/me")
+                .then()
+                .statusCode(403)
+                .contentType(ContentType.JSON)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", equalTo(FORBIDDEN.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비회원은 프로필 이미지를 변경할 수 없다")
+    void shouldDenyRequest_WhenGuestChangesProfileImage() {
+        // given
+        User guest = testInitializer.createTestGuest();
+        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.MULTIPART)
+                .multiPart(multipartText("defaultProfileImageName", "chick"))
+                .when()
+                .patch("/api/v2/users/me/profile-image")
+                .then()
+                .statusCode(403)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", equalTo(FORBIDDEN.getMessage()));
     }
 }

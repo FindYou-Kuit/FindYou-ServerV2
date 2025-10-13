@@ -10,10 +10,8 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.ResponseFormat;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
@@ -50,14 +48,17 @@ public class OpenAiClient {
         this.chatClient = chatClientBuilder.build();
     }
 
-    public BreedAiDetectionResponseDTO analyzeImage(String imageUrl, String prompt) {
+    public BreedAiDetectionResponseDTO analyzeImage(String base64Image, String prompt) {
         try {
+            // Base64 문자열을 byte 배열로 디코딩
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+
             UserMessage user = UserMessage.builder()
                     .text(prompt)
                     .media(List.of(
                             Media.builder()
-                                    .mimeType(guessImageMediaType(imageUrl))
-                                    .data(safeCreateUri(imageUrl))
+                                    .mimeType(MediaType.IMAGE_JPEG)
+                                    .data(imageBytes)
                                     .build()
                     ))
                     .build();
@@ -85,35 +86,6 @@ public class OpenAiClient {
             throw e;
         } catch (Exception e) {
             log.error("OpenAI Chat Completion API 호출 중 오류 발생", e);
-            throw new OpenAiClientException(OPENAI_CLIENT_CALL_FAILED, e);
-        }
-    }
-
-    private MediaType guessImageMediaType(String inputUrl) {
-        String url = inputUrl.toLowerCase();
-
-        if (url.endsWith(".jpg") || url.endsWith(".jpeg")) return MediaType.IMAGE_JPEG;
-        if (url.endsWith(".png")) return MediaType.IMAGE_PNG;
-        if (url.endsWith(".gif")) return MediaType.IMAGE_GIF;
-        if (url.endsWith(".webp")) return MediaType.valueOf("image/webp");
-        if (url.endsWith(".bmp")) return MediaType.valueOf("image/bmp");
-        if (url.endsWith(".tif") || url.endsWith(".tiff")) return MediaType.valueOf("image/tiff");
-
-        // 기본값 - 대부분의 사진이 jpeg 이므로 안전한 default
-        return MediaType.IMAGE_JPEG;
-    }
-
-    /**
-     * 대괄호/공백/괄호 등 path/query 의 불법 문자를 안전하게 퍼센트 인코딩해서 URI 생성
-     */
-    private URI safeCreateUri(String rawUrl) {
-        try {
-            return UriComponentsBuilder
-                    .fromUriString(rawUrl)
-                    .encode(StandardCharsets.UTF_8)
-                    .build()
-                    .toUri();
-        } catch (Exception e) {
             throw new OpenAiClientException(OPENAI_CLIENT_CALL_FAILED, e);
         }
     }

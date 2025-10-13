@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.information.service.animalCenter;
 
-import com.kuit.findyou.domain.information.dto.AnimalCenterPagingResponse;
-import com.kuit.findyou.domain.information.dto.AnimalCenterResponse;
+import com.kuit.findyou.domain.information.dto.response.AnimalCenterPagingResponse;
+import com.kuit.findyou.domain.information.dto.response.AnimalCenterResponse;
 
 public interface AnimalCenterService {
     AnimalCenterPagingResponse<AnimalCenterResponse> getCenters(Long lastId, String district, int size);

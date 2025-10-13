@@ -28,7 +28,7 @@ public class BreedAiDetectionServiceImpl implements BreedAiDetectionService{
     private final BreedRepository breedRepository;
 
     @Override
-    public BreedAiDetectionResponseDTO analyzeBreedWithAi(String imageUrl) {
+    public BreedAiDetectionResponseDTO analyzeBreedWithAi(String base64Image) {
         try {
             List<Breed> breeds = breedRepository.findAll(); // 실패 시 DataAccessException 등 자동 전파됨
 
@@ -36,7 +36,7 @@ public class BreedAiDetectionServiceImpl implements BreedAiDetectionService{
 
             String prompt = OpenAiPromptBuilder.buildBreedDetectionPrompt(breedGroup);
 
-            return OpenAiResponseValidator.validateOpenAiResponse(openAiClient.analyzeImage(imageUrl, prompt), breedGroup);
+            return OpenAiResponseValidator.validateOpenAiResponse(openAiClient.analyzeImage(base64Image, prompt), breedGroup);
         } catch (OpenAiClientException | OpenAiResponseValidatingException e) {
             log.warn("품종 판별 실패: {}", e.getMessage());
             throw new CustomException(BREED_ANALYSIS_FAILED);

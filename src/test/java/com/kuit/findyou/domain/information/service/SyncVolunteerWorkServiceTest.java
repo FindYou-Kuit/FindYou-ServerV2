@@ -1,6 +1,6 @@
 package com.kuit.findyou.domain.information.service;
 
-import com.kuit.findyou.domain.information.dto.UpdateVolunteerWorkRequest;
+import com.kuit.findyou.domain.information.dto.request.UpdateVolunteerWorkRequest;
 import com.kuit.findyou.domain.information.model.VolunteerWork;
 import com.kuit.findyou.domain.information.repository.VolunteerWorkRepository;
 import com.kuit.findyou.domain.information.service.volunteerWork.SyncVolunteerWorkServiceImpl;

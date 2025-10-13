@@ -1,7 +1,7 @@
 package com.kuit.findyou.domain.home.controller;
 
-import com.kuit.findyou.domain.home.dto.GetHomeRequest;
-import com.kuit.findyou.domain.home.dto.GetHomeResponse;
+import com.kuit.findyou.domain.home.dto.request.GetHomeRequest;
+import com.kuit.findyou.domain.home.dto.response.GetHomeResponse;
 import com.kuit.findyou.domain.home.service.HomeServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.exception.CustomException;
