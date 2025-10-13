@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +93,7 @@ public class UserController {
             description = "닉네임을 수정합니다."
     )
     @CustomExceptionDescription(DEFAULT)
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PatchMapping("/me/nickname")
     public BaseResponse<Void> changeNickname(
             @Parameter(hidden = true) @LoginUserId Long userId,
@@ -107,6 +109,7 @@ public class UserController {
             description = "회원 탈퇴 기능을 수행합니다."
     )
     @CustomExceptionDescription(DEFAULT)
+    @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/me")
     public BaseResponse<Void> deleteUser(@Parameter(hidden = true) @LoginUserId Long userId) {
         log.info("[deleteUser] userId = {}", userId);
@@ -143,6 +146,7 @@ public class UserController {
             description = "프로필 이미지 변경을 수행합니다. 기본이미지는 enum값 이름으로 저장, 사용자 업로드 이미지는 cdn url로 저장됩니다."
     )
     @CustomExceptionDescription(CHANGE_PROFILE_IMAGE)
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PatchMapping(value = "/me/profile-image", consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<Void> changeProfileImage(
             @LoginUserId Long userId,
@@ -160,6 +164,7 @@ public class UserController {
     """
     )
     @CustomExceptionDescription(DEFAULT)
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/me/reports")
     public BaseResponse<CardResponseDTO> retrieveUserReports(@Parameter(hidden = true) @LoginUserId Long userId,
                                                              @Parameter(name = "lastId") @RequestParam(required = true) Long lastId){

@@ -8,6 +8,7 @@ import com.kuit.findyou.global.jwt.annotation.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -28,6 +29,7 @@ public class ImageController {
 
     @Operation(summary = "신고글 이미지 업로드 API", description = "멀티파트 이미지 업로드 후 CDN URL 리스트 반환")
     @CustomExceptionDescription(IMAGE_UPLOAD)
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping(value = "/upload", consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<ReportImageResponse> uploadImages(@RequestPart(value = "files", required = false) List<MultipartFile> files, @LoginUserId Long userId) {
         List<String> urls = imageUploadService.uploadImages(files);

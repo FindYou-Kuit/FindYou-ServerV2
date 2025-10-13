@@ -25,6 +25,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.FORBIDDEN;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -271,7 +272,7 @@ class ReportControllerTest {
         User testUser = testInitializer.createTestUser();
         String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
 
-        CreateMissingReportRequest request = testInitializer.createBasicMissingReportRequest();
+        CreateMissingReportRequest request = createBasicMissingReportRequest();
 
         // 실행 및 검증 (when & then)
         given()
@@ -325,7 +326,7 @@ class ReportControllerTest {
         User testUser = testInitializer.createTestUser();
         String accessToken = jwtUtil.createAccessJwt(testUser.getId(), testUser.getRole());
 
-        CreateWitnessReportRequest request = testInitializer.createBasicWitnessReportRequest();
+        CreateWitnessReportRequest request = createBasicWitnessReportRequest();
 
         // when & then
         given()
@@ -342,6 +343,8 @@ class ReportControllerTest {
                 .body("code", equalTo(200))
                 .body("data", is(nullValue()));
     }
+
+
 
     @Test
     @DisplayName("POST /api/v2/reports/new-witness-reports: 실패 - 필수 필드(종) 누락")
@@ -433,5 +436,105 @@ class ReportControllerTest {
                 .body("success", equalTo(false))
                 .body("code", equalTo(404))
                 .body("message", containsString("존재하지 않는 신고글입니다."));
+    }
+
+    @Test
+    @DisplayName("비회원은 실종 신고글을 작성할 수 없다")
+    void shouldDenyRequest_WhenGuestPostsMissingReport(){
+        // given
+        User guest = testInitializer.createTestGuest();
+        String accessToken = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        CreateMissingReportRequest request = createBasicMissingReportRequest();
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v2/reports/new-missing-reports")
+                .then()
+                .statusCode(403)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", is(FORBIDDEN.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비회원은 목격 신고글을 작성할 수 없다")
+    void shouldDenyRequest_WhenGuestPostsWitnessReport(){
+        // given
+        User guest = testInitializer.createTestGuest();
+        String accessToken = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        CreateWitnessReportRequest request = createBasicWitnessReportRequest();
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v2/reports/new-witness-reports")
+                .then()
+                .statusCode(403)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", is(FORBIDDEN.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비회원은 신고글을 삭제할 수 없다")
+    void shouldDenyRequest_WhenGuestDeletesReport() {
+        // given
+        User guest = testInitializer.createTestGuest();
+        String accessToken = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+        long nonExistentReportId = 9999L;
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .delete("/api/v2/reports/" + nonExistentReportId)
+                .then()
+                .log().all()
+                .statusCode(403)
+                .body("success", equalTo(FORBIDDEN.getSuccess()))
+                .body("code", equalTo(FORBIDDEN.getCode()))
+                .body("message", equalTo(FORBIDDEN.getMessage()));
+    }
+
+    private CreateMissingReportRequest createBasicMissingReportRequest() {
+        return new CreateMissingReportRequest(
+                List.of(
+                        "https://cdn.findyou.store/some-image1.jpg",
+                        "https://cdn.findyou.store/some-image2.jpg"
+                ),
+                "개",
+                "포메라니안",
+                "3살",
+                "남자",
+                "9900112233445566",
+                "흰색",
+                LocalDate.of(2025, 8, 30),
+                "왼쪽 앞발에 붉은 점이 있어요.",
+                "서울특별시 광진구 화양동",
+                "건국대학교"
+        );
+    }
+
+    private CreateWitnessReportRequest createBasicWitnessReportRequest() {
+        return new CreateWitnessReportRequest(
+                List.of("https://cdn.findyou.store/my_cat.jpg"),
+                "고양이",
+                "코리안숏헤어",
+                "갈색",
+                LocalDate.of(2025, 9, 4),
+                "파란색 목줄을 하고 있습니다.",
+                "서울시 광진구 능동로 120",
+                "건국대학교"
+        );
     }
 }
