@@ -17,14 +17,22 @@ public record AnimalCenterResponse(
         String phoneNumber,
 
         @Schema(description = "보호소/동물병원 주소", example = "서울특별시 강남구 삼성로1 삼성빌딩 1층")
-        String address
+        String address,
+
+        @Schema(description = "보호소/동물병원 위도", example = "37.5")
+        Double latitude,
+
+        @Schema(description = "보호소/동물병원 경도", example = "127.13")
+        Double longitude
 ) {
     public static AnimalCenterResponse from(AnimalCenter  center){
         return new AnimalCenterResponse(
                 List.of(center.getJurisdiction().split(",")),
                 center.getName(),
                 center.getPhoneNumber(),
-                center.getAddress()
+                center.getAddress(),
+                center.getLatitude(),
+                center.getLongitude()
         );
     }
 }
