@@ -108,22 +108,22 @@ public class MissingReportSyncServiceImpl implements MissingReportSyncService {
         String breedName = MissingAnimalParser.parseBreed(item.kindCd());
 
         return MissingReport.builder()
-                .breed(breedName)
+                .breed(breedName.trim())
                 .species(MissingAnimalParser.parseSpecies(breedName, dogBreeds, catBreeds, otherBreeds))
                 .tag(ReportTag.MISSING)
                 .date(MissingAnimalParser.parseDate(item.happenDt()))
-                .address(item.happenAddr())
+                .address(item.happenAddr().trim())
                 .latitude(coordinate.latitude())
                 .longitude(coordinate.longitude())
                 .user(null)
                 .sex(MissingAnimalParser.parseSex(item.sexCd()))
-                .rfid(item.rfidCd())
-                .age(item.age())
-                .furColor(item.colorCd())
+                .rfid(item.rfidCd().trim())
+                .age(item.age().trim())
+                .furColor(item.colorCd().trim())
                 .significant(MissingAnimalParser.parseSignificant(item.specialMark()))
-                .reporterName(item.callName())
-                .reporterTel(item.callTel())
-                .landmark(item.happenPlace())
+                .reporterName(item.callName().trim())
+                .reporterTel(item.callTel().trim())
+                .landmark(item.happenPlace().trim())
                 .build();
     }
 

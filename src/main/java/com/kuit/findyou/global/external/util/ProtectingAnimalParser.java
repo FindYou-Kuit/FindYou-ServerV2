@@ -130,7 +130,7 @@ public class ProtectingAnimalParser {
     public static String parseSpecies(String species) {
         if (species == null || species.isBlank()) return UNKNOWN;
 
-        return species.trim().equals("개") ? DOG.getValue() : species;
+        return species.trim().equals("개") ? DOG.getValue() : species.trim();
     }
 
     /**
