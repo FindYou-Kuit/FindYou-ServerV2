@@ -102,7 +102,7 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
         KakaoCoordinateClient.Coordinate coordinate = kakaoCoordinateClient.requestCoordinateOrDefault(item.careAddr());
 
         return ProtectingReport.builder()
-                .breed(item.kindNm().trim())
+                .breed(ProtectingAnimalParser.trimOrNull(item.kindNm()))
                 .species(ProtectingAnimalParser.parseSpecies(item.upKindNm()))
                 .tag(ReportTag.PROTECTING)
                 .date(ProtectingAnimalParser.parseDate(item.happenDt()))
@@ -116,13 +116,13 @@ public class ProtectingReportSyncServiceImpl implements ProtectingReportSyncServ
                 .furColor(ProtectingAnimalParser.parseColor(item.colorCd()))
                 .neutering(ProtectingAnimalParser.parseNeutering(item.neuterYn()))
                 .significant(item.specialMark() != null ? item.specialMark().trim() : DEFAULT_SIGNIFICANT)
-                .foundLocation(item.happenPlace().trim())
-                .noticeNumber(item.noticeNo().trim())
+                .foundLocation(ProtectingAnimalParser.trimOrNull(item.happenPlace()))
+                .noticeNumber(ProtectingAnimalParser.trimOrNull(item.noticeNo()))
                 .noticeStartDate(ProtectingAnimalParser.parseDate(item.noticeSdt()))
                 .noticeEndDate(ProtectingAnimalParser.parseDate(item.noticeEdt()))
-                .careName(item.careNm().trim())
-                .careTel(item.careTel().trim())
-                .authority(item.orgNm().trim())
+                .careName(ProtectingAnimalParser.trimOrNull(item.careNm()))
+                .careTel(ProtectingAnimalParser.trimOrNull(item.careTel()))
+                .authority(ProtectingAnimalParser.trimOrNull(item.orgNm()))
                 .build();
     }
 

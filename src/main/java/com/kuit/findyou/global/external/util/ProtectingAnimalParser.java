@@ -164,4 +164,8 @@ public class ProtectingAnimalParser {
             default -> Neutering.U;
         };
     }
+
+    public static String trimOrNull(String s) {
+        return (s == null) ? null : s.trim();
+    }
 }
