@@ -23,7 +23,7 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
 
         return new MissingReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
-                report.getBreed(),
+                ReportFormatUtil.safeValue(report.getBreed()),
                 report.getTag().getValue(),
                 ReportFormatUtil.safeValue(report.getAge()),
                 ReportFormatUtil.safeSex(report.getSex()),

@@ -24,7 +24,7 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
 
         return new ProtectingReportDetailResponseDTO(
                 report.getReportImagesUrlList(),
-                report.getBreed(),
+                ReportFormatUtil.safeValue(report.getBreed()),
                 report.getTag().getValue(),
                 ReportFormatUtil.formatAge(report.getAge()),
                 ReportFormatUtil.formatWeight(report.getWeight()),
@@ -32,16 +32,16 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
                 report.getSex().getValue(),
                 report.getNeutering().toString(),
                 report.getSignificant(),
-                report.getCareName(),
+                ReportFormatUtil.safeValue(report.getCareName()),
                 report.getAddress(),
                 ReportFormatUtil.formatCoordinate(report.getLatitude()),
                 ReportFormatUtil.formatCoordinate(report.getLongitude()),
-                report.getCareTel(),
+                ReportFormatUtil.safeValue(report.getCareTel()),
                 ReportFormatUtil.safeDate(report.getDate()),
-                report.getFoundLocation(),
+                ReportFormatUtil.safeValue(report.getFoundLocation()),
                 report.getNoticeDuration(),
-                report.getNoticeNumber(),
-                report.getAuthority(),
+                ReportFormatUtil.safeValue(report.getNoticeNumber()),
+                ReportFormatUtil.safeValue(report.getAuthority()),
                 interest
         );
     }
