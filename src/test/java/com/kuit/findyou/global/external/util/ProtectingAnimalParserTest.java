@@ -169,4 +169,48 @@ class ProtectingAnimalParserTest {
             assertThat(ProtectingAnimalParser.parseNeutering("?")).isEqualTo(Neutering.U);
         }
     }
+
+    @Nested
+    @DisplayName("trimOrNull 메서드 검증")
+    class TrimOrNull {
+
+        @Test
+        @DisplayName("입력이 null이면 null을 반환한다")
+        void returns_null_when_input_is_null() {
+            String input = null;
+            String result = ProtectingAnimalParser.trimOrNull(input);
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("공백만 있는 문자열이면 빈 문자열을 반환한다")
+        void returns_empty_string_when_only_whitespaces() {
+            String input1 = "     ";
+            String input2 = "\t\t";
+            String input3 = "\n\n";
+
+            assertThat(ProtectingAnimalParser.trimOrNull(input1)).isEqualTo("");
+            assertThat(ProtectingAnimalParser.trimOrNull(input2)).isEqualTo("");
+            assertThat(ProtectingAnimalParser.trimOrNull(input3)).isEqualTo("");
+        }
+
+        @Test
+        @DisplayName("앞뒤 공백을 제거한다")
+        void trims_leading_and_trailing_whitespaces() {
+            String input1 = "  진돗개  ";
+            String input2 = "\t고양이\n";
+
+            assertThat(ProtectingAnimalParser.trimOrNull(input1)).isEqualTo("진돗개");
+            assertThat(ProtectingAnimalParser.trimOrNull(input2)).isEqualTo("고양이");
+        }
+
+        @Test
+        @DisplayName("공백이 없는 문자열은 그대로 반환한다")
+        void returns_same_content_when_no_whitespaces() {
+            String input = "코리안숏헤어";
+            String result = ProtectingAnimalParser.trimOrNull(input);
+            assertThat(result).isEqualTo("코리안숏헤어");
+        }
+    }
+
 }

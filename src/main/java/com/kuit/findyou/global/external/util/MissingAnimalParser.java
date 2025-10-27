@@ -59,4 +59,8 @@ public class MissingAnimalParser {
             default -> Sex.Q;
         };
     }
+
+    public static String trimOrNull(String s) {
+        return (s == null) ? null : s.trim();
+    }
 }
