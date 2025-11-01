@@ -39,6 +39,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: -XX:-UseContainerSupport
     env_file:
       - .env
     depends_on:
