@@ -1,6 +1,5 @@
 package com.kuit.findyou.global.external.client;
 
-import com.kuit.findyou.global.external.constant.ExternalExceptionMessage;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalApiFullResponse;
 import com.kuit.findyou.global.external.dto.ProtectingAnimalItemDTO;
 import com.kuit.findyou.global.external.exception.ProtectingAnimalApiClientException;
@@ -20,10 +19,12 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.*;
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.PROTECTING_ANIMAL_API_CLIENT_CALL_FAILED;
+import static com.kuit.findyou.global.external.constant.ExternalExceptionMessage.PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -54,44 +55,64 @@ class ProtectingAnimalApiClientTest {
         doReturn(responseSpec).when(uriSpec).retrieve();
     }
 
-    /** 깊은 중첩 응답을 간단히 만드는 유틸 */
-    private ProtectingAnimalApiFullResponse deepResponse(List<ProtectingAnimalItemDTO> items, String totalCount) {
+    /** items().item()가 주어진 리스트를 반환하는 정상 페이지 */
+    private ProtectingAnimalApiFullResponse pageWithItems(List<ProtectingAnimalItemDTO> items) {
         ProtectingAnimalApiFullResponse full =
                 mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
         when(full.response().body().items().item()).thenReturn(items);
-        when(full.response().body().totalCount()).thenReturn(totalCount);
         return full;
     }
 
+    /** items()는 존재하지만 item()이 null인 '마지막 페이지' 시그널 */
+    private ProtectingAnimalApiFullResponse lastPageNullItem() {
+        ProtectingAnimalApiFullResponse full =
+                mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
+        when(full.response().body().items().item()).thenReturn(null);
+        return full;
+    }
+
+    /** items() 자체가 null인 비정상 스키마(에러) */
+    private ProtectingAnimalApiFullResponse invalidSchema_itemsNull() {
+        ProtectingAnimalApiFullResponse full =
+                mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
+        when(full.response().body().items()).thenReturn(null);
+        return full;
+    }
+
+    // ---------------------- 정상 플로우 ----------------------
+
     @Test
-    @DisplayName("단일 페이지: totalCount=2 → 1페이지만 수집")
-    void fetchAll_singlePage() {
+    @DisplayName("단일 페이지 수집 후 다음 페이지가 item()==null → 정상 종료")
+    void fetchAll_singlePage_thenNullItem_ends() {
         stubChain();
 
-        var i1 = mock(ProtectingAnimalItemDTO.class);
-        var i2 = mock(ProtectingAnimalItemDTO.class);
-        var page1 = deepResponse(List.of(i1, i2), "2"); // pageSize=1000 → totalPages=1
+        var a = mock(ProtectingAnimalItemDTO.class);
+        var b = mock(ProtectingAnimalItemDTO.class);
 
-        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1);
+        var page1 = pageWithItems(List.of(a, b));
+        var page2 = lastPageNullItem(); // 다음 페이지 신호 = 마지막 페이지
+
+        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1, page2);
 
         var result = client.fetchAllProtectingAnimals();
 
-        assertThat(result).hasSize(2).containsExactly(i1, i2);
+        assertThat(result).hasSize(2).containsExactly(a, b);
     }
 
     @Test
-    @DisplayName("다중 페이지: totalCount=2000 → 2페이지 수집 후 종료")
-    void fetchAll_multiPage() {
+    @DisplayName("다중 페이지 수집: p1(2개) → p2(1개) → p3(item()==null)로 종료")
+    void fetchAll_multiPages_thenNullItem_ends() {
         stubChain();
 
         var a = mock(ProtectingAnimalItemDTO.class);
         var b = mock(ProtectingAnimalItemDTO.class);
         var c = mock(ProtectingAnimalItemDTO.class);
 
-        var page1 = deepResponse(List.of(a, b), "2000"); // totalPages=2
-        var page2 = deepResponse(List.of(c), "2000");
+        var page1 = pageWithItems(List.of(a, b));
+        var page2 = pageWithItems(List.of(c));
+        var page3 = lastPageNullItem();
 
-        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1, page2);
+        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1, page2, page3);
 
         var result = client.fetchAllProtectingAnimals();
 
@@ -99,27 +120,40 @@ class ProtectingAnimalApiClientTest {
     }
 
     @Test
-    @DisplayName("빈 응답: items.item() == null → 예외 발생(EMPTY_RESPONSE)")
-    void fetchAll_emptyResponse_throws() {
+    @DisplayName("첫 페이지부터 item()==null → 즉시 종료(빈 결과)")
+    void fetchAll_firstPageNullItem_returnsEmpty() {
         stubChain();
 
-        var empty = mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
-        when(empty.response().body().items().item()).thenReturn(null);
+        var page1 = lastPageNullItem();
+        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1);
 
-        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(empty);
+        var result = client.fetchAllProtectingAnimals();
 
-        assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
-                .isInstanceOf(ProtectingAnimalApiClientException.class)
-                .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
+        assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("중간 예외: 1페이지 수집 후 2페이지에서 예외 → ProtectingAnimalApiClientException(CALL_FAILED)")
+    @DisplayName("첫 페이지가 빈 리스트([]) → 마지막 페이지로 간주하고 종료(빈 결과)")
+    void fetchAll_firstPageEmptyList_returnsEmpty() {
+        stubChain();
+
+        var page1 = pageWithItems(List.of()); // item() == []
+        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1);
+
+        var result = client.fetchAllProtectingAnimals();
+
+        assertThat(result).isEmpty();
+    }
+
+    // ---------------------- 예외 플로우 ----------------------
+
+    @Test
+    @DisplayName("중간 예외: 1페이지 OK 후 2페이지에서 런타임 예외 → CALL_FAILED 래핑")
     void fetchAll_exceptionOnSecondPage_throws() {
         stubChain();
 
         var i1 = mock(ProtectingAnimalItemDTO.class);
-        var page1 = deepResponse(List.of(i1), "2000"); // totalPages=2
+        var page1 = pageWithItems(List.of(i1));
 
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class))
                 .thenReturn(page1)                          // 1페이지 OK
@@ -131,12 +165,12 @@ class ProtectingAnimalApiClientTest {
     }
 
     @Test
-    @DisplayName("빈 응답: response()가 null → 예외 발생(EMPTY_RESPONSE)")
+    @DisplayName("빈 응답: response()가 null → EMPTY_RESPONSE")
     void fetchAll_responseNull_throws() {
         stubChain();
+
         var full = mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
         when(full.response()).thenReturn(null);
-
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(full);
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
@@ -145,9 +179,10 @@ class ProtectingAnimalApiClientTest {
     }
 
     @Test
-    @DisplayName("빈 응답: responseSpec.body(...) 자체가 null → 예외 발생(EMPTY_RESPONSE)")
+    @DisplayName("빈 응답: responseSpec.body(...)가 null → EMPTY_RESPONSE")
     void fetchAll_bodyCallReturnsNull_throws() {
         stubChain();
+
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(null);
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
@@ -156,42 +191,15 @@ class ProtectingAnimalApiClientTest {
     }
 
     @Test
-    @DisplayName("빈 응답: items()가 null → 예외 발생(EMPTY_RESPONSE)")
+    @DisplayName("빈 응답: items()가 null(스키마 오류) → EMPTY_RESPONSE")
     void fetchAll_itemsNull_throws() {
         stubChain();
-        var full = mock(ProtectingAnimalApiFullResponse.class, Answers.RETURNS_DEEP_STUBS);
-        when(full.response().body().items()).thenReturn(null);
 
+        var full = invalidSchema_itemsNull();
         when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(full);
 
         assertThatThrownBy(() -> client.fetchAllProtectingAnimals())
                 .isInstanceOf(ProtectingAnimalApiClientException.class)
                 .hasMessage(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE.getValue());
     }
-
-    @Test
-    @DisplayName("경계값: totalCount=0, items 빈 리스트 → 수집 없이 종료")
-    void fetchAll_totalCountZero_returnsEmptyButPassesLoop() {
-        stubChain();
-        var page1 = deepResponse(List.of(), "0");
-
-        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1);
-
-        var result = client.fetchAllProtectingAnimals();
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    @DisplayName("경계값: totalCount=1000(페이지 사이즈의 배수) → 딱 1페이지만")
-    void fetchAll_totalCountExactPageSize_onePage() {
-        stubChain();
-        var i1 = mock(ProtectingAnimalItemDTO.class);
-        var page1 = deepResponse(List.of(i1), "1000");
-
-        when(responseSpec.body(ProtectingAnimalApiFullResponse.class)).thenReturn(page1);
-
-        var result = client.fetchAllProtectingAnimals();
-        assertThat(result).containsExactly(i1);
-    }
-
 }
