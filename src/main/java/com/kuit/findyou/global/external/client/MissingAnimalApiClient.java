@@ -45,12 +45,13 @@ public class MissingAnimalApiClient {
                 }
 
                 List<MissingAnimalItemDTO> currentPageItems = response.response().body().items().item();
-                allItems.addAll(currentPageItems);
 
-                if (isLastPage(response, pageNo)) {
+                if (currentPageItems == null || currentPageItems.isEmpty()) {
+                    log.info("[마지막 페이지 도달] pageNo={} (item() == null)", pageNo);
                     break;
                 }
 
+                allItems.addAll(currentPageItems);
                 pageNo++;
 
             } catch (MissingAnimalApiClientException e) {
@@ -84,14 +85,6 @@ public class MissingAnimalApiClient {
         return response == null ||
                 response.response() == null ||
                 response.response().body() == null ||
-                response.response().body().items() == null ||
-                response.response().body().items().item() == null;
-    }
-
-    private boolean isLastPage(MissingAnimalApiFullResponse response, int currentPage) {
-        int totalCount = Integer.parseInt(response.response().body().totalCount());
-        int totalPages = (int) Math.ceil((double) totalCount / DEFAULT_PAGE_SIZE);
-
-        return currentPage >= totalPages;
+                response.response().body().items() == null;
     }
 }
