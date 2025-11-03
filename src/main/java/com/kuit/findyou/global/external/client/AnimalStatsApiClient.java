@@ -1,5 +1,6 @@
 package com.kuit.findyou.global.external.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.external.dto.ProtectingAndAdoptedAnimalCount;
 import com.kuit.findyou.global.external.dto.RescueAnimalStatsServiceApiResponse;
@@ -29,7 +30,7 @@ public class AnimalStatsApiClient {
     public ProtectingAndAdoptedAnimalCount fetchProtectingAndAdoptedAnimalCount(String bgnde, String endde) {
         log.info("[fetchProtectingAndAdoptedAnimalCount] (bgnde={}, endde={}) 수치 집계 시작", bgnde, endde);
         try {
-            RescueAnimalStatsServiceApiResponse resp = restClient.get()
+            String rawResponse = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .queryParam("serviceKey", properties.apiKey())
                             .queryParam("bgnde", bgnde)
@@ -37,27 +38,42 @@ public class AnimalStatsApiClient {
                             .queryParam("_type", "json")
                             .build())
                     .retrieve()
-                    .body(RescueAnimalStatsServiceApiResponse.class);
+                    .body(String.class);// 원본 문자열로 받기
 
-            String protectingAnimalCount = null;
-            String adoptedAnimalCount = null;
+            RescueAnimalStatsServiceApiResponse resp = null;
+            try{
+                resp = new ObjectMapper().readValue(rawResponse, RescueAnimalStatsServiceApiResponse.class);
+            }
+            catch(Exception e){
+                log.error("[fetchProtectingAndAdoptedAnimalCount] 응답 역직렬화 불가", e.getMessage());
+                throw new RuntimeException("응답을 역직렬화하는 과정에서 오류가 발생했습니다");
+            }
 
             if (resp == null || resp.response() == null
                     || resp.response().body() == null
                     || resp.response().body().items() == null
                     || resp.response().body().items().item() == null
                     || resp.response().body().items().item().isEmpty()) {
+                log.error("[fetchProtectingAndAdoptedAnimalCount] 응답이 비어 있음");
                 throw new RuntimeException("외부 API 응답이 비어 있습니다");
             }
 
+            String protectingAnimalCount = null;
+            String adoptedAnimalCount = null;
             for (RescueAnimalStatsServiceApiResponse.Item item : resp.response().body().items().item()) {
                 if (isProtectingAnimalTotalCount(item)) protectingAnimalCount = item.total();
                 else if (isAdoptedAnimalCount(item)) adoptedAnimalCount = item.total();
             }
 
-            if (protectingAnimalCount == null || adoptedAnimalCount == null) {
-                throw new RuntimeException("외부 API 응답에서 값을 찾을 수 없습니다");
+            if (protectingAnimalCount == null){
+                log.info("[fetchProtectingAndAdoptedAnimalCount] protectingAnimalCount가 비어 있으므로 기본값으로 대체");
+                protectingAnimalCount = "0";
             }
+            if (adoptedAnimalCount == null) {
+                log.info("[fetchProtectingAndAdoptedAnimalCount] adoptedAnimalCount가 비어 있으므로 기본값으로 대체");
+                adoptedAnimalCount = "0";
+            }
+
 
             log.info("[fetchProtectingAndAdoptedAnimalCount] (bgnde={}, endde={}) 수치 집계 완료", bgnde, endde);
             return new ProtectingAndAdoptedAnimalCount(protectingAnimalCount, adoptedAnimalCount);
