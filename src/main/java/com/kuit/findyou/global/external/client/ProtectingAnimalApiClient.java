@@ -46,17 +46,18 @@ public class ProtectingAnimalApiClient {
                 ProtectingAnimalApiFullResponse response = fetchPageData(pageNo);
 
                 if (isEmptyResponse(response)) {
-                    log.warn("[구조동물 공공데이터 응답이 비어있습니다] pageNo={}", pageNo);
+                    log.warn("[구조동물 공공데이터 응답 구조 이상] pageNo={}", pageNo);
                     throw new ProtectingAnimalApiClientException(PROTECTING_ANIMAL_API_CLIENT_EMPTY_RESPONSE);
                 }
 
                 List<ProtectingAnimalItemDTO> currentPageItems = response.response().body().items().item();
-                allItems.addAll(currentPageItems);
 
-                if (isLastPage(response, pageNo)) {
+                if (currentPageItems == null || currentPageItems.isEmpty()) {
+                    log.info("[마지막 페이지 도달] pageNo={} (item() == null)", pageNo);
                     break;
                 }
 
+                allItems.addAll(currentPageItems);
                 pageNo++;
 
             } catch (ProtectingAnimalApiClientException e) {
@@ -89,15 +90,7 @@ public class ProtectingAnimalApiClient {
         return response == null ||
                 response.response() == null ||
                 response.response().body() == null ||
-                response.response().body().items() == null ||
-                response.response().body().items().item() == null;
-    }
-
-    private boolean isLastPage(ProtectingAnimalApiFullResponse response, int currentPage) {
-        int totalCount = Integer.parseInt(response.response().body().totalCount());
-        int totalPages = (int) Math.ceil((double) totalCount / DEFAULT_PAGE_SIZE);
-
-        return currentPage >= totalPages;
+                response.response().body().items() == null;
     }
 
     public String fetchRescuedAnimalCount(String bgnde, String endde) {
