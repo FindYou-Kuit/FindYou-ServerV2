@@ -20,9 +20,9 @@ if [ -n "$IS_BLUE_RUNNING" ]; then
   HEALTH_TIMEOUT_SEC=120
   HEALTH_INTERVAL_SEC=3
   DEADLINE=$((SECONDS + HEALTH_TIMEOUT_SEC))
+
   while true; do
-    # 실패 시에도 즉시 빠져나오도록 -fsS와 타임아웃 추가
-    RESPONSE=$(curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:9002/actuator/health 2>/dev/null | grep '"status":"UP"')
+    RESPONSE=$(curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:9002/actuator/health 2>/dev/null | grep '"status":"UP"' || true)
     if [ -n "$RESPONSE" ]; then
       echo ">>> green health check 성공!"
       break
@@ -58,7 +58,7 @@ else
   HEALTH_INTERVAL_SEC=3
   DEADLINE=$((SECONDS + HEALTH_TIMEOUT_SEC))
   while true; do
-    RESPONSE=$(curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:9001/actuator/health 2>/dev/null | grep '"status":"UP"')
+    RESPONSE=$(curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1:9001/actuator/health 2>/dev/null | grep '"status":"UP"' || true)
     if [ -n "$RESPONSE" ]; then
       echo ">>> blue health check 성공!"
       break
