@@ -6,7 +6,7 @@ spring:
       local : local-db, dev-port, common
       dev: dev-db, dev-port, common
       prod: prod-db, prod-port, common
-    active: dev
+    active: prod
   web:
     resources:
       add-mappings: false
