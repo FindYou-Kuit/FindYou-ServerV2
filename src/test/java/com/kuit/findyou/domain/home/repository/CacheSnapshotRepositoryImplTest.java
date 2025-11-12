@@ -15,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -24,16 +24,22 @@ import static org.junit.jupiter.api.Assertions.*;
         """
         CREATE TABLE IF NOT EXISTS cache_snapshot (
             cache_key VARCHAR(255) PRIMARY KEY,
-            content   TEXT NOT NULL
+            content   JSON NOT NULL
         );
         """
 })
 class CacheSnapshotRepositoryImplTest {
+
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     CacheSnapshotRepository repository;
+
+    private static String jstr(String s) {
+        // JSON string 값으로 저장하려면 따옴표 포함 필요: "v1" -> "\"v1\""
+        return "\"" + s + "\"";
+    }
 
     @BeforeEach
     void clean() {
@@ -50,18 +56,20 @@ class CacheSnapshotRepositoryImplTest {
     @DisplayName("insert 후 find 하면 content 를 얻을 수 있다")
     @Test
     void should_Succeed_When_FindAfterInserting() {
+        // 유효한 JSON 객체
         repository.insert("home:statistics", "{\"foo\":1}");
 
         Optional<String> result = repository.find("home:statistics");
 
         assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo("{\"foo\":1}");
+        assertThat(result.get()).isEqualToIgnoringWhitespace("{\"foo\":1}");
     }
 
     @DisplayName("delete 하면 해당 키는 조회되지 않는다")
     @Test
     void should_FindReturnsEmpty_When_Delete() {
-        repository.insert("k1", "v1");
+        // JSON 문자열로 저장 (값 자체를 문자열로 저장하고 싶다면 따옴표 포함)
+        repository.insert("k1", jstr("v1"));
 
         repository.delete("k1");
 
@@ -71,9 +79,9 @@ class CacheSnapshotRepositoryImplTest {
     @DisplayName("같은 키로 다시 insert 하면 PK 제약으로 예외가 난다")
     @Test
     void should_ThrowException_When_InsertDuplicateKey() {
-        repository.insert("dup", "v1");
+        repository.insert("dup", jstr("v1"));
 
         assertThrows(Exception.class,
-                () -> repository.insert("dup", "v2"));
+                () -> repository.insert("dup", jstr("v2")));
     }
 }
