@@ -1,0 +1,92 @@
+package com.kuit.findyou.global.common.response.status;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public enum BaseExceptionResponseStatus implements ResponseStatus{
+    // 테스트
+    TEST_EXCEPTION(100, "테스트용 예외입니다."),
+
+    // 성공
+    SUCCESS(200, "요청에 성공했습니다."),
+
+    // 공통 에러
+    BAD_REQUEST(400, "유효하지 않은 요청입니다."),
+    UNAUTHORIZED(401, "인증 자격이 없습니다."),
+    FORBIDDEN(403, "권한이 없습니다."),
+    API_NOT_FOUND(404, "존재하지 않는 API입니다."),
+    METHOD_NOT_ALLOWED(405, "유효하지 않은 Http 메서드입니다."),
+    INTERNAL_SERVER_ERROR(500, "서버 내부 오류입니다."),
+
+    // JWT 토큰
+    INVALID_JWT(401, "올바르지 않은 토큰입니다."),
+    EXPIRED_JWT(401, "만료된 토큰입니다"),
+    JWT_NOT_FOUND(400, "토큰을 찾을 수 없습니다"),
+
+    // 로그인
+    GUEST_LOGIN_FAILED(404, "일치하는 게스트가 없습니다."),
+
+    // 회원가입
+    ALREADY_REGISTERED_USER(400, "이미 회원가입한 유저입니다."),
+
+    // 인프라
+    IMAGE_UPLOAD_FAILED(502, "외부 서버 문제로 인해 이미지 업로드에 실패했습니다"),
+
+    // 홈
+    HOME_STATISTICS_UPDATE_FAILED(502, "홈화면 통계 업데이트에 실패했습니다."),
+
+    // 유저 - User
+    USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
+    DUPLICATE_INTEREST_REPORT(400, "이미 관심글로 등록된 신고글입니다."),
+
+    // 글 - Report
+    REPORT_NOT_FOUND(404, "존재하지 않는 신고글입니다."),
+    PROTECTING_REPORT_NOT_FOUND(404, "존재하지 않는 보호글입니다."),
+    PROTECTING_REPORT_SYNC_FAILED(500, "구조 동물 데이터 동기화에 실패하였습니다."),
+    MISSING_REPORT_SYNC_FAILED(500, "분실 동물 데이터 동기화에 실패하였습니다."),
+    MISSING_REPORT_NOT_FOUND(404, "존재하지 않는 실종 신고글입니다."),
+    WITNESS_REPORT_NOT_FOUND(404, "존재하지 않는 목격 신고글입니다."),
+    ILLEGAL_TAG(500, "잘못된 태그값입니다."),
+    IMAGE_UPLOAD_HTTPS_REQUIRED(500, "이미지 URL은 https만 허용됩니다."),
+    MISMATCH_REPORT_USER(404, "글 작성자와 삭제 요청자가 동일하지 않습니다."),
+
+
+    // 글 이미지 - ReportImage
+    IMAGE_UPLOAD_LIMIT_EXCEEDED(400, "이미지는 최대 5개까지 업로드할 수 있습니다."),
+    INVALID_IMAGE_FORMAT(400, "잘못된 이미지 형식입니다."),
+    IMAGE_SIZE_EXCEEDED(400, "파일 크기를 초과하였습니다. 한 파일당 최대 30MB의 크기가 허용됩니다."),
+
+
+    // 추천 컨텐츠 - Recommendation
+    RECOMMENDED_VIDEO_NOT_FOUND(404, "추천 영상이 존재하지 않습니다."),
+    RECOMMENDED_NEWS_NOT_FOUND(404, "추천 기사가 존재하지 않습니다."),
+    // 품종 - Breed
+    BREED_ANALYSIS_FAILED(502, "AI를 통한 품종 판별에 실패했습니다."),
+
+    //보호센터 조회
+    INVALID_CURSOR(400, "유효하지 않은 lastId입니다. 0 이상의 정수를 입력하세요."),
+    INVALID_COORDINATE(400, "유효하지 않은 좌표입니다. lat/long는 double 타입이어야 합니다."),
+    LAT_LONG_PAIR_REQUIRED(400, "위도(lat)와 경도(long)는 함께 전달되어야 합니다."),
+    GEO_OR_FILTER_REQUIRED(400, "초기 접근은 lat/long 또는 sido/sigungu 중 하나가 필요합니다."),
+    INVALID_SIZE(400, "유효하지 않은 size입니다. 0 초과의 정수를 입력하세요."),
+
+    // 시도 / 시군구
+    SIDO_NOT_FOUND(404, "존재하지 않는 시/도입니다.");
+
+    private final boolean success = false;
+    private final int code;
+    private final String message;
+
+    @Override
+    public boolean getSuccess() { return this.success; }
+
+    @Override
+    public int getCode() {
+        return this.code;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
+}

@@ -1,0 +1,49 @@
+package com.kuit.findyou.domain.image.model;
+
+import com.kuit.findyou.domain.report.model.Report;
+import com.kuit.findyou.global.common.model.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "report_images")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ReportImage extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "image_url", length = 2083, nullable = false)
+    private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_id", nullable = false)
+    private Report report;
+
+
+    public static ReportImage createReportImage(String imageUrl, Report report) {
+        ReportImage image = new ReportImage();
+        image.imageUrl = imageUrl;
+        image.setReport(report);
+        return image;
+    }
+
+    public void setReport(Report report) {
+        if (report == null) {
+            throw new IllegalArgumentException("Report는 null이 될 수 없습니다.");
+        }
+        if (this.report != null && this.report != report) {
+            this.report.getReportImages().remove(this);
+        }
+        this.report = report; //null이 아님
+        if (report != null && !report.getReportImages().contains(this)) {
+            report.getReportImages().add(this);
+        }
+    }
+}
+

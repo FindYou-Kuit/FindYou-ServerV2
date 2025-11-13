@@ -1,0 +1,123 @@
+package com.kuit.findyou.domain.user.model;
+
+import com.kuit.findyou.domain.notification.model.FcmToken;
+import com.kuit.findyou.domain.notification.model.NotificationHistory;
+import com.kuit.findyou.domain.notification.model.ReceiveNotification;
+import com.kuit.findyou.domain.report.model.InterestReport;
+import com.kuit.findyou.domain.report.model.Report;
+import com.kuit.findyou.domain.report.model.ViewedReport;
+import com.kuit.findyou.domain.notification.model.Subscribe;
+import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.global.common.model.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.ALREADY_REGISTERED_USER;
+
+@Entity
+@Table(name = "users")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class User extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "name", length = 50)
+    private String name;
+
+    @Column(name = "profile_image_url", length = 2083)
+    private String profileImageUrl;
+
+    @Column(name = "kakao_id")
+    private Long kakaoId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(columnDefinition = "CHAR(1)", nullable = false, length = 1)
+    private ReceiveNotification  receiveNotification = ReceiveNotification.N;
+
+    @Column(length = 100, unique = true)
+    private String deviceId;
+
+    // 신고글에 대해 orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @Builder.Default
+    private List<Report> reports = new ArrayList<>();
+
+    // 최근 본 글 과의 양방향 연관 관계 설정
+    // 최근 본 글에 대해 orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @Builder.Default
+    private List<ViewedReport> viewedReports = new ArrayList<>();
+
+    // 관심글 과의 양방향 연관 관계 설정
+    // 관심글에 대해 orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @Builder.Default
+    private List<InterestReport> interestReports = new ArrayList<>();
+
+    // 알림 내역 과의 양방향 연관 관계 설정
+    // 알림 내역에 대해 orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @Builder.Default
+    private List<NotificationHistory> notificationHistories = new ArrayList<>();
+
+    // 구독 과의 양방향 연관 관계 설정
+    // 구독에 대해 orphanRemoval = true 만 설정
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @Builder.Default
+    private List<Subscribe> subscribes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private FcmToken fcmToken;
+
+    public void addReport(Report report) {
+        reports.add(report);
+    }
+
+    public void addViewedReport(ViewedReport viewedReport) {
+        viewedReports.add(viewedReport);
+    }
+
+    public void addInterestReport(InterestReport interestReport) {
+        interestReports.add(interestReport);
+    }
+    public void addNotificationHistory(NotificationHistory notificationHistory) { notificationHistories.add(notificationHistory); }
+    public void addSubscribe(Subscribe subscribe) { subscribes.add(subscribe); }
+    public void setFcmToken(FcmToken fcmToken) {this.fcmToken = fcmToken;}
+
+    public void upgradeToMember(Long kakaoId, String nickname, String profileImageUrl){
+        // 비회원이어야 회원이 될 수 있음
+        if(this.role != Role.GUEST){
+            throw new CustomException(ALREADY_REGISTERED_USER);
+        }
+
+        this.kakaoId = kakaoId;
+        this.name = nickname;
+        this.profileImageUrl = profileImageUrl;
+        this.role = Role.USER;
+    }
+
+    public boolean isGuest(){
+        return this.role == Role.GUEST;
+    }
+
+    public void changeNickname(String newNickname) {
+        this.name = newNickname;
+    }
+    public void changeProfileImage(String newImage) {this.profileImageUrl = newImage;}
+}

@@ -1,0 +1,80 @@
+name: CI with Gradle   
+on:
+  pull_request:
+    branches:
+      - 'main'
+      - 'develop'
+
+permissions:
+  contents: read
+  checks: write         # check-runs 작성 허용
+  pull-requests: write  # PR 코멘트 작성 허용
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest     # OS 지정
+    steps:
+      - uses: actions/checkout@v4
+      - name: ☕️ set up JDK 17        
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Gradle 캐싱 추가
+      - name: 🚀 Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: 🐳 Verify Docker is available
+        run: |
+          docker --version
+          docker info
+
+      - name: 👏🏻 grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🐘 Run tests with coverage
+        run: ./gradlew clean test --stacktrace
+
+      - name: 📦 Upload JaCoCo HTML report (artifact)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-html
+          path: |
+            **/build/reports/jacoco/test/html/**
+          retention-days: 7
+
+      - name: ✉️ Post test results as a comment on the PR
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
+
+      - name: 🙁 Annotate failed test cases on changed lines
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ github.token }}
+
+      - name: 📊 Comment JaCoCo coverage summary on PR
+        uses: madrapps/jacoco-report@v1.7.2
+        if: always()
+        with:
+          paths: |
+            **/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ github.token }}
+          title: '📊 JaCoCo Coverage'
+          update-comment: true

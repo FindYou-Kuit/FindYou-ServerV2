@@ -1,0 +1,32 @@
+package com.kuit.findyou.domain.information.repository;
+
+import com.kuit.findyou.domain.information.model.AnimalCenter;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface AnimalCenterRepository extends JpaRepository<AnimalCenter,Long> {
+    @Query("""
+    SELECT a FROM AnimalCenter a
+    WHERE (:lastId IS NULL OR a.id > :lastId)
+      AND (:jurisdiction IS NULL OR a.jurisdiction LIKE CONCAT('%', :jurisdiction, '%'))
+    ORDER BY a.id ASC
+""")
+    List<AnimalCenter> findWithFilter(@Param("lastId") Long lastId,
+                                      @Param("jurisdiction") String jurisdiction,
+                                      Pageable pageSize
+    );
+
+    @Query("""
+    SELECT a FROM AnimalCenter a
+    WHERE (:lastId IS NULL OR a.id > :lastId)
+      AND a.latitude IS NOT NULL
+      AND a.longitude IS NOT NULL
+    ORDER BY a.id ASC
+""")
+    List<AnimalCenter> findAllWithLatLngAfterId(@Param("lastId") Long lastId, Pageable pageable);
+
+}

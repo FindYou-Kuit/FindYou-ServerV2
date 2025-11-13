@@ -1,0 +1,93 @@
+name: CD with Gradle and Docker
+
+on:
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90    # 잡의 타임아웃 시간을 90분으로 설정
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: ☕️ set up JDK 17        # 프로젝트의 java 버전에 맞추어 설정
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 👏🏻 grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🐘 build with Gradle (without test)
+        run: ./gradlew clean build -x test --stacktrace
+
+      - name: 🐳 Docker build & push
+        run: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker build -f Dockerfile-prod -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:prod .
+            docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:prod
+
+      - name: 🫴🏻 Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: 🪪 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-northeast-2'
+
+      - name: ➕ Add GitHub Actions IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.PROD_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: 📦 Send docker-compose-prod.yml & deploy.sh on EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PROD_EC2_HOST }}
+          username: ${{ secrets.PROD_EC2_USERNAME }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          port: ${{ secrets.PROD_EC2_PORT }}
+          source: "./docker-compose-prod.yml, ./deploy.sh"
+          target: "/home/ubuntu/FindYou-ServerV2/"
+
+      - name: 🚀 Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        timeout-minutes: 60   # step 기본 30분 제한 회피
+        with:
+          host: ${{ secrets.PROD_EC2_HOST }}
+          username: ${{ secrets.PROD_EC2_USERNAME }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          port: ${{ secrets.PROD_EC2_PORT }}
+          command_timeout: 60m   # 기본 10분 ->  60분으로 늘리기
+          script: |
+            echo "🗂️ Change Directory to EC2 Root"
+            cd /home/ubuntu/FindYou-ServerV2
+            
+            echo "👉🏻 Grant Permission to deploy.sh"
+            chmod +x ./deploy.sh
+            
+            echo "✋🏻 Stopping Existing Container and Deploy New Container"
+            ./deploy.sh
+
+
+      - name: ❌ Remove GitHub Actions IP
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --region ap-northeast-2 \
+            --group-id ${{ secrets.PROD_SECURITY_GROUP_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32

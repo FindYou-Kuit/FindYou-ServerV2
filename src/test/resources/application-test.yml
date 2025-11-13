@@ -1,0 +1,60 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 30MB      # 파일 하나당 최대 30MB
+      max-request-size: 150MB   # 요청당 총 크기를 150MB로
+  ai:
+    openai:
+      api-key: test
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0
+          max-tokens: 50
+
+findyou:
+  jwt:
+    access:
+      expire-ms: 6000000
+    secret-key : secretkey1224secretkey1224secretkey1224secretkey1224
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2 # 서울 리전
+    credentials:
+      access-key: key
+      secret-key: key
+    s3:
+      bucket: bucket
+      base-url: base-url
+
+openapi:
+  protecting-animal:
+    api-url: https://apis.data.go.kr/1543061/abandonmentPublicService_v2
+    api-key: test-key
+  rescue-animal-stats:
+    api-url: https://apis.data.go.kr/1543061/rescueAnimalStatsService/rescueAnimalStats
+    api-key: test-key
+  loss-animal-info:
+    api-url: https://apis.data.go.kr/1543061/lossInfoService/lossInfo
+    api-key: test-key
+  kakao:
+    api-url: "https://dapi.kakao.com/v2/local/search/address.json"
+    api-key: test-key
+  volunteer-work:
+    api-url: http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrSearchWordList
