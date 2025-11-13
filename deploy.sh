@@ -1,7 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-IS_BLUE_RUNNING=$(docker ps | grep findyou_blue)
+if docker ps | grep -q findyou_blue; then
+  IS_BLUE_RUNNING=true
+else
+  IS_BLUE_RUNNING=false
+fi
 export NGINX_CONF="/etc/nginx/sites-available/default"
 
 # blue 가 실행 중이면 green 을 up
