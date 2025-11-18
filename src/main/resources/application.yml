@@ -156,6 +156,8 @@ findyou:
     access:
       expire-ms: ${JWT_ACCESS_EXPIRE_MS}
     secret-key : ${JWT_SECRET_KEY}
+  home-stats:
+    parsing-timeout-sec: ${HOME_STATS_PARSING_TIMEOUT_SEC}
 
 cloud:
   aws:
