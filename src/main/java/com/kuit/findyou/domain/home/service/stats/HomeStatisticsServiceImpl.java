@@ -8,6 +8,7 @@ import com.kuit.findyou.global.external.client.LossAnimalApiClient;
 import com.kuit.findyou.global.external.client.ProtectingAnimalApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,7 +23,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class HomeStatisticsServiceImpl implements HomeStatisticsService{
-    private long CALL_TIMEOUT_SEC = 5;
+    @Value("${findyou.home-stats.parsing-timeout-sec}")
+    private long PARSING_TIMEOUT_SEC;
     private final AnimalStatsApiClient animalStatsApiClient;
     private final ProtectingAnimalApiClient protectingAnimalApiClient;
     private final LossAnimalApiClient lossAnimalApiClient;
@@ -90,15 +92,15 @@ public class HomeStatisticsServiceImpl implements HomeStatisticsService{
 
         CompletableFuture<ProtectingAndAdoptedAnimalCount> pna =
                 CompletableFuture.supplyAsync(() -> animalStatsApiClient.fetchProtectingAndAdoptedAnimalCount(bgnde, endde), statisticsExecutor)
-                        .orTimeout(CALL_TIMEOUT_SEC, TimeUnit.SECONDS);
+                        .orTimeout(PARSING_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         CompletableFuture<String> rescued =
                 CompletableFuture.supplyAsync(() -> protectingAnimalApiClient.fetchRescuedAnimalCount(bgnde, endde), statisticsExecutor)
-                        .orTimeout(CALL_TIMEOUT_SEC, TimeUnit.SECONDS);
+                        .orTimeout(PARSING_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         CompletableFuture<String> reported =
                 CompletableFuture.supplyAsync(() -> lossAnimalApiClient.fetchReportedAnimalCount(bgnde, endde), statisticsExecutor)
-                        .orTimeout(CALL_TIMEOUT_SEC, TimeUnit.SECONDS);
+                        .orTimeout(PARSING_TIMEOUT_SEC, TimeUnit.SECONDS);
 
         return CompletableFuture.allOf(pna, rescued, reported)
                 .thenApply(v -> {
