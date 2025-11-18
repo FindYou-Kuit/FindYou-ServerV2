@@ -31,6 +31,8 @@ findyou:
     access:
       expire-ms: 6000000
     secret-key : secretkey1224secretkey1224secretkey1224secretkey1224
+  home-stats:
+    parsing-timeout-sec: 20
 
 cloud:
   aws:
