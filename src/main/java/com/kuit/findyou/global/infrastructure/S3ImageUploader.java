@@ -59,6 +59,36 @@ public class S3ImageUploader implements ImageUploader {
     }
 
     @Override
+    public String upload(byte[] content, String originalFileName, String contentType) throws FileUploadingFailedException {
+
+            if (content == null || content.length == 0) {
+                throw new IllegalArgumentException("업로드할 파일이 비어 있을 수 없습니다");
+            }
+
+            String safeOriginalName = (originalFileName == null || originalFileName.isBlank())
+                    ? "image"
+                    : originalFileName;
+
+            String datePath = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+            String fileName = datePath + "/" + UUID.randomUUID() + "_" + safeOriginalName;
+
+            try {
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(fileName)
+                        .contentType(contentType != null ? contentType : "image/jpeg")
+                        .build();
+
+                s3Client.putObject(putObjectRequest, RequestBody.fromBytes(content));
+
+                return getFileUrl(fileName);
+
+            } catch (S3Exception e) {
+                throw new FileUploadingFailedException("S3 업로드 실패: " + e.awsErrorDetails().errorMessage());
+            }
+    }
+
+    @Override
     public void delete(String s3ObjectKey) {
         if (s3ObjectKey == null || s3ObjectKey.isBlank()) {
             throw new IllegalArgumentException("S3에서 삭제할 객체 키가 없습니다.");
