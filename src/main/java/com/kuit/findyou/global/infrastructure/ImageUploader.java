@@ -4,5 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageUploader {
     String upload(MultipartFile file) throws FileUploadingFailedException;
+    String upload(byte[] content, String originalFileName, String contentType) throws FileUploadingFailedException;
     void delete(String s3ObjectKey);
 }
