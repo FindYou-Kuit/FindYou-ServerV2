@@ -49,6 +49,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     ILLEGAL_TAG(500, "잘못된 태그값입니다."),
     IMAGE_UPLOAD_HTTPS_REQUIRED(500, "이미지 URL은 https만 허용됩니다."),
     MISMATCH_REPORT_USER(404, "글 작성자와 삭제 요청자가 동일하지 않습니다."),
+    INVALID_REPORT_SAMPLE_COUNT(400, "유효하지 않은 count입니다."),
 
 
     // 글 이미지 - ReportImage
