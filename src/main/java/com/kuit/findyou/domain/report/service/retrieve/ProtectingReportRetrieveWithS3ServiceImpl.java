@@ -37,7 +37,7 @@ public class ProtectingReportRetrieveWithS3ServiceImpl implements ProtectingRepo
     public List<ProtectingReportDetailResponseDTO> getRandomProtectingReportsWithS3(int count) {
 
         // 전체 보호글 조회
-        List<ProtectingReport> all = protectingReportRepository.findAll();
+        List<ProtectingReport> all = new ArrayList<>(protectingReportRepository.findAll());
         if (all.isEmpty()) {
             throw new CustomException(PROTECTING_REPORT_NOT_FOUND);
         }
