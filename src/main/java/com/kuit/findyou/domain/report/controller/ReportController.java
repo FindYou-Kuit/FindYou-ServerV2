@@ -9,6 +9,7 @@ import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailRespons
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.*;
 import com.kuit.findyou.domain.report.service.facade.ReportServiceFacade;
+import com.kuit.findyou.domain.report.service.retrieve.ProtectingReportRetrieveWithS3Service;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.jwt.annotation.LoginUserId;
@@ -21,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 
 @RestController
@@ -31,6 +34,7 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 public class ReportController {
 
     private final ReportServiceFacade reportServiceFacade;
+    private final ProtectingReportRetrieveWithS3Service protectingReportRetrieveWithS3Service;
 
     @Operation(summary = "보호글 상세 조회 API", description = "보호글의 정보를 상세 조회하기 위한 API")
     @GetMapping("/protecting-reports/{reportId}")
@@ -106,6 +110,18 @@ public class ReportController {
     ) {
         reportServiceFacade.deleteReport(reportId, userId);
         return BaseResponse.ok(null);
+    }
+
+    @Operation(summary = "보호글 S3 이미지 포함 랜덤 조회 API", description = "랜덤으로 보호글을 선택하여 원본 이미지를 S3에 업로드 후, S3 URL 포함 보호글을 리스트로 반환합니다.")
+    @GetMapping("/protecting-reports/random-s3")
+    @CustomExceptionDescription(DEFAULT)
+    public BaseResponse<List<ProtectingReportDetailResponseDTO>> getRandomProtectingReportsWithS3(
+            @RequestParam(name = "count", defaultValue = "1") int count
+    ) {
+        List<ProtectingReportDetailResponseDTO> details =
+                protectingReportRetrieveWithS3Service.getRandomProtectingReportsWithS3(count);
+
+        return BaseResponse.ok(details);
     }
 
 }
