@@ -10,6 +10,7 @@ import com.kuit.findyou.global.infrastructure.ImageUploader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,6 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -49,6 +52,16 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
 
     @InjectMocks
     private ProtectingReportRetrieveWithS3ServiceImpl protectingReportRetrieveWithS3Service;
+
+    @BeforeEach
+    void injectRestTemplateMock() {
+        //mock RestTemplate 주입
+        ReflectionTestUtils.setField(
+                protectingReportRetrieveWithS3Service,
+                "restTemplate",
+                restTemplate
+        );
+    }
 
     @Test
     @DisplayName("보호글이 하나도 없으면 PROTECTING_REPORT_NOT_FOUND 예외")
@@ -162,5 +175,61 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         assertThat(result)
                 .hasSize(1)
                 .containsExactly(dto);
+    }
+    @Test
+    @DisplayName("이미지를 정상적으로 받으면 S3에 업로드 &  업로드된 URL로 DTO 생성")
+    void getRandomProtectingReportsWithS3_successUploadFlow() {
+        // given
+        ProtectingReport report = mock(ProtectingReport.class);
+        when(report.getId()).thenReturn(100L);
+
+        ReportImage img1 = mock(ReportImage.class);
+        ReportImage img2 = mock(ReportImage.class);
+        when(img1.getImageUrl()).thenReturn("http://example.com/1.jpg");
+        when(img2.getImageUrl()).thenReturn("http://example.com/2.jpg");
+        when(report.getReportImages()).thenReturn(List.of(img1, img2));
+
+        when(protectingReportRepository.findAll())
+                .thenReturn(new ArrayList<>(List.of(report)));
+
+        // RestTemplate 가 바이트 배열 내려줌
+        when(restTemplate.getForObject(eq("http://example.com/1.jpg"), eq(byte[].class)))
+                .thenReturn(new byte[]{1, 2, 3});
+        when(restTemplate.getForObject(eq("http://example.com/2.jpg"), eq(byte[].class)))
+                .thenReturn(new byte[]{4, 5, 6});
+
+        // S3 업로더는 순서대로 두 번 URL을 반환
+        when(imageUploader.upload(any(byte[].class), anyString(), eq("image/jpeg")))
+                .thenReturn(
+                        "https://s3.findyou.store/1.jpg",
+                        "https://s3.findyou.store/2.jpg"
+                );
+
+        ProtectingReportDetailResponseDTO dto = mock(ProtectingReportDetailResponseDTO.class);
+
+        ArgumentCaptor<List<String>> s3UrlsCaptor = ArgumentCaptor.forClass(List.class);
+        when(protectingReportDetailStrategy.toDetailDto(eq(report), s3UrlsCaptor.capture(), eq(false)))
+                .thenReturn(dto);
+
+        // when
+        List<ProtectingReportDetailResponseDTO> result =
+                protectingReportRetrieveWithS3Service.getRandomProtectingReportsWithS3(1);
+
+        // then
+        assertThat(result).hasSize(1).containsExactly(dto);
+
+        List<String> capturedUrls = s3UrlsCaptor.getValue();
+        assertThat(capturedUrls)
+                .containsExactly(
+                        "https://s3.findyou.store/1.jpg",
+                        "https://s3.findyou.store/2.jpg"
+                );
+
+        verify(restTemplate, times(1))
+                .getForObject("http://example.com/1.jpg", byte[].class);
+        verify(restTemplate, times(1))
+                .getForObject("http://example.com/2.jpg", byte[].class);
+        verify(imageUploader, times(2))
+                .upload(any(byte[].class), anyString(), eq("image/jpeg"));
     }
 }
