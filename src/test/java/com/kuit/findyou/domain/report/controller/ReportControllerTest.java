@@ -3,6 +3,8 @@ package com.kuit.findyou.domain.report.controller;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
+import com.kuit.findyou.domain.report.service.retrieve.ProtectingReportRetrieveWithS3Service;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
@@ -28,6 +30,7 @@ import java.util.List;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.FORBIDDEN;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,6 +40,9 @@ class ReportControllerTest {
 
     @MockitoBean
     private ImageUploader imageUploader;
+
+    @MockitoBean
+    private ProtectingReportRetrieveWithS3Service protectingReportRetrieveWithS3Service;
 
     @LocalServerPort
     int port;
@@ -536,5 +542,49 @@ class ReportControllerTest {
                 "서울시 광진구 능동로 120",
                 "건국대학교"
         );
+    }
+    @Test
+    @DisplayName("보호글 랜덤 조회 -> S3 URL 포함 응답")
+    void getRandomProtectingReportsWithS3_success() {
+        // given
+        User user = testInitializer.userWith3InterestReportsAnd2ViewedReports();
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        ProtectingReportDetailResponseDTO dto = new ProtectingReportDetailResponseDTO(
+                List.of("https://cdn.findyou.store/random1.jpg", "https://cdn.findyou.store/random2.jpg"),
+                "스피츠", "보호중", "1살", "4kg", "흰색",
+                "수컷", "N", "사람을 잘 따름",
+                "인천광역시수의사회", "인천광역시 남동구",
+                37.566239, 126.719642,
+                "032-515-7567",
+                "2025-10-27",
+                "남동구 만수동 993",
+                "2025-10-28 ~ 2025-11-07",
+                "인천-남동-2025-00349",
+                "인천광역시 남동구",
+                false
+        );
+
+        when(protectingReportRetrieveWithS3Service.getRandomProtectingReportsWithS3(1))
+                .thenReturn(List.of(dto));
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/protecting-reports/random-s3")
+                .then()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200))
+                .body("data.size()", equalTo(1))
+                .body("data[0].imageUrls.size()", equalTo(2))
+                .body("data[0].imageUrls[0]", equalTo("https://cdn.findyou.store/random1.jpg"))
+                .body("data[0].breed", equalTo("스피츠"))
+                .body("data[0].tag", equalTo("보호중"))
+                .body("data[0].careName", equalTo("인천광역시수의사회"));
     }
 }
