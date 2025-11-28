@@ -17,9 +17,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +34,7 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @RequestMapping("/api/v2/reports")
 @Tag(name = "Report", description = "글 관련 API")
 @RequiredArgsConstructor
+@Validated
 public class ReportController {
 
     private final ReportServiceFacade reportServiceFacade;
@@ -116,7 +120,8 @@ public class ReportController {
     @GetMapping("/protecting-reports/random-s3")
     @CustomExceptionDescription(DEFAULT)
     public BaseResponse<List<ProtectingReportDetailResponseDTO>> getRandomProtectingReportsWithS3(
-            @RequestParam(name = "count", defaultValue = "1") int count
+            @RequestParam(name = "count", defaultValue = "1")
+             @Min(1) @Max(10) int count
     ) {
         List<ProtectingReportDetailResponseDTO> details =
                 protectingReportRetrieveWithS3Service.getRandomProtectingReportsWithS3(count);
