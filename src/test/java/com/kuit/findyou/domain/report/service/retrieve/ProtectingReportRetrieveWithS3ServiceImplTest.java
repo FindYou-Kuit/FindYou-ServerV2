@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.util.ReflectionTestUtils;
+import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
@@ -232,4 +233,57 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         verify(imageUploader, times(2))
                 .upload(any(byte[].class), anyString(), eq("image/jpeg"));
     }
+
+    @Test
+    @DisplayName("S3 업로드나 이미지 처리에사 예외가 발생해도 DTO는 정상 반환된다")
+    void getRandomProtectingReportsWithS3_whenUploadFails_thenContinuePerImage() {
+        // given
+        ProtectingReport report = mock(ProtectingReport.class);
+        when(report.getId()).thenReturn(200L);
+
+        //첫 번째는 S3 업로드 실패, 두 번째는 다운로드 단계 예외
+        ReportImage img1 = mock(ReportImage.class);
+        ReportImage img2 = mock(ReportImage.class);
+        when(img1.getImageUrl()).thenReturn("http://example.com/1.jpg");
+        when(img2.getImageUrl()).thenReturn("http://example.com/2.jpg");
+        when(report.getReportImages()).thenReturn(List.of(img1, img2));
+
+        when(protectingReportRepository.findAll())
+                .thenReturn(new ArrayList<>(List.of(report)));
+
+        //1번 이미지는 S3 업로드 시 FileUploadingFailedException 발생
+        when(restTemplate.getForObject("http://example.com/1.jpg", byte[].class))
+                .thenReturn(new byte[]{1, 2, 3});
+        when(imageUploader.upload(any(byte[].class), anyString(), eq("image/jpeg")))
+                .thenThrow(new FileUploadingFailedException("업로드 실패"));
+
+        //2번 이미지는 다운로드 단계에서 바로 RuntimeException
+        when(restTemplate.getForObject("http://example.com/2.jpg", byte[].class))
+                .thenThrow(new RuntimeException("다운로드 오류"));
+
+        ProtectingReportDetailResponseDTO dto = mock(ProtectingReportDetailResponseDTO.class);
+        ArgumentCaptor<List<String>> s3UrlsCaptor = ArgumentCaptor.forClass(List.class);
+        when(protectingReportDetailStrategy.toDetailDto(eq(report), s3UrlsCaptor.capture(), eq(false)))
+                .thenReturn(dto);
+
+        // when
+        List<ProtectingReportDetailResponseDTO> result =
+                protectingReportRetrieveWithS3Service.getRandomProtectingReportsWithS3(1);
+
+        // then
+        //전체 API는 죽지 않고 DTO 하나는 정상 반환
+        assertThat(result).hasSize(1).containsExactly(dto);
+
+        //두 이미지 모두 실패했으므로 이미지는 빈값
+        assertThat(s3UrlsCaptor.getValue()).isEmpty();
+
+        //예외가 던져지지 않음
+        verify(restTemplate, times(1))
+                .getForObject("http://example.com/1.jpg", byte[].class);
+        verify(restTemplate, times(1))
+                .getForObject("http://example.com/2.jpg", byte[].class);
+        verify(imageUploader, times(1))
+                .upload(any(byte[].class), anyString(), eq("image/jpeg"));
+    }
+
 }
