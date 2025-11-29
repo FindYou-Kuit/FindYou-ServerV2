@@ -36,21 +36,17 @@ public class ProtectingReportRetrieveWithS3ServiceImpl implements ProtectingRepo
     @Transactional(readOnly = true)
     public List<ProtectingReportDetailResponseDTO> getRandomProtectingReportsWithS3(int count) {
 
-        // 전체 보호글 조회
-        List<ProtectingReport> all = new ArrayList<>(protectingReportRepository.findAll());
-        if (all.isEmpty()) {
+        int safeCount = (count <=0 ) ? 1 : count;
+
+        //랜덤으로 count 만큼 조회
+        List<ProtectingReport> reports = new ArrayList<>(protectingReportRepository.findRandomReports(safeCount));
+        if(reports.isEmpty()) {
             throw new CustomException(PROTECTING_REPORT_NOT_FOUND);
         }
 
-        //랜덤하게 섞고, 실제 사용할 개수 결정 (오류로 인해 전체 개수가 count보다 적은 경우를 대비)
-        Collections.shuffle(all);
-        int targetCount = Math.min(count, all.size());
-
         List<ProtectingReportDetailResponseDTO> result = new ArrayList<>();
 
-        //앞에서부터 해당 개수만큼 선택
-        for (int i = 0; i < targetCount; i++) {
-            ProtectingReport report = all.get(i);
+        for(ProtectingReport report : reports) {
 
             //보호글에 연결된 원본 이미지 가져오기
             List<ReportImage> reportImages = report.getReportImages();
