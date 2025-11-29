@@ -235,7 +235,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
     }
 
     @Test
-    @DisplayName("S3 업로드나 이미지 처리에사 예외가 발생해도 DTO는 정상 반환된다")
+    @DisplayName("S3 업로드나 이미지 처리에서 예외가 발생해도 DTO는 정상 반환된다")
     void getRandomProtectingReportsWithS3_whenUploadFails_thenContinuePerImage() {
         // given
         ProtectingReport report = mock(ProtectingReport.class);
