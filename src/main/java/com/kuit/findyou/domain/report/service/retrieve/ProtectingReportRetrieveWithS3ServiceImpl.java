@@ -10,12 +10,12 @@ import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,16 +30,16 @@ public class ProtectingReportRetrieveWithS3ServiceImpl implements ProtectingRepo
     private final ProtectingReportDetailStrategy protectingReportDetailStrategy;
 
     //외부 URL에서 이미지를 받아오기 위한 HTTP 클라이언트
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Override
     @Transactional(readOnly = true)
     public List<ProtectingReportDetailResponseDTO> getRandomProtectingReportsWithS3(int count) {
 
-        int safeCount = (count <=0 ) ? 1 : count;
+        int limit = Math.max(1, count);
 
         //랜덤으로 count 만큼 조회
-        List<ProtectingReport> reports = new ArrayList<>(protectingReportRepository.findRandomReports(safeCount));
+        List<ProtectingReport> reports = protectingReportRepository.findRandomReports(PageRequest.of(0, limit));
         if(reports.isEmpty()) {
             throw new CustomException(PROTECTING_REPORT_NOT_FOUND);
         }
