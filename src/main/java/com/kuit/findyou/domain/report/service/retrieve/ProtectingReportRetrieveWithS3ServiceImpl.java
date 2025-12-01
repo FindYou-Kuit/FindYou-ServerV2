@@ -5,21 +5,20 @@ import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailRespons
 import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.ProtectingReportDetailStrategy;
-import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
 import com.kuit.findyou.global.infrastructure.ImageUploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.PROTECTING_REPORT_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
@@ -36,17 +35,22 @@ public class ProtectingReportRetrieveWithS3ServiceImpl implements ProtectingRepo
     @Transactional(readOnly = true)
     public List<ProtectingReportDetailResponseDTO> getRandomProtectingReportsWithS3(int count) {
 
-        int limit = Math.max(1, count);
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = LocalDate.now().minusDays(1).atStartOfDay();
+        List<ProtectingReport> allReports = protectingReportRepository.findByCreatedAtBetween(start, end);
 
-        //랜덤으로 count 만큼 조회
-        List<ProtectingReport> reports = protectingReportRepository.findRandomReports(PageRequest.of(0, limit));
-        if(reports.isEmpty()) {
-            throw new CustomException(PROTECTING_REPORT_NOT_FOUND);
+        if(allReports.isEmpty()) {
+            //204 no content
+            return Collections.emptyList();
         }
+
+        Collections.shuffle(allReports);
+
+        List<ProtectingReport> selectedReports = allReports.stream().limit(count).toList();
 
         List<ProtectingReportDetailResponseDTO> result = new ArrayList<>();
 
-        for(ProtectingReport report : reports) {
+        for(ProtectingReport report : selectedReports) {
 
             //보호글에 연결된 원본 이미지 가져오기
             List<ReportImage> reportImages = report.getReportImages();
