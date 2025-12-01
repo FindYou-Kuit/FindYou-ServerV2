@@ -1,8 +1,15 @@
 package com.kuit.findyou.domain.report.controller;
 
+import com.kuit.findyou.domain.image.model.ReportImage;
+import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.model.Neutering;
+import com.kuit.findyou.domain.report.model.ProtectingReport;
+import com.kuit.findyou.domain.report.model.ReportTag;
+import com.kuit.findyou.domain.report.model.Sex;
+import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
@@ -21,13 +28,18 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.FORBIDDEN;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,6 +49,16 @@ class ReportControllerTest {
 
     @MockitoBean
     private ImageUploader imageUploader;
+
+    @MockitoBean
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private ProtectingReportRepository protectingReportRepository;
+
+    @Autowired
+    private ReportImageRepository reportImageRepository;
+
 
     @LocalServerPort
     int port;
@@ -536,5 +558,68 @@ class ReportControllerTest {
                 "서울시 광진구 능동로 120",
                 "건국대학교"
         );
+    }
+    @Test
+    @DisplayName("보호글 랜덤 조회 -> S3 URL 포함 응답")
+    void getRandomProtectingReportsWithS3_success() {
+        // given
+        User user = testInitializer.createTestUser();
+
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+
+        ProtectingReport report = ProtectingReport.builder()
+                .tag(ReportTag.PROTECTING)
+                .breed("믹스견")
+                .species("강아지")
+                .sex(Sex.M)
+                .age("10")
+                .weight("5kg")
+                .furColor("흰색")
+                .neutering(Neutering.Y)
+                .significant("특이사항 없음")
+                .foundLocation("서울시 광진구")
+                .noticeNumber("12345")
+                .noticeStartDate(LocalDate.now())
+                .noticeEndDate(LocalDate.now().plusDays(10))
+                .careName("광진보호소")
+                .careTel("02-123-4567")
+                .authority("광진구청")
+                .date(LocalDate.now())
+                .address("서울시 광진구")
+                .latitude(BigDecimal.valueOf(37.12345))
+                .longitude(BigDecimal.valueOf(127.12345))
+                .user(user)
+                .build();
+
+        protectingReportRepository.saveAndFlush(report);
+
+        String originalImageUrl = "https://cdn.findyou.store/random1.jpg";
+        ReportImage reportImage = ReportImage.createReportImage(originalImageUrl, report);
+
+        reportImageRepository.saveAndFlush(reportImage);
+
+        when(restTemplate.getForObject(eq(originalImageUrl),eq(byte[].class)))
+                .thenReturn(new byte[]{1, 2, 3});
+
+        when(imageUploader.upload(any(byte[].class), anyString(), eq("image/jpeg")))
+                .thenReturn("https://cdn.findyou.store/random1.jpg");
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+        .when()
+                .get("/api/v2/reports/protecting-reports/random-s3")
+        .then()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200))
+                .body("data.size()", equalTo(1))
+                .body("data[0].imageUrls[0]", equalTo("https://cdn.findyou.store/random1.jpg"))
+                .body("data[0].breed", equalTo("믹스견"))
+                .body("data[0].tag", equalTo("보호중"))
+                .body("data[0].careName", equalTo("광진보호소"));
     }
 }
