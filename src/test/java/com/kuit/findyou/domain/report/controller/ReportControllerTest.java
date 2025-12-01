@@ -590,7 +590,7 @@ class ReportControllerTest {
                 .longitude(BigDecimal.valueOf(127.12345))
                 .user(user)
                 .build();
-        ReflectionTestUtils.setField(report, "createdAt", LocalDateTime.now().minusHours(1));
+        ReflectionTestUtils.setField(report, "createdAt", LocalDateTime.now().minusDays(1));
         protectingReportRepository.saveAndFlush(report);
 
         String originalImageUrl = "https://cdn.findyou.store/random1.jpg";
