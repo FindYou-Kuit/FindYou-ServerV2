@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ProtectingReportRetrieveWithS3ServiceImpl implements ProtectingRepo
     @Transactional(readOnly = true)
     public List<ProtectingReportDetailResponseDTO> getRandomProtectingReportsWithS3(int count) {
 
-        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime end = LocalDate.now().atTime(LocalTime.MAX);
         LocalDateTime start = LocalDate.now().minusDays(1).atStartOfDay();
         List<ProtectingReport> allReports = protectingReportRepository.findByCreatedAtBetween(start, end);
 
