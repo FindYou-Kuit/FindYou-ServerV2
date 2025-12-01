@@ -28,10 +28,12 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.FORBIDDEN;
@@ -565,8 +567,6 @@ class ReportControllerTest {
         // given
         User user = testInitializer.createTestUser();
 
-        //String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
         ProtectingReport report = ProtectingReport.builder()
                 .tag(ReportTag.PROTECTING)
                 .breed("믹스견")
@@ -590,7 +590,7 @@ class ReportControllerTest {
                 .longitude(BigDecimal.valueOf(127.12345))
                 .user(user)
                 .build();
-
+        ReflectionTestUtils.setField(report, "createdAt", LocalDateTime.now());
         protectingReportRepository.saveAndFlush(report);
 
         String originalImageUrl = "https://cdn.findyou.store/random1.jpg";
