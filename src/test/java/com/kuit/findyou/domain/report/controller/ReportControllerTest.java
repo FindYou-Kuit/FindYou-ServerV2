@@ -565,7 +565,7 @@ class ReportControllerTest {
         // given
         User user = testInitializer.createTestUser();
 
-        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+        //String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
 
         ProtectingReport report = ProtectingReport.builder()
                 .tag(ReportTag.PROTECTING)
@@ -606,13 +606,13 @@ class ReportControllerTest {
 
         // when & then
         given()
-                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("count", 1)
         .when()
                 .get("/api/v2/reports/protecting-reports/random-s3")
         .then()
+                .log().all()
                 .statusCode(200)
                 .body("success", equalTo(true))
                 .body("code", equalTo(200))
@@ -621,5 +621,23 @@ class ReportControllerTest {
                 .body("data[0].breed", equalTo("믹스견"))
                 .body("data[0].tag", equalTo("보호중"))
                 .body("data[0].careName", equalTo("광진보호소"));
+    }
+
+    @Test
+    @DisplayName("보호글이 없을 경우 -> 204 No Content 응답 (Body 없음)")
+    void getRandomProtectingReportsWithS3_noContent() {
+        // given
+        //DB에 아무것도 저장하지 않음 (빈 상태)
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/protecting-reports/random-s3")
+                .then()
+                .log().all()
+                .statusCode(204);
     }
 }
