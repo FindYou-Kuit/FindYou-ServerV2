@@ -64,7 +64,6 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         // then
         assertThat(result).isEmpty();
 
-        // countBy 호출 확인 삭제, findBy 호출 확인
         verify(protectingReportRepository, times(1))
                 .findByCreatedAtBetween(any(LocalDateTime.class), any(LocalDateTime.class));
 
