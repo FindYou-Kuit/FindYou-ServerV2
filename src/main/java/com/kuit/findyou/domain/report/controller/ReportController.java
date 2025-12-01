@@ -7,7 +7,7 @@ import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.MissingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
-import com.kuit.findyou.domain.report.model.*;
+import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.service.facade.ReportServiceFacade;
 import com.kuit.findyou.domain.report.service.retrieve.ProtectingReportRetrieveWithS3Service;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
@@ -21,6 +21,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -119,14 +120,17 @@ public class ReportController {
     @Operation(summary = "보호글 S3 이미지 포함 랜덤 조회 API", description = "랜덤으로 보호글을 선택하여 원본 이미지를 S3에 업로드 후, S3 URL 포함 보호글을 리스트로 반환합니다.")
     @GetMapping("/protecting-reports/random-s3")
     @CustomExceptionDescription(DEFAULT)
-    public BaseResponse<List<ProtectingReportDetailResponseDTO>> getRandomProtectingReportsWithS3(
+    public ResponseEntity<?> getRandomProtectingReportsWithS3(
             @RequestParam(name = "count", defaultValue = "1")
              @Min(1) @Max(10) int count
     ) {
         List<ProtectingReportDetailResponseDTO> details =
                 protectingReportRetrieveWithS3Service.getRandomProtectingReportsWithS3(count);
 
-        return BaseResponse.ok(details);
+        if (details.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(BaseResponse.ok(details));
     }
 
 }
