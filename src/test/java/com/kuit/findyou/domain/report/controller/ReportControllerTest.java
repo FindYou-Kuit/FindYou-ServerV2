@@ -1,14 +1,10 @@
 package com.kuit.findyou.domain.report.controller;
 
-import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
-import com.kuit.findyou.domain.report.model.Neutering;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
-import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
@@ -28,12 +24,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.FORBIDDEN;
@@ -566,36 +559,11 @@ class ReportControllerTest {
     void getRandomProtectingReportsWithS3_success() {
         // given
         User user = testInitializer.createTestUser();
+        ProtectingReport report = testInitializer.createTestProtectingReportWithImage(user);
 
-        ProtectingReport report = ProtectingReport.builder()
-                .tag(ReportTag.PROTECTING)
-                .breed("믹스견")
-                .species("강아지")
-                .sex(Sex.M)
-                .age("10")
-                .weight("5kg")
-                .furColor("흰색")
-                .neutering(Neutering.Y)
-                .significant("특이사항 없음")
-                .foundLocation("서울시 광진구")
-                .noticeNumber("12345")
-                .noticeStartDate(LocalDate.now())
-                .noticeEndDate(LocalDate.now().plusDays(10))
-                .careName("광진보호소")
-                .careTel("02-123-4567")
-                .authority("광진구청")
-                .date(LocalDate.now())
-                .address("서울시 광진구")
-                .latitude(BigDecimal.valueOf(37.12345))
-                .longitude(BigDecimal.valueOf(127.12345))
-                .user(user)
-                .build();
         protectingReportRepository.saveAndFlush(report);
 
-        String originalImageUrl = "https://cdn.findyou.store/random1.jpg";
-        ReportImage reportImage = ReportImage.createReportImage(originalImageUrl, report);
-
-        reportImageRepository.saveAndFlush(reportImage);
+        String originalImageUrl = "https://img.com/1.png";
 
         when(restTemplate.getForObject(eq(originalImageUrl),eq(byte[].class)))
                 .thenReturn(new byte[]{1, 2, 3});
