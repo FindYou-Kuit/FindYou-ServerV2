@@ -121,7 +121,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         when(r3.getReportImages()).thenReturn(Collections.emptyList());
 
         when(protectingReportRepository.findByCreatedAtBetween(any(), any()))
-                .thenReturn(new ArrayList<>(List.of(r1, r2)));
+                .thenReturn(new ArrayList<>(List.of(r1, r2, r3)));
 
         when(protectingReportDetailStrategy.toDetailDto(any(), anyList(), eq(false)))
                 .thenReturn(mock(ProtectingReportDetailResponseDTO.class));
