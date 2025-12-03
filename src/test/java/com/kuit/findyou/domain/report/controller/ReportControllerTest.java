@@ -1,14 +1,10 @@
 package com.kuit.findyou.domain.report.controller;
 
-import com.kuit.findyou.domain.image.model.ReportImage;
 import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
-import com.kuit.findyou.domain.report.model.Neutering;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
-import com.kuit.findyou.domain.report.model.ReportTag;
-import com.kuit.findyou.domain.report.model.Sex;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
@@ -30,7 +26,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -564,39 +559,11 @@ class ReportControllerTest {
     void getRandomProtectingReportsWithS3_success() {
         // given
         User user = testInitializer.createTestUser();
-
-        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        ProtectingReport report = ProtectingReport.builder()
-                .tag(ReportTag.PROTECTING)
-                .breed("믹스견")
-                .species("강아지")
-                .sex(Sex.M)
-                .age("10")
-                .weight("5kg")
-                .furColor("흰색")
-                .neutering(Neutering.Y)
-                .significant("특이사항 없음")
-                .foundLocation("서울시 광진구")
-                .noticeNumber("12345")
-                .noticeStartDate(LocalDate.now())
-                .noticeEndDate(LocalDate.now().plusDays(10))
-                .careName("광진보호소")
-                .careTel("02-123-4567")
-                .authority("광진구청")
-                .date(LocalDate.now())
-                .address("서울시 광진구")
-                .latitude(BigDecimal.valueOf(37.12345))
-                .longitude(BigDecimal.valueOf(127.12345))
-                .user(user)
-                .build();
+        ProtectingReport report = testInitializer.createTestProtectingReportWithImage(user);
 
         protectingReportRepository.saveAndFlush(report);
 
-        String originalImageUrl = "https://cdn.findyou.store/random1.jpg";
-        ReportImage reportImage = ReportImage.createReportImage(originalImageUrl, report);
-
-        reportImageRepository.saveAndFlush(reportImage);
+        String originalImageUrl = "https://img.com/1.png";
 
         when(restTemplate.getForObject(eq(originalImageUrl),eq(byte[].class)))
                 .thenReturn(new byte[]{1, 2, 3});
@@ -606,13 +573,13 @@ class ReportControllerTest {
 
         // when & then
         given()
-                .header("Authorization", "Bearer " + accessToken)
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .param("count", 1)
         .when()
                 .get("/api/v2/reports/protecting-reports/random-s3")
         .then()
+                .log().all()
                 .statusCode(200)
                 .body("success", equalTo(true))
                 .body("code", equalTo(200))
@@ -621,5 +588,23 @@ class ReportControllerTest {
                 .body("data[0].breed", equalTo("믹스견"))
                 .body("data[0].tag", equalTo("보호중"))
                 .body("data[0].careName", equalTo("광진보호소"));
+    }
+
+    @Test
+    @DisplayName("보호글이 없을 경우 -> 204 No Content 응답 (Body 없음)")
+    void getRandomProtectingReportsWithS3_noContent() {
+        // given
+        //DB에 아무것도 저장하지 않음 (빈 상태)
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/protecting-reports/random-s3")
+                .then()
+                .log().all()
+                .statusCode(204);
     }
 }
