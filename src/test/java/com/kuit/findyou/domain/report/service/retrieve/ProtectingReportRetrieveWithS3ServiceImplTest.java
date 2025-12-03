@@ -52,7 +52,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
     private ProtectingReportRetrieveWithS3ServiceImpl protectingReportRetrieveWithS3Service;
 
     @Test
-    @DisplayName("어제, 오늘 게시된 보호글이 하나도 없으면 204")
+    @DisplayName("어제, 오늘 게시된 보호글이 하나도 없으면 빈 리스트를 반환")
     void getRandomProtectingReportsWithS3_whenNoReports_thenThrow() {
         // given
         when(protectingReportRepository.findByCreatedAtBetween(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Collections.emptyList());
