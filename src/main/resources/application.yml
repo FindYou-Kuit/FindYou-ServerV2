@@ -153,8 +153,9 @@ logging:
 
 findyou:
   jwt:
-    access:
-      expire-ms: ${JWT_ACCESS_EXPIRE_MS}
+    expiration-ms:
+      access-token : ${JWT_ACCESS_EXPIRE_MS}
+      refresh-token : ${JWT_REFRESH_EXPIRE_MS}
     secret-key : ${JWT_SECRET_KEY}
   home-stats:
     parsing-timeout-sec: ${HOME_STATS_PARSING_TIMEOUT_SEC}

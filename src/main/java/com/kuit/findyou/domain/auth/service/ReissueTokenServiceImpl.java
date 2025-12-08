@@ -1,0 +1,49 @@
+package com.kuit.findyou.domain.auth.service;
+
+import com.kuit.findyou.domain.auth.dto.ReissueTokenRequest;
+import com.kuit.findyou.domain.auth.dto.ReissueTokenResponse;
+import com.kuit.findyou.domain.auth.repository.RedisRefreshTokenRepository;
+import com.kuit.findyou.domain.user.model.User;
+import com.kuit.findyou.domain.user.repository.UserRepository;
+import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.global.jwt.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
+
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class ReissueTokenServiceImpl implements ReissueTokenService {
+    private final JwtUtil jwtUtil;
+    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private final UserRepository userRepository;
+    @Override
+    public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
+        log.info("[reissueToken] 토큰 재발급 시작");
+        // 리프레시 토큰 만료 여부 검증
+        if(jwtUtil.isExpired(request.refreshToken())){
+            throw new CustomException(EXPIRED_JWT);
+        }
+        Long userId = jwtUtil.getUserId(request.refreshToken());
+
+        // 리프레시 토큰 찾기
+        // 없으면 에러
+        String foundRefreshToken = redisRefreshTokenRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(REFRESH_TOKEN_NOT_FOUND));
+
+        // 토큰이 일치하면 토큰 재발급
+        if(!foundRefreshToken.equals(request.refreshToken())){
+            throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
+        String refreshToken = jwtUtil.createRefreshJwt(user.getId());
+
+        return new ReissueTokenResponse(accessToken, refreshToken);
+    }
+}

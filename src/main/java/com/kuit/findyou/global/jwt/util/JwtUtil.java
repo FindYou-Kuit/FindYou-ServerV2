@@ -24,8 +24,11 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class JwtUtil {
     private final SecretKey secretKey;
 
-    @Value("${findyou.jwt.access.expire-ms}")
+    @Value("${findyou.jwt.expiration-ms.access-token}")
     private long accessTokenExpireMs;
+
+    @Value("${findyou.jwt.expiration-ms.refresh-token}")
+    private long refreshTokenExpireMs;
 
     public JwtUtil(@Value("${findyou.jwt.secret-key}") String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -57,6 +60,16 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String createRefreshJwt(Long userId) {
+        return Jwts.builder()
+                .claim(JwtClaimKey.USER_ID.getKey(), userId)
+                .claim(JwtClaimKey.TOKEN_TYPE.getKey(), JwtTokenType.REFRESH_TOKEN)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpireMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
     public void validateJwt(String token){
         log.info("validateJwt");
         try{
@@ -70,5 +83,15 @@ public class JwtUtil {
         } catch (IllegalArgumentException e) {
             throw new JwtNotFoundException(JWT_NOT_FOUND);
         }
+    }
+
+    public boolean isExpired(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration()
+                .before(new Date());
     }
 }
