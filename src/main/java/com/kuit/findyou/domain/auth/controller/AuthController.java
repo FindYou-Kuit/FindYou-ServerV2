@@ -1,10 +1,13 @@
 package com.kuit.findyou.domain.auth.controller;
 
+import com.kuit.findyou.domain.auth.dto.ReissueTokenRequest;
+import com.kuit.findyou.domain.auth.dto.ReissueTokenResponse;
 import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
 import com.kuit.findyou.domain.auth.service.AuthService;
+import com.kuit.findyou.domain.auth.service.ReissueTokenService;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +28,9 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @RequestMapping("api/v2/auth")
 @RestController
 public class AuthController {
+    // todo 퍼사드 패턴 도입
     private final AuthService authService;
+    private final ReissueTokenService reissueTokenService;
 
     @Operation(
             summary = "카카오 로그인 API",
@@ -34,7 +39,7 @@ public class AuthController {
     @PostMapping("/login/kakao")
     @CustomExceptionDescription(KAKAO_LOGIN)
     public BaseResponse<KakaoLoginResponse> kakaoLogin(@RequestBody KakaoLoginRequest request){
-        log.info("[kakaoLogin]");
+        log.info("[kakaoLogin] ");
         return BaseResponse.ok(authService.kakaoLogin(request));
     }
 
@@ -47,5 +52,11 @@ public class AuthController {
     public BaseResponse<GuestLoginResponse> guestLogin(@RequestBody GuestLoginRequest request){
         log.info("[guestLogin] deviceId = {}", request.deviceId());
         return BaseResponse.ok(authService.guestLogin(request));
+    }
+
+    @PostMapping("/reissue/token")
+    public BaseResponse<ReissueTokenResponse> reissueToken(@RequestBody ReissueTokenRequest request){
+        log.debug("[reissueToken] request.refreshToken = {}", request.refreshToken());
+        return BaseResponse.ok(reissueTokenService.reissueToken(request));
     }
 }
