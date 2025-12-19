@@ -29,16 +29,16 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
         }
         Long userId = jwtUtil.getUserId(request.refreshToken());
 
-        // 리프레시 토큰 찾기
-        // 없으면 에러
+        // 저장된 리프레시 토큰이 없으면 에러
         String foundRefreshToken = redisRefreshTokenRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(REFRESH_TOKEN_NOT_FOUND));
 
-        // 토큰이 일치하면 토큰 재발급
+        // 토큰이 일차히자 않으면 에러
         if(!foundRefreshToken.equals(request.refreshToken())){
             throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
         }
 
+        // 토큰이 일치하면 토큰 재발급
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
