@@ -20,4 +20,9 @@ public class RedisRefreshTokenRepositoryImpl implements RedisRefreshTokenReposit
         String value = redisTemplate.opsForValue().get(key(userId));
         return Optional.ofNullable(value);
     }
+
+    @Override
+    public void save(Long userId, String refreshToken) {
+        redisTemplate.opsForValue().set(key(userId), refreshToken);
+    }
 }

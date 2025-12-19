@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
+import com.kuit.findyou.domain.auth.repository.RedisRefreshTokenRepository;
 import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
@@ -22,6 +23,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Service
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
+    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final JwtUtil jwtUtil;
     public KakaoLoginResponse kakaoLogin(KakaoLoginRequest request) {
         log.info("[kakaoLogin] kakaoId = {}", request.kakaoId());
@@ -60,8 +62,11 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(GUEST_LOGIN_FAILED);
         }
 
-        // 응답 반환
+        // 토큰 생성
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-        return new GuestLoginResponse(user.getId(), accessToken);
+        String refreshToken = jwtUtil.createRefreshJwt(user.getId());
+        redisRefreshTokenRepository.save(user.getId(), refreshToken);
+
+        return new GuestLoginResponse(user.getId(), accessToken, refreshToken);
     }
 }
