@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
+import com.kuit.findyou.domain.auth.repository.RedisRefreshTokenRepository;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
@@ -32,8 +33,11 @@ class AuthServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
+    private RedisRefreshTokenRepository redisRefreshTokenRepository;
+    @Mock
     private JwtUtil jwtUtil;
 
+    @DisplayName("카카오 id와 일치하는 사용자가 없다면 isFirstLogin을 true로 반환하여 회원가입을 유도한다")
     @Test
     void should_ReturnfirstLoginWithTrue_When_UserWithKakaoIdNotFound(){
         // given
@@ -48,21 +52,26 @@ class AuthServiceTest {
         assertThat(response.userInfo()).isNull();
     }
 
+    @DisplayName("카카오 id와 일치하는 사용자가 있다면 정보를 리턴한다")
     @Test
     void should_ReturnUserInfo_When_UserWithKakaoIdExists(){
         // given
         final Long KAKAO_ID = 1234L;
         final String ACCESS_TOKEN = "accessToken";
+        final String REFRESH_TOKEN = "accessToken";
         final String NAME = "유저";
 
         User user = mockUser(NAME, Role.USER, KAKAO_ID);
         when(userRepository.findByKakaoId(KAKAO_ID)).thenReturn(Optional.of(user));
         when(jwtUtil.createAccessJwt(user.getId(), user.getRole())).thenReturn(ACCESS_TOKEN);
+        when(jwtUtil.createRefreshJwt(user.getId())).thenReturn(REFRESH_TOKEN);
 
         // when
         KakaoLoginResponse response = authService.kakaoLogin(new KakaoLoginRequest(KAKAO_ID));
 
         // then
+        verify(redisRefreshTokenRepository, times(1)).save(anyLong(), anyString());
+
         assertThat(response.isFirstLogin()).isFalse();
         assertThat(response.userInfo()).isNotNull();
         assertThat(response.userInfo().userId()).isEqualTo(user.getId());
@@ -87,18 +96,23 @@ class AuthServiceTest {
         // given
         final String deviceId = "asdf-1234-asdf";
         final String accessToken = "accessToken";
+        final String refreshToken = "refreshToken";
 
         User user = mockUser("게스트", Role.GUEST, null);
         when(userRepository.findByDeviceId(eq(deviceId))).thenReturn(Optional.of(user));
-        when(jwtUtil.createAccessJwt(user.getId(), user.getRole())).thenReturn(accessToken);
+        when(jwtUtil.createAccessJwt(anyLong(), any(Role.class))).thenReturn(accessToken);
+        when(jwtUtil.createRefreshJwt(anyLong())).thenReturn(refreshToken);
 
         // when
         GuestLoginResponse response = authService.guestLogin(new GuestLoginRequest(deviceId));
 
         // then
         verify(userRepository, never()).save(any());
+        verify(redisRefreshTokenRepository, times(1)).save(anyLong(), anyString());
+
         assertThat(response.userId()).isEqualTo(user.getId());
         assertThat(response.accessToken()).isEqualTo(accessToken);
+        assertThat(response.refreshToken()).isEqualTo(refreshToken);
     }
 
     @DisplayName("디바이스 id가 일치하는 유저가 없으면 새로 게스트를 저장한다")
@@ -107,19 +121,24 @@ class AuthServiceTest {
         // given
         final String deviceId = "asdf-1234-asdf";
         final String accessToken = "accessToken";
+        final String refreshToken = "refreshToken";
 
         User user = mockUser("게스트", Role.GUEST, null);
         when(userRepository.findByDeviceId(eq(deviceId))).thenReturn(Optional.empty());
         when(userRepository.save(any())).thenReturn(user);
-        when(jwtUtil.createAccessJwt(user.getId(), user.getRole())).thenReturn(accessToken);
+        when(jwtUtil.createAccessJwt(anyLong(), any(Role.class))).thenReturn(accessToken);
+        when(jwtUtil.createRefreshJwt(anyLong())).thenReturn(refreshToken);
 
         // when
         GuestLoginResponse response = authService.guestLogin(new GuestLoginRequest(deviceId));
 
         // then
         verify(userRepository).save(any(User.class));
+        verify(redisRefreshTokenRepository, times(1)).save(anyLong(), anyString());
+
         assertThat(response.userId()).isEqualTo(user.getId());
         assertThat(response.accessToken()).isEqualTo(accessToken);
+        assertThat(response.refreshToken()).isEqualTo(refreshToken);
     }
 
     @DisplayName("게스트가 아니면 예외가 발생한다.")
