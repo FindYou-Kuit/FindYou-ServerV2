@@ -31,12 +31,16 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByKakaoId(request.kakaoId())
                 .map(loginUser -> {
                     log.info("[kakaoLogin] user found");
-                    String token = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
-                    return KakaoLoginResponse.fromUserAndAccessToken(loginUser, token);
+                    String accessToken = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
+                    String refreshToken = jwtUtil.createRefreshJwt(loginUser.getId());
+
+                    redisRefreshTokenRepository.save(loginUser.getId(), refreshToken);
+
+                    return KakaoLoginResponse.fromUserAndTokens(loginUser, accessToken, refreshToken);
                 })
                 .orElseGet(() -> {
                     log.info("[kakaoLogin] user not found");
-                    return KakaoLoginResponse.notFound();
+                    return KakaoLoginResponse.firstLogin();
                 });
     }
 
