@@ -6,7 +6,7 @@ import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
-import com.kuit.findyou.domain.auth.service.AuthService;
+import com.kuit.findyou.domain.auth.service.LoginService;
 import com.kuit.findyou.domain.auth.service.ReissueTokenService;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
@@ -29,7 +29,7 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @RestController
 public class AuthController {
     // todo 퍼사드 패턴 도입
-    private final AuthService authService;
+    private final LoginService loginService;
     private final ReissueTokenService reissueTokenService;
 
     @Operation(
@@ -40,7 +40,7 @@ public class AuthController {
     @CustomExceptionDescription(KAKAO_LOGIN)
     public BaseResponse<KakaoLoginResponse> kakaoLogin(@RequestBody KakaoLoginRequest request){
         log.info("[kakaoLogin] ");
-        return BaseResponse.ok(authService.kakaoLogin(request));
+        return BaseResponse.ok(loginService.kakaoLogin(request));
     }
 
     @Operation(
@@ -51,7 +51,7 @@ public class AuthController {
     @CustomExceptionDescription(GUEST_LOGIN)
     public BaseResponse<GuestLoginResponse> guestLogin(@RequestBody GuestLoginRequest request){
         log.info("[guestLogin] deviceId = {}", request.deviceId());
-        return BaseResponse.ok(authService.guestLogin(request));
+        return BaseResponse.ok(loginService.guestLogin(request));
     }
 
     @PostMapping("/reissue/token")

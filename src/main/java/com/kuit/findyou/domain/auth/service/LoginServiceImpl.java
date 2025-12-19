@@ -21,7 +21,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImpl implements AuthService {
+public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
     private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final JwtUtil jwtUtil;

@@ -27,9 +27,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class LoginServiceTest {
     @InjectMocks
-    private AuthServiceImpl authService;
+    private LoginServiceImpl authService;
     @Mock
     private UserRepository userRepository;
     @Mock
