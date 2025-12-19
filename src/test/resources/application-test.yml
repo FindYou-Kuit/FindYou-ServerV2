@@ -32,6 +32,7 @@ findyou:
       access-token : 6000000
       refresh-token : 6000000
     secret-key : secretkey1224secretkey1224secretkey1224secretkey1224
+    refresh-token-redis-key-prefix: "refresh-token-redis-key-prefix:"
   home-stats:
     parsing-timeout-sec: 20
 
