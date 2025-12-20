@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -62,6 +63,7 @@ public class JwtUtil {
 
     public String createRefreshJwt(Long userId) {
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .claim(JwtClaimKey.USER_ID.getKey(), userId)
                 .claim(JwtClaimKey.TOKEN_TYPE.getKey(), JwtTokenType.REFRESH_TOKEN)
                 .issuedAt(new Date(System.currentTimeMillis()))
