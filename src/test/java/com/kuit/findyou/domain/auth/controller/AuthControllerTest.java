@@ -232,7 +232,7 @@ class AuthControllerTest {
     @DisplayName("리프레시 토큰이 일치하지 않으면 404 코드를 응답한다")
     @Test
     void reissueToken_shouldReturnNotFound_WhenRefreshTokenIsNotMatched(){
-// given
+        // given
         User user = createUser("회원", Role.USER, null, "asdf-1234-asdf");
         String unknownRefreshToken = jwtUtil.createRefreshJwt(user.getId());
         String savedRefreshToken = jwtUtil.createRefreshJwt(user.getId());
