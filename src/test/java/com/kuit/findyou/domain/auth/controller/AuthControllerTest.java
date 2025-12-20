@@ -13,6 +13,7 @@ import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.response.BaseErrorResponse;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
+import com.kuit.findyou.global.config.RedisTestContainersConfig;
 import com.kuit.findyou.global.config.TestDatabaseConfig;
 import com.kuit.findyou.global.jwt.util.JwtClaimKey;
 import com.kuit.findyou.global.jwt.util.JwtTokenType;
@@ -42,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-@Import(TestDatabaseConfig.class)
+@Import({RedisTestContainersConfig.class, TestDatabaseConfig.class})
 class AuthControllerTest {
     @LocalServerPort
     int port;
