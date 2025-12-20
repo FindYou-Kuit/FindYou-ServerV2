@@ -30,16 +30,14 @@ public class LoginServiceImpl implements LoginService {
 
         return userRepository.findByKakaoId(request.kakaoId())
                 .map(loginUser -> {
-                    log.info("[kakaoLogin] user found");
                     String accessToken = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
                     String refreshToken = jwtUtil.createRefreshJwt(loginUser.getId());
-
                     redisRefreshTokenRepository.save(loginUser.getId(), refreshToken);
-
+                    log.info("[kakaoLogin] 카카오 로그인 성공");
                     return KakaoLoginResponse.fromUserAndTokens(loginUser, accessToken, refreshToken);
                 })
                 .orElseGet(() -> {
-                    log.info("[kakaoLogin] user not found");
+                    log.info("[kakaoLogin] 일치하는 유저가 없어서 카카오 로그인 실패");
                     return KakaoLoginResponse.firstLogin();
                 });
     }
@@ -52,6 +50,7 @@ public class LoginServiceImpl implements LoginService {
         User user = userRepository.findByDeviceId(request.deviceId())
                 .orElseGet(()->{
                     // 디바이스 id에 해당하는 유저가 없으면 게스트 추가
+                    log.info("[guestLogin] 새로운 게스트 추가");
                     User build = User.builder()
                             .name("게스트")
                             .profileImageUrl(DefaultProfileImage.DEFAULT.getName())
@@ -63,6 +62,7 @@ public class LoginServiceImpl implements LoginService {
 
         // 게스트가 아니면 로그인 실패
         if(!user.isGuest()){
+            log.info("[guestLogin] 게스트 권한이 없어서 게스트 로그인 실패");
             throw new CustomException(GUEST_LOGIN_FAILED);
         }
 
@@ -70,7 +70,7 @@ public class LoginServiceImpl implements LoginService {
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
         String refreshToken = jwtUtil.createRefreshJwt(user.getId());
         redisRefreshTokenRepository.save(user.getId(), refreshToken);
-
+        log.info("[guestLogin] 게스트 로그인 성공");
         return new GuestLoginResponse(user.getId(), accessToken, refreshToken);
     }
 }
