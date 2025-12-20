@@ -7,6 +7,7 @@ import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
+import com.kuit.findyou.global.jwt.exception.JwtExpiredException;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,6 @@ class ReissueTokenServiceImplTest {
 
         ReissueTokenRequest request = new ReissueTokenRequest(existingRefreshToken);
 
-        when(jwtUtil.isExpired(any(String.class))).thenReturn(false);
         when(jwtUtil.getUserId(any(String.class))).thenReturn(userId);
         when(redisRefreshTokenRepository.findByUserId(any(Long.class))).thenReturn(Optional.of(existingRefreshToken));
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
@@ -70,7 +70,8 @@ class ReissueTokenServiceImplTest {
     void reissueToken_shouldThrowException_whenInvalidRefreshToken(){
         // given
         ReissueTokenRequest request = new ReissueTokenRequest("expired refresh");
-        when(jwtUtil.isExpired(any(String.class))).thenReturn(true);
+
+        doThrow(new JwtExpiredException(EXPIRED_JWT)).when(jwtUtil).validateJwt(anyString());
 
         // when & then
         assertThatThrownBy(() -> reissueTokenService.reissueToken(request))
@@ -86,7 +87,6 @@ class ReissueTokenServiceImplTest {
 
         ReissueTokenRequest request = new ReissueTokenRequest("old refresh");
 
-        when(jwtUtil.isExpired(any(String.class))).thenReturn(false);
         when(jwtUtil.getUserId(any(String.class))).thenReturn(userId);
         when(redisRefreshTokenRepository.findByUserId(any(Long.class))).thenReturn(Optional.of("valid refresh"));
 
