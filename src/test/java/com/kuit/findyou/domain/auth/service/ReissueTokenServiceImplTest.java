@@ -61,6 +61,8 @@ class ReissueTokenServiceImplTest {
         ReissueTokenResponse response = reissueTokenService.reissueToken(request);
 
         // then
+        verify(redisRefreshTokenRepository, times(1)).save(anyLong(), anyString());
+
         assertThat(response.accessToken()).isEqualTo(newAccessToken);
         assertThat(response.refreshToken()).isEqualTo(newRefreshToken);
     }
@@ -74,6 +76,8 @@ class ReissueTokenServiceImplTest {
         doThrow(new JwtExpiredException(EXPIRED_JWT)).when(jwtUtil).validateJwt(anyString());
 
         // when & then
+        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
+
         assertThatThrownBy(() -> reissueTokenService.reissueToken(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(EXPIRED_JWT.getMessage());
@@ -91,6 +95,8 @@ class ReissueTokenServiceImplTest {
         when(redisRefreshTokenRepository.findByUserId(any(Long.class))).thenReturn(Optional.of("valid refresh"));
 
         // when & then
+        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
+
         assertThatThrownBy(() -> reissueTokenService.reissueToken(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(REFRESH_TOKEN_NOT_FOUND.getMessage());
