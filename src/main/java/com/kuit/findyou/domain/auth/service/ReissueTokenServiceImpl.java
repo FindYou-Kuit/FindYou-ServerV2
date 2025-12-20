@@ -30,10 +30,14 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
 
         // 저장된 리프레시 토큰이 없으면 에러
         String foundRefreshToken = redisRefreshTokenRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(REFRESH_TOKEN_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.info("[reissueToken] 토큰이 존재하지 않음");
+                    return new CustomException(REFRESH_TOKEN_NOT_FOUND);
+                });
 
         // 토큰이 일차히지 않으면 에러
         if(!foundRefreshToken.equals(request.refreshToken())){
+            log.info("[reissueToken] 토큰이 일치하지 않음");
             throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
         }
 
@@ -43,6 +47,9 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
         String refreshToken = jwtUtil.createRefreshJwt(user.getId());
 
+        redisRefreshTokenRepository.save(user.getId(), refreshToken);
+
+        log.info("[reissueToken] 토큰 재발급 완료");
         return new ReissueTokenResponse(accessToken, refreshToken);
     }
 }
