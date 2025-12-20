@@ -30,6 +30,14 @@ public enum SwaggerResponseDescription {
             GUEST_LOGIN_FAILED
     ))),
 
+    REISSUE_TOKEN(new LinkedHashSet<>(Set.of(
+            INVALID_JWT,
+            EXPIRED_JWT,
+            JWT_NOT_FOUND,
+            REFRESH_TOKEN_NOT_FOUND,
+            USER_NOT_FOUND
+    ))),
+
     KAKAO_LOGIN(new LinkedHashSet<>(Set.of())),
 
     TEST(new LinkedHashSet<>(Set.of(
