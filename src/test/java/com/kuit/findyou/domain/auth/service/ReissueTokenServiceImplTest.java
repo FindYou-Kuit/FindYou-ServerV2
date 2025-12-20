@@ -76,11 +76,11 @@ class ReissueTokenServiceImplTest {
         doThrow(new JwtExpiredException(EXPIRED_JWT)).when(jwtUtil).validateJwt(anyString());
 
         // when & then
-        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
-
         assertThatThrownBy(() -> reissueTokenService.reissueToken(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(EXPIRED_JWT.getMessage());
+
+        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
     }
 
     @DisplayName("리프레시 토큰이 저장된 리프레시 토큰과 일치하지 않으면 예외를 발생시킨다")
@@ -95,11 +95,12 @@ class ReissueTokenServiceImplTest {
         when(redisRefreshTokenRepository.findByUserId(any(Long.class))).thenReturn(Optional.of("valid refresh"));
 
         // when & then
-        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
-
         assertThatThrownBy(() -> reissueTokenService.reissueToken(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(REFRESH_TOKEN_NOT_FOUND.getMessage());
+
+        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
+
     }
 
     @DisplayName("저장된 리프레시 토큰이 없으면 예외를 발생시킨다")
@@ -114,10 +115,10 @@ class ReissueTokenServiceImplTest {
         when(redisRefreshTokenRepository.findByUserId(any(Long.class))).thenReturn(Optional.empty());
 
         // when & then
-        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
-
         assertThatThrownBy(() -> reissueTokenService.reissueToken(request))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(REFRESH_TOKEN_NOT_FOUND.getMessage());
+
+        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
     }
 }
