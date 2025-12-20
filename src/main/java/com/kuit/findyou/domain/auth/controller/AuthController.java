@@ -35,7 +35,6 @@ public class AuthController {
     @CustomExceptionDescription(KAKAO_LOGIN)
     @PostMapping("/login/kakao")
     public BaseResponse<KakaoLoginResponse> kakaoLogin(@RequestBody KakaoLoginRequest request){
-        log.info("[kakaoLogin] ");
         return BaseResponse.ok(authServiceFacade.kakaoLogin(request));
     }
 
@@ -57,7 +56,6 @@ public class AuthController {
     @CustomExceptionDescription(REISSUE_TOKEN)
     @PostMapping("/reissue/token")
     public BaseResponse<ReissueTokenResponse> reissueToken(@RequestBody ReissueTokenRequest request){
-        log.debug("[reissueToken] request.refreshToken = {}", request.refreshToken());
         return BaseResponse.ok(authServiceFacade.reissueToken(request));
     }
 }
