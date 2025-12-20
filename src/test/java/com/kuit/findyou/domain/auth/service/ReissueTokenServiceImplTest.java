@@ -101,4 +101,23 @@ class ReissueTokenServiceImplTest {
                 .isInstanceOf(CustomException.class)
                 .hasMessage(REFRESH_TOKEN_NOT_FOUND.getMessage());
     }
+
+    @DisplayName("저장된 리프레시 토큰이 없으면 예외를 발생시킨다")
+    @Test
+    void reissueToken_shouldThrowException_whenNoSavedRefreshToken(){
+        // given
+        Long userId = 1L;
+
+        ReissueTokenRequest request = new ReissueTokenRequest("refresh");
+
+        when(jwtUtil.getUserId(any(String.class))).thenReturn(userId);
+        when(redisRefreshTokenRepository.findByUserId(any(Long.class))).thenReturn(Optional.empty());
+
+        // when & then
+        verify(redisRefreshTokenRepository, never()).save(anyLong(), anyString());
+
+        assertThatThrownBy(() -> reissueTokenService.reissueToken(request))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(REFRESH_TOKEN_NOT_FOUND.getMessage());
+    }
 }
