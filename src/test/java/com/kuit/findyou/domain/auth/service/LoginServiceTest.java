@@ -76,6 +76,7 @@ class LoginServiceTest {
         assertThat(response.userInfo()).isNotNull();
         assertThat(response.userInfo().userId()).isEqualTo(user.getId());
         assertThat(response.userInfo().accessToken()).isEqualTo(ACCESS_TOKEN);
+        assertThat(response.userInfo().refreshToken()).isEqualTo(REFRESH_TOKEN);
         assertThat(response.userInfo().nickname()).isEqualTo(NAME);
     }
 
