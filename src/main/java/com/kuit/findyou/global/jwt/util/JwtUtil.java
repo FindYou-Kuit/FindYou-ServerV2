@@ -84,14 +84,4 @@ public class JwtUtil {
             throw new JwtNotFoundException(JWT_NOT_FOUND);
         }
     }
-
-    public boolean isExpired(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
-    }
 }

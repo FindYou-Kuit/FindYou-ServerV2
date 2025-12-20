@@ -23,17 +23,16 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
     @Override
     public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
         log.info("[reissueToken] 토큰 재발급 시작");
-        // 리프레시 토큰 만료 여부 검증
-        if(jwtUtil.isExpired(request.refreshToken())){
-            throw new CustomException(EXPIRED_JWT);
-        }
+        // 리프레시 토큰 검증
+        jwtUtil.validateJwt(request.refreshToken());
+
         Long userId = jwtUtil.getUserId(request.refreshToken());
 
         // 저장된 리프레시 토큰이 없으면 에러
         String foundRefreshToken = redisRefreshTokenRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(REFRESH_TOKEN_NOT_FOUND));
 
-        // 토큰이 일차히자 않으면 에러
+        // 토큰이 일차히지 않으면 에러
         if(!foundRefreshToken.equals(request.refreshToken())){
             throw new CustomException(REFRESH_TOKEN_NOT_FOUND);
         }
