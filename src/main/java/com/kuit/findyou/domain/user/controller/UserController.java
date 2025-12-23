@@ -1,8 +1,10 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.user.dto.request.CheckGuestRequest;
 import com.kuit.findyou.domain.user.dto.request.*;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
+import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
@@ -179,5 +181,10 @@ public class UserController {
     @GetMapping("/me")
     public BaseResponse<GetUserProfileResponse> getUserProfile(@Parameter(hidden = true) @LoginUserId Long userId){
         return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
+    }
+
+    @PostMapping("/me/check/guest")
+    public BaseResponse<CheckGuestResponse> checkGuest(@LoginUserId Long userId){
+        return BaseResponse.ok(userServiceFacade.checkGuest(userId));
     }
 }
