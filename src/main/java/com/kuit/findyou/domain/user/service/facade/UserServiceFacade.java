@@ -74,6 +74,6 @@ public class UserServiceFacade {
     }
 
     public CheckGuestResponse checkGuest(Long userId) {
-        return null;
+        return queryUserService.checkGuest(userId);
     }
 }
