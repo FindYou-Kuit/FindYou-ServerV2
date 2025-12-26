@@ -1,7 +1,6 @@
 package com.kuit.findyou.domain.user.controller;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
-import com.kuit.findyou.domain.user.dto.request.CheckGuestRequest;
 import com.kuit.findyou.domain.user.dto.request.*;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
