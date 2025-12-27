@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,9 +34,8 @@ public class ProtectingReportRetrieveWithS3ServiceImpl implements ProtectingRepo
     @Transactional(readOnly = true)
     public List<ProtectingReportDetailResponseDTO> getRandomProtectingReportsWithS3(int count) {
 
-        LocalDateTime end = LocalDate.now().atTime(LocalTime.MAX);
-        LocalDateTime start = LocalDate.now().minusDays(1).atStartOfDay();
-        List<ProtectingReport> allReports = protectingReportRepository.findByCreatedAtBetween(start, end);
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        List<ProtectingReport> allReports = protectingReportRepository.findByDate(yesterday);
 
         if(allReports.isEmpty()) {
             //204 no content
@@ -47,7 +44,8 @@ public class ProtectingReportRetrieveWithS3ServiceImpl implements ProtectingRepo
 
         Collections.shuffle(allReports);
 
-        List<ProtectingReport> selectedReports = allReports.stream().limit(count).toList();
+        int limit = Math.max(1, count);
+        List<ProtectingReport> selectedReports = allReports.stream().limit(limit).toList();
 
         List<ProtectingReportDetailResponseDTO> result = new ArrayList<>();
 
