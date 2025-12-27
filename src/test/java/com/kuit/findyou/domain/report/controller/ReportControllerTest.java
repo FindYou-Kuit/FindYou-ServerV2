@@ -24,6 +24,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -560,7 +561,7 @@ class ReportControllerTest {
         // given
         User user = testInitializer.createTestUser();
         ProtectingReport report = testInitializer.createTestProtectingReportWithImage(user);
-
+        ReflectionTestUtils.setField(report, "date", LocalDate.now().minusDays(1));
         protectingReportRepository.saveAndFlush(report);
 
         String originalImageUrl = "https://img.com/1.png";
