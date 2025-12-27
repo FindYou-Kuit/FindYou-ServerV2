@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,6 @@ public interface ProtectingReportRepository extends JpaRepository<ProtectingRepo
 
     List<ProtectingReport> findByNoticeNumberIn(Set<String> noticeNumbers);
 
-    List<ProtectingReport> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    List<ProtectingReport> findByDate(LocalDate date);
 }
 
