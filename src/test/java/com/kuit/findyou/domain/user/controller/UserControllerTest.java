@@ -6,6 +6,7 @@ import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
+import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
@@ -885,5 +886,49 @@ class UserControllerTest {
                 .body("success", equalTo(FORBIDDEN.getSuccess()))
                 .body("code", equalTo(FORBIDDEN.getCode()))
                 .body("message", equalTo(FORBIDDEN.getMessage()));
+    }
+
+    @Test
+    @DisplayName("게스트는 게스트로 조회된다")
+    void checkGuest_shouldReturnTrue_WhenGuest() {
+        // given
+        User guest = testInitializer.createTestGuest();
+        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        // when
+        CheckGuestResponse response = given()
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .post("/api/v2/users/me/check/guest")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", CheckGuestResponse.class);
+
+        // then
+        assertThat(response.isGuest()).isTrue();
+    }
+
+    @Test
+    @DisplayName("게스트가 아닌 사용자는 게스트가 아니라고 조회된다 ")
+    void checkGuest_shouldReturnFalse_WhenNonGuest() {
+        // given
+        User guest = testInitializer.createTestUser();
+        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
+
+        // when
+        CheckGuestResponse response = given()
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .post("/api/v2/users/me/check/guest")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getObject("data", CheckGuestResponse.class);
+
+        // then
+        assertThat(response.isGuest()).isFalse();
     }
 }

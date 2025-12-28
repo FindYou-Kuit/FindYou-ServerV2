@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.user.service.facade;
 
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
+import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.ChangeProfileImageRequest;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
@@ -70,5 +71,9 @@ public class UserServiceFacade {
 
     public GetUserProfileResponse getUserProfile(Long userId) {
         return queryUserService.getUserProfile(userId);
+    }
+
+    public CheckGuestResponse checkGuest(Long userId) {
+        return queryUserService.checkGuest(userId);
     }
 }

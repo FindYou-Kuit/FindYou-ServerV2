@@ -3,6 +3,7 @@ package com.kuit.findyou.domain.user.controller;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.user.dto.request.*;
 import com.kuit.findyou.domain.user.dto.request.AddInterestAnimalRequest;
+import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.ChangeNicknameRequestDTO;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
@@ -179,5 +180,15 @@ public class UserController {
     @GetMapping("/me")
     public BaseResponse<GetUserProfileResponse> getUserProfile(@Parameter(hidden = true) @LoginUserId Long userId){
         return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
+    }
+
+    @Operation(
+            summary = "게스트 여부 조회 API",
+            description = "사용자가 게스트인지 여부를 조회합니다. 게스트이면 true를 반환합니다"
+    )
+    @CustomExceptionDescription(DEFAULT)
+    @PostMapping("/me/check/guest")
+    public BaseResponse<CheckGuestResponse> checkGuest(@LoginUserId Long userId){
+        return BaseResponse.ok(userServiceFacade.checkGuest(userId));
     }
 }
