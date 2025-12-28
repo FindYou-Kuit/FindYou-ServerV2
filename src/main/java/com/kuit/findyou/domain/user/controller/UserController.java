@@ -182,6 +182,11 @@ public class UserController {
         return BaseResponse.ok(userServiceFacade.getUserProfile(userId));
     }
 
+    @Operation(
+            summary = "게스트 여부 조회 API",
+            description = "사용자가 게스트인지 여부를 조회합니다. 게스트이면 true를 반환합니다"
+    )
+    @CustomExceptionDescription(DEFAULT)
     @PostMapping("/me/check/guest")
     public BaseResponse<CheckGuestResponse> checkGuest(@LoginUserId Long userId){
         return BaseResponse.ok(userServiceFacade.checkGuest(userId));
