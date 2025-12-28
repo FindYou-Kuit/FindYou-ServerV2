@@ -12,10 +12,9 @@ import java.util.Optional;
 @Repository
 public class RedisRefreshTokenRepositoryImpl implements RedisRefreshTokenRepository {
     private final RedisTemplate<String, String> redisTemplate;
+    private final String refreshTokenKeyPrefix = "refresh-token:";
     @Value("${findyou.jwt.expiration-ms.refresh-token}")
     private Long refreshTokenExpireMs;
-    @Value("${findyou.jwt.refresh-token-redis-key-prefix}")
-    private String refreshTokenKeyPrefix;
 
     private String key(Long userId) {
         return refreshTokenKeyPrefix + userId;
