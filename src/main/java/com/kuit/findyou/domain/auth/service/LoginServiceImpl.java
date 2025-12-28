@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
+import com.kuit.findyou.domain.auth.repository.RedisRefreshTokenRepository;
 import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
@@ -20,21 +21,24 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImpl implements AuthService {
+public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
+    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
     private final JwtUtil jwtUtil;
     public KakaoLoginResponse kakaoLogin(KakaoLoginRequest request) {
         log.info("[kakaoLogin] kakaoId = {}", request.kakaoId());
 
         return userRepository.findByKakaoId(request.kakaoId())
                 .map(loginUser -> {
-                    log.info("[kakaoLogin] user found");
-                    String token = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
-                    return KakaoLoginResponse.fromUserAndAccessToken(loginUser, token);
+                    String accessToken = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
+                    String refreshToken = jwtUtil.createRefreshJwt(loginUser.getId());
+                    redisRefreshTokenRepository.save(loginUser.getId(), refreshToken);
+                    log.info("[kakaoLogin] 카카오 로그인 성공");
+                    return KakaoLoginResponse.fromUserAndTokens(loginUser, accessToken, refreshToken);
                 })
                 .orElseGet(() -> {
-                    log.info("[kakaoLogin] user not found");
-                    return KakaoLoginResponse.notFound();
+                    log.info("[kakaoLogin] 일치하는 유저가 없어서 카카오 로그인 실패");
+                    return KakaoLoginResponse.firstLogin();
                 });
     }
 
@@ -46,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByDeviceId(request.deviceId())
                 .orElseGet(()->{
                     // 디바이스 id에 해당하는 유저가 없으면 게스트 추가
+                    log.info("[guestLogin] 새로운 게스트 추가");
                     User build = User.builder()
                             .name("게스트")
                             .profileImageUrl(DefaultProfileImage.DEFAULT.getName())
@@ -57,11 +62,15 @@ public class AuthServiceImpl implements AuthService {
 
         // 게스트가 아니면 로그인 실패
         if(!user.isGuest()){
+            log.info("[guestLogin] 게스트 권한이 없어서 게스트 로그인 실패");
             throw new CustomException(GUEST_LOGIN_FAILED);
         }
 
-        // 응답 반환
+        // 토큰 생성
         String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-        return new GuestLoginResponse(user.getId(), accessToken);
+        String refreshToken = jwtUtil.createRefreshJwt(user.getId());
+        redisRefreshTokenRepository.save(user.getId(), refreshToken);
+        log.info("[guestLogin] 게스트 로그인 성공");
+        return new GuestLoginResponse(user.getId(), accessToken, refreshToken);
     }
 }

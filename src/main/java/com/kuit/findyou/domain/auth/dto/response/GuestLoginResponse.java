@@ -7,6 +7,8 @@ public record GuestLoginResponse (
         @Schema(description = "유저 식별자")
         Long userId,
         @Schema(description = "엑세스 토큰")
-        String accessToken
+        String accessToken,
+        @Schema(description = "리프레시 토큰")
+        String refreshToken
 ){
 }
