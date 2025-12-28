@@ -621,14 +621,6 @@ class ReportControllerTest {
 
         missingReportRepository.saveAndFlush(report);
 
-        String originalImageUrl = "https://img.com/missing.png";
-
-        when(restTemplate.getForObject(eq(originalImageUrl), eq(byte[].class)))
-                .thenReturn(new byte[]{1, 2, 3});
-
-        when(imageUploader.upload(any(byte[].class), anyString(), eq("image/jpeg")))
-                .thenReturn("https://cdn.findyou.store/random-missing1.jpg");
-
         // when & then
         given()
                 .contentType(ContentType.JSON)
@@ -642,7 +634,7 @@ class ReportControllerTest {
                 .body("success", equalTo(true))
                 .body("code", equalTo(200))
                 .body("data.size()", equalTo(1))
-                .body("data[0].imageUrls[0]", equalTo("https://cdn.findyou.store/random-missing1.jpg"))
+                .body("data[0].imageUrls[0]", equalTo("https://img.com/missing.png"))
                 .body("data[0].breed", equalTo("포메라니안"))
                 .body("data[0].tag", equalTo("실종신고"));
     }
