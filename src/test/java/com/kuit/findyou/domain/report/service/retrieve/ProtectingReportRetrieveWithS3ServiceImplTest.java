@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +55,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
     @DisplayName("어제, 오늘 게시된 보호글이 하나도 없으면 빈 리스트를 반환")
     void getRandomProtectingReportsWithS3_whenNoReports_thenThrow() {
         // given
-        when(protectingReportRepository.findByCreatedAtBetween(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Collections.emptyList());
+        when(protectingReportRepository.findByDate(any(LocalDate.class))).thenReturn(Collections.emptyList());
 
         // when
         List<ProtectingReportDetailResponseDTO> result =
@@ -65,7 +65,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         assertThat(result).isEmpty();
 
         verify(protectingReportRepository, times(1))
-                .findByCreatedAtBetween(any(LocalDateTime.class), any(LocalDateTime.class));
+                .findByDate(any(LocalDate.class));
 
         verifyNoInteractions(imageUploader, protectingReportDetailStrategy);
     }
@@ -81,7 +81,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         when(report1.getReportImages()).thenReturn(Collections.<ReportImage>emptyList());
         when(report2.getReportImages()).thenReturn(Collections.<ReportImage>emptyList());
 
-        when(protectingReportRepository.findByCreatedAtBetween(any(), any())).thenReturn(new ArrayList<>(List.of(report1, report2)));
+        when(protectingReportRepository.findByDate(any())).thenReturn(new ArrayList<>(List.of(report1, report2)));
 
         ProtectingReportDetailResponseDTO dto1 = mock(ProtectingReportDetailResponseDTO.class);
         ProtectingReportDetailResponseDTO dto2 = mock(ProtectingReportDetailResponseDTO.class);
@@ -100,7 +100,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
                 .hasSize(2)
                 .containsExactlyInAnyOrder(dto1, dto2);
 
-        verify(protectingReportRepository, times(1)).findByCreatedAtBetween(any(), any());
+        verify(protectingReportRepository, times(1)).findByDate(any());
         verify(protectingReportDetailStrategy, times(2))
                 .toDetailDto(any(ProtectingReport.class), anyList(), eq(false));
 
@@ -120,7 +120,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         when(r2.getReportImages()).thenReturn(Collections.emptyList());
         when(r3.getReportImages()).thenReturn(Collections.emptyList());
 
-        when(protectingReportRepository.findByCreatedAtBetween(any(), any()))
+        when(protectingReportRepository.findByDate(any()))
                 .thenReturn(new ArrayList<>(List.of(r1, r2, r3)));
 
         when(protectingReportDetailStrategy.toDetailDto(any(), anyList(), eq(false)))
@@ -133,7 +133,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         // then
         assertThat(result).hasSize(2);
 
-        verify(protectingReportRepository).findByCreatedAtBetween(any(), any());
+        verify(protectingReportRepository).findByDate(any());
         verify(protectingReportDetailStrategy, times(2))
                 .toDetailDto(any(ProtectingReport.class), anyList(), eq(false));
     }
@@ -150,7 +150,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         when(img1.getImageUrl()).thenReturn("http://localhost:65535/nonexistent");
 
         when(report.getReportImages()).thenReturn(List.of(img1));
-        when(protectingReportRepository.findByCreatedAtBetween(any(), any()))
+        when(protectingReportRepository.findByDate(any()))
                 .thenReturn(new ArrayList<>(List.of(report)));
 
         ProtectingReportDetailResponseDTO dto = mock(ProtectingReportDetailResponseDTO.class);
@@ -179,7 +179,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         when(img2.getImageUrl()).thenReturn("http://example.com/2.jpg");
         when(report.getReportImages()).thenReturn(List.of(img1, img2));
 
-        when(protectingReportRepository.findByCreatedAtBetween(any(), any()))
+        when(protectingReportRepository.findByDate(any()))
                 .thenReturn(new ArrayList<>(List.of(report)));
 
         // RestTemplate 가 바이트 배열 내려줌
@@ -237,7 +237,7 @@ class ProtectingReportRetrieveWithS3ServiceImplTest {
         when(img2.getImageUrl()).thenReturn("http://example.com/2.jpg");
         when(report.getReportImages()).thenReturn(List.of(img1, img2));
 
-        when(protectingReportRepository.findByCreatedAtBetween(any(), any()))
+        when(protectingReportRepository.findByDate(any()))
                 .thenReturn(new ArrayList<>(List.of(report)));
 
         //1번 이미지는 S3 업로드 시 FileUploadingFailedException 발생
