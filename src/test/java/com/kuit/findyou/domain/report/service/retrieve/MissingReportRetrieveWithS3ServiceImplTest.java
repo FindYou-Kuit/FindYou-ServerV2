@@ -5,8 +5,6 @@ import com.kuit.findyou.domain.report.dto.response.MissingReportDetailResponseDT
 import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.repository.MissingReportRepository;
 import com.kuit.findyou.domain.report.service.detail.strategy.MissingReportDetailStrategy;
-import com.kuit.findyou.global.infrastructure.FileUploadingFailedException;
-import com.kuit.findyou.global.infrastructure.ImageUploader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,14 +35,10 @@ class MissingReportRetrieveWithS3ServiceImplTest {
     @Mock
     private MissingReportRepository missingReportRepository;
 
-    @Mock
-    private ImageUploader imageUploader;
 
     @Mock
     private MissingReportDetailStrategy missingReportDetailStrategy;
 
-    @Mock
-    private RestTemplate restTemplate;
 
     @InjectMocks
     private MissingReportRetrieveWithS3ServiceImpl missingReportRetrieveWithS3Service;
@@ -65,7 +58,6 @@ class MissingReportRetrieveWithS3ServiceImplTest {
         assertThat(result).isEmpty();
 
         verify(missingReportRepository, times(1)).findByDate(any(LocalDate.class));
-        verifyNoInteractions(imageUploader, missingReportDetailStrategy);
     }
 
     @Test
@@ -98,7 +90,6 @@ class MissingReportRetrieveWithS3ServiceImplTest {
         verify(missingReportDetailStrategy, times(2))
                 .toDetailDto(any(MissingReport.class), anyList(), eq(false));
 
-        verifyNoInteractions(imageUploader);
     }
 
     @Test
@@ -132,132 +123,6 @@ class MissingReportRetrieveWithS3ServiceImplTest {
     }
 
     @Test
-    @DisplayName("이미지 다운로드에서 예외가 나도 전체 API는 실패하지 않고 DTO는 반환")
-    void getRandomMissingReportsWithS3_whenUnexpectedException_thenContinue() {
-        // given
-        MissingReport report = mock(MissingReport.class);
-        when(report.getId()).thenReturn(1L);
-
-        ReportImage img1 = mock(ReportImage.class);
-        when(img1.getImageUrl()).thenReturn("http://localhost:65535/nonexistent");
-        when(report.getReportImages()).thenReturn(List.of(img1));
-
-        when(missingReportRepository.findByDate(any(LocalDate.class)))
-                .thenReturn(new ArrayList<>(List.of(report)));
-
-        MissingReportDetailResponseDTO dto = mock(MissingReportDetailResponseDTO.class);
-        when(missingReportDetailStrategy.toDetailDto(eq(report), anyList(), eq(false))).thenReturn(dto);
-
-        // RestTemplate이 예외 던지게(다운로드 실패)
-        when(restTemplate.getForObject(anyString(), eq(byte[].class)))
-                .thenThrow(new RuntimeException("다운로드 오류"));
-
-        // when
-        List<MissingReportDetailResponseDTO> result =
-                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(1);
-
-        // then
-        assertThat(result).hasSize(1).containsExactly(dto);
-    }
-
-    @Test
-    @DisplayName("이미지를 정상적으로 받으면 S3 업로드되고 업로드된 URL 리스트가 DTO 생성에 전달된다")
-    void getRandomMissingReportsWithS3_successUploadFlow() {
-        // given
-        MissingReport report = mock(MissingReport.class);
-        when(report.getId()).thenReturn(100L);
-
-        ReportImage img1 = mock(ReportImage.class);
-        ReportImage img2 = mock(ReportImage.class);
-
-        when(img1.getImageUrl()).thenReturn("http://example.com/1.jpg");
-        when(img2.getImageUrl()).thenReturn("http://example.com/2.jpg");
-        when(report.getReportImages()).thenReturn(List.of(img1, img2));
-
-        when(missingReportRepository.findByDate(any(LocalDate.class)))
-                .thenReturn(new ArrayList<>(List.of(report)));
-
-        when(restTemplate.getForObject(eq("http://example.com/1.jpg"), eq(byte[].class)))
-                .thenReturn(new byte[]{1, 2, 3});
-        when(restTemplate.getForObject(eq("http://example.com/2.jpg"), eq(byte[].class)))
-                .thenReturn(new byte[]{4, 5, 6});
-
-        when(imageUploader.upload(any(byte[].class), anyString(), eq("image/jpeg")))
-                .thenReturn("https://s3.findyou.store/1.jpg", "https://s3.findyou.store/2.jpg");
-
-        MissingReportDetailResponseDTO dto = mock(MissingReportDetailResponseDTO.class);
-
-        ArgumentCaptor<List<String>> s3UrlsCaptor = ArgumentCaptor.forClass(List.class);
-        when(missingReportDetailStrategy.toDetailDto(eq(report), s3UrlsCaptor.capture(), eq(false)))
-                .thenReturn(dto);
-
-        // when
-        List<MissingReportDetailResponseDTO> result =
-                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(1);
-
-        // then
-        assertThat(result).hasSize(1).containsExactly(dto);
-
-        List<String> capturedUrls = s3UrlsCaptor.getValue();
-        assertThat(capturedUrls).containsExactly(
-                "https://s3.findyou.store/1.jpg",
-                "https://s3.findyou.store/2.jpg"
-        );
-
-        verify(restTemplate, times(1)).getForObject("http://example.com/1.jpg", byte[].class);
-        verify(restTemplate, times(1)).getForObject("http://example.com/2.jpg", byte[].class);
-        verify(imageUploader, times(2)).upload(any(byte[].class), anyString(), eq("image/jpeg"));
-    }
-
-    @Test
-    @DisplayName("S3 업로드/다운로드에서 예외가 발생해도 DTO는 정상 반환되고, 성공한 URL만 전달된다")
-    void getRandomMissingReportsWithS3_whenUploadFails_thenContinuePerImage() {
-        // given
-        MissingReport report = mock(MissingReport.class);
-        when(report.getId()).thenReturn(200L);
-
-        ReportImage img1 = mock(ReportImage.class);
-        ReportImage img2 = mock(ReportImage.class);
-
-        when(img1.getImageUrl()).thenReturn("http://example.com/1.jpg");
-        when(img2.getImageUrl()).thenReturn("http://example.com/2.jpg");
-        when(report.getReportImages()).thenReturn(List.of(img1, img2));
-
-        when(missingReportRepository.findByDate(any(LocalDate.class)))
-                .thenReturn(new ArrayList<>(List.of(report)));
-
-        // 1번: 다운로드 성공 -> 업로드 실패
-        when(restTemplate.getForObject("http://example.com/1.jpg", byte[].class))
-                .thenReturn(new byte[]{1, 2, 3});
-        when(imageUploader.upload(any(byte[].class), anyString(), eq("image/jpeg")))
-                .thenThrow(new FileUploadingFailedException("업로드 실패"));
-
-        // 2번: 다운로드 자체 실패
-        when(restTemplate.getForObject("http://example.com/2.jpg", byte[].class))
-                .thenThrow(new RuntimeException("다운로드 오류"));
-
-        MissingReportDetailResponseDTO dto = mock(MissingReportDetailResponseDTO.class);
-
-        ArgumentCaptor<List<String>> s3UrlsCaptor = ArgumentCaptor.forClass(List.class);
-        when(missingReportDetailStrategy.toDetailDto(eq(report), s3UrlsCaptor.capture(), eq(false)))
-                .thenReturn(dto);
-
-        // when
-        List<MissingReportDetailResponseDTO> result =
-                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(1);
-
-        // then
-        assertThat(result).hasSize(1).containsExactly(dto);
-
-        // 둘 다 실패했으니 URL은 빈 리스트
-        assertThat(s3UrlsCaptor.getValue()).isEmpty();
-
-        verify(restTemplate, times(1)).getForObject("http://example.com/1.jpg", byte[].class);
-        verify(restTemplate, times(1)).getForObject("http://example.com/2.jpg", byte[].class);
-        verify(imageUploader, times(1)).upload(any(byte[].class), anyString(), eq("image/jpeg"));
-    }
-
-    @Test
     @DisplayName("Repository 조회 날짜가 '어제'로 들어간다")
     void getRandomMissingReportsWithS3_verifyRepositoryDateIsYesterday() {
         // given
@@ -273,4 +138,118 @@ class MissingReportRetrieveWithS3ServiceImplTest {
         verify(missingReportRepository).findByDate(dateCaptor.capture());
         assertThat(dateCaptor.getValue()).isEqualTo(LocalDate.now().minusDays(1));
     }
+    @Test
+    @DisplayName("DB에 저장된 imageUrl을 그대로 DTO에 전달한다")
+    void getRandomMissingReportsWithS3_returnsStoredImageUrls() {
+        MissingReport report = mock(MissingReport.class);
+
+        ReportImage img1 = mock(ReportImage.class);
+        when(img1.getImageUrl()).thenReturn("https://cdn.findyou.store/a.jpg");
+
+        ReportImage img2 = mock(ReportImage.class);
+        when(img2.getImageUrl()).thenReturn("https://cdn.findyou.store/b.jpg");
+
+        when(report.getReportImages()).thenReturn(List.of(img1, img2));
+        when(missingReportRepository.findByDate(any()))
+                .thenReturn(List.of(report));
+
+        MissingReportDetailResponseDTO dto = mock(MissingReportDetailResponseDTO.class);
+
+        ArgumentCaptor<List<String>> captor = ArgumentCaptor.forClass(List.class);
+        when(missingReportDetailStrategy.toDetailDto(eq(report), captor.capture(), eq(false)))
+                .thenReturn(dto);
+
+        List<MissingReportDetailResponseDTO> result =
+                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(1);
+
+        assertThat(result).hasSize(1);
+        assertThat(captor.getValue())
+                .containsExactly(
+                        "https://cdn.findyou.store/a.jpg",
+                        "https://cdn.findyou.store/b.jpg"
+                );
+    }
+    @Test
+    @DisplayName("count가 0 이하이면 최소 1개를 반환한다")
+    void getRandomMissingReportsWithS3_whenCountZeroOrNegative_thenReturnAtLeastOne() {
+        // given
+        MissingReport r1 = mock(MissingReport.class);
+        MissingReport r2 = mock(MissingReport.class);
+        MissingReport r3 = mock(MissingReport.class);
+
+        when(r1.getReportImages()).thenReturn(Collections.emptyList());
+        when(r2.getReportImages()).thenReturn(Collections.emptyList());
+        when(r3.getReportImages()).thenReturn(Collections.emptyList());
+
+        when(missingReportRepository.findByDate(any(LocalDate.class)))
+                .thenReturn(new ArrayList<>(List.of(r1, r2, r3)));
+
+        when(missingReportDetailStrategy.toDetailDto(any(MissingReport.class), anyList(), eq(false)))
+                .thenReturn(mock(MissingReportDetailResponseDTO.class));
+
+        // when
+        List<MissingReportDetailResponseDTO> resultZero =
+                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(0);
+
+        List<MissingReportDetailResponseDTO> resultNegative =
+                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(-5);
+
+        // then
+        assertThat(resultZero).hasSize(1);
+        assertThat(resultNegative).hasSize(1);
+
+        verify(missingReportRepository, times(2)).findByDate(any(LocalDate.class));
+        verify(missingReportDetailStrategy, times(2))
+                .toDetailDto(any(MissingReport.class), anyList(), eq(false));
+    }
+
+    @Test
+    @DisplayName("imageUrl에서 null/blank/중복 제거 후 DTO로 전달한다")
+    void getRandomMissingReportsWithS3_filtersNullBlankAndDistinctImageUrls() {
+        // given
+        MissingReport report = mock(MissingReport.class);
+
+        ReportImage imgNull = mock(ReportImage.class);
+        when(imgNull.getImageUrl()).thenReturn(null);
+
+        ReportImage imgBlank = mock(ReportImage.class);
+        when(imgBlank.getImageUrl()).thenReturn("   ");
+
+        ReportImage imgA1 = mock(ReportImage.class);
+        when(imgA1.getImageUrl()).thenReturn("https://cdn.findyou.store/a.jpg");
+
+        ReportImage imgA2 = mock(ReportImage.class);
+        when(imgA2.getImageUrl()).thenReturn("https://cdn.findyou.store/a.jpg");
+
+        ReportImage imgB = mock(ReportImage.class);
+        when(imgB.getImageUrl()).thenReturn("https://cdn.findyou.store/b.jpg");
+
+        when(report.getReportImages()).thenReturn(List.of(imgNull, imgBlank, imgA1, imgA2, imgB));
+
+        when(missingReportRepository.findByDate(any(LocalDate.class)))
+                .thenReturn(new ArrayList<>(List.of(report)));
+
+        MissingReportDetailResponseDTO dto = mock(MissingReportDetailResponseDTO.class);
+
+        ArgumentCaptor<List<String>> urlCaptor = ArgumentCaptor.forClass(List.class);
+        when(missingReportDetailStrategy.toDetailDto(eq(report), urlCaptor.capture(), eq(false)))
+                .thenReturn(dto);
+
+        // when
+        List<MissingReportDetailResponseDTO> result =
+                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(1);
+
+        // then
+        assertThat(result).hasSize(1).containsExactly(dto);
+        assertThat(urlCaptor.getValue())
+                .containsExactly(
+                        "https://cdn.findyou.store/a.jpg",
+                        "https://cdn.findyou.store/b.jpg"
+                );
+
+        verify(missingReportRepository, times(1)).findByDate(any(LocalDate.class));
+        verify(missingReportDetailStrategy, times(1))
+                .toDetailDto(eq(report), anyList(), eq(false));
+    }
+
 }
