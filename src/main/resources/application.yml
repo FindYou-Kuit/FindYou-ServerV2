@@ -157,7 +157,6 @@ findyou:
       access-token : ${JWT_ACCESS_EXPIRE_MS}
       refresh-token : ${JWT_REFRESH_EXPIRE_MS}
     secret-key : ${JWT_SECRET_KEY}
-    refresh-token-redis-key-prefix: ${JWT_REFRESH_REDIS_KEY_PREFIX}
   home-stats:
     parsing-timeout-sec: ${HOME_STATS_PARSING_TIMEOUT_SEC}
 
