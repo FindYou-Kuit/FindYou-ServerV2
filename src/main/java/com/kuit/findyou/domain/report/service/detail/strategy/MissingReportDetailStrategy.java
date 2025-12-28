@@ -8,7 +8,7 @@ import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.MISSING_REPORT_NOT_FOUND;
 
@@ -32,6 +32,25 @@ public class MissingReportDetailStrategy implements ReportDetailStrategy<Missing
                 ReportFormatUtil.safeValue(report.getSignificant()),
                 ReportFormatUtil.safeValue(report.getLandmark()),       // missingLocation
                 ReportFormatUtil.safeValue(report.getAddress()),        // missingAddress
+                ReportFormatUtil.formatCoordinate(report.getLatitude()),
+                ReportFormatUtil.formatCoordinate(report.getLongitude()),
+                ReportFormatUtil.safeValue(report.getReporterName()),
+                ReportFormatUtil.safeValue(report.getReporterTel()),
+                interest
+        );
+    }
+    public MissingReportDetailResponseDTO toDetailDto(MissingReport report, List<String> imageUrls, boolean interest) {
+        return new MissingReportDetailResponseDTO(
+                imageUrls,
+                ReportFormatUtil.safeValue(report.getBreed()),
+                report.getTag().getValue(),
+                ReportFormatUtil.safeValue(report.getAge()),
+                ReportFormatUtil.safeSex(report.getSex()),
+                ReportFormatUtil.safeDate(report.getDate()),
+                ReportFormatUtil.safeValue(report.getRfid()),
+                ReportFormatUtil.safeValue(report.getSignificant()),
+                ReportFormatUtil.safeValue(report.getLandmark()),
+                ReportFormatUtil.safeValue(report.getAddress()),
                 ReportFormatUtil.formatCoordinate(report.getLatitude()),
                 ReportFormatUtil.formatCoordinate(report.getLongitude()),
                 ReportFormatUtil.safeValue(report.getReporterName()),
