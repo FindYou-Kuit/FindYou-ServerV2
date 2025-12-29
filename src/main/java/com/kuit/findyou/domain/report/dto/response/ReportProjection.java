@@ -8,5 +8,6 @@ public interface ReportProjection {
     String getTitle();
     String getTag();
     LocalDate getDate();
+    LocalDate getCreatedAt();
     String getAddress();
 }

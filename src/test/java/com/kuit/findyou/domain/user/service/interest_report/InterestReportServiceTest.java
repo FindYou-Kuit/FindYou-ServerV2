@@ -158,6 +158,7 @@ class InterestReportServiceTest {
                         "breed" + i,
                         ReportTag.PROTECTING.getValue(),
                         LocalDate.of(2025, 1, 1),
+                        LocalDate.of(2025, 12, 11),
                         "city"
                 ))
                 .collect(Collectors.toList());

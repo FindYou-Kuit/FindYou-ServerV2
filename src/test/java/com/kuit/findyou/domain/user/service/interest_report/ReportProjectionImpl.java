@@ -13,6 +13,7 @@ public class ReportProjectionImpl implements ReportProjection {
     private final String breed;
     private final String tag;
     private final LocalDate date;
+    private final LocalDate createdAt;
     private final String address;
 
     public Long getReportId() { return reportId; }
@@ -20,5 +21,6 @@ public class ReportProjectionImpl implements ReportProjection {
     public String getTitle() { return breed; }
     public String getTag() { return tag; }
     public LocalDate getDate() { return date; }
+    public LocalDate getCreatedAt() { return createdAt; }
     public String getAddress() { return address; }
 }

@@ -32,6 +32,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
                     r.breed AS title,
                     r.tag AS tag,
                     r.date AS date,
+                    r.createdAt AS createdAt,
                     r.address AS address
                 FROM Report r
                 WHERE r.id < :lastId
@@ -67,6 +68,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
                     r.breed AS title,
                     r.tag AS tag,
                     r.date AS date,
+                    r.createdAt AS createdAt,
                     r.address AS address
                 FROM Report r
                 WHERE r.id IN :ids
@@ -80,6 +82,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             r.breed AS title,
             r.tag AS tag,
             r.date AS date,
+            r.createdAt AS createdAt,
             r.address AS address
         FROM Report r
         WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL AND r.tag IN :tags
@@ -105,6 +108,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
         r.breed AS title,
         r.tag AS tag,
         r.date AS date,
+        r.createdAt AS createdAt,
         r.address AS address
         FROM Report r 
         WHERE r.user.id = :userId AND r.id < :lastId
