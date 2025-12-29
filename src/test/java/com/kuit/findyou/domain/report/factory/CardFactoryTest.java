@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -40,8 +41,8 @@ class CardFactoryTest {
 
         boolean isLast = true;
 
-        ReportProjection projection1 = mockProjection(101L, "http://image1.jpg", "제목1", "MISSING", LocalDate.of(2024, 7, 20), "서울시 강남구");
-        ReportProjection projection2 = mockProjection(102L, "http://image2.jpg", "제목2", "PROTECTING", LocalDate.of(2024, 7, 21), "서울시 마포구");
+        ReportProjection projection1 = mockProjection(101L, "http://image1.jpg", "제목1", "MISSING", LocalDate.of(2024, 7, 20),LocalDateTime.now(), "서울시 강남구");
+        ReportProjection projection2 = mockProjection(102L, "http://image2.jpg", "제목2", "PROTECTING", LocalDate.of(2024, 7, 21),LocalDateTime.now(), "서울시 마포구");
 
         List<ReportProjection> projections = List.of(projection1, projection2);
 
@@ -68,13 +69,14 @@ class CardFactoryTest {
 
 
 
-    private ReportProjection mockProjection(Long id, String imageUrl, String title, String tag, LocalDate date, String address) {
+    private ReportProjection mockProjection(Long id, String imageUrl, String title, String tag, LocalDate date, LocalDateTime createdAt, String address) {
         ReportProjection mock = mock(ReportProjection.class);
         when(mock.getReportId()).thenReturn(id);
         when(mock.getThumbnailImageUrl()).thenReturn(imageUrl);
         when(mock.getTitle()).thenReturn(title);
         when(mock.getTag()).thenReturn(tag);
         when(mock.getDate()).thenReturn(date);
+        when(mock.getCreatedAt()).thenReturn(createdAt);
         when(mock.getAddress()).thenReturn(address);
         return mock;
     }

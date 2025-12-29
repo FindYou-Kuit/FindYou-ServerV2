@@ -1,6 +1,7 @@
 package com.kuit.findyou.domain.report.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface ReportProjection {
     Long getReportId();
@@ -8,6 +9,6 @@ public interface ReportProjection {
     String getTitle();
     String getTag();
     LocalDate getDate();
-    LocalDate getCreatedAt();
+    LocalDateTime getCreatedAt();
     String getAddress();
 }
