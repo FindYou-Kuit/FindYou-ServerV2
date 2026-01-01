@@ -33,6 +33,7 @@ public interface InterestReportRepository extends JpaRepository<InterestReport, 
             ir.report.breed AS breed,
             ir.report.tag AS tag,
             ir.report.date AS date,
+            ir.report.createdAt AS createdAt,
             ir.report.address AS address
         FROM InterestReport ir JOIN ir.report
         WHERE ir.id < :lastId AND ir.user.id = :userId

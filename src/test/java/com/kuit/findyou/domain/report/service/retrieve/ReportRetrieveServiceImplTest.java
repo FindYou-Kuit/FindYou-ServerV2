@@ -69,6 +69,7 @@ class ReportRetrieveServiceImplTest {
                 "골든 리트리버",
                 "MISSING",
                 "2025-07-10",
+                "2025-12-31",
                 "서울시 강남구",
                 true
         );

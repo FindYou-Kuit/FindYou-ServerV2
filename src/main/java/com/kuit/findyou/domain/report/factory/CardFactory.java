@@ -27,6 +27,7 @@ public class CardFactory {
                         p.getTitle(),
                         ReportTag.valueOf(p.getTag()).getValue(),
                         ReportFormatUtil.safeDate(p.getDate()),
+                        p.getCreatedAt().toLocalDate().toString(),
                         p.getAddress(),
                         interestIds.contains(p.getReportId())
                 ))

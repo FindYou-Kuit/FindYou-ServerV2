@@ -14,6 +14,8 @@ public record Card(
         String tag,
         @Schema(description = "날짜 (발견 날짜/분실 날짜/목격 날짜)", example = "2025-07-01")
         String date,
+        @Schema(description = "데이터 생성일", example = "2025-12-11")
+        String createdAt,
         @Schema(description = "장소 (발견 장소/분실 장소/목격 장소)", example = "성산구 내동 628-1")
         String location,
         @Schema(description = "관심 여부", example = "true")

@@ -18,6 +18,7 @@ public record CardResponseDTO(
                             "title": "말티즈",
                             "tag": "보호중",
                             "date": "2025-07-01",
+                            "createdAt": "2025-12-11",
                             "location": "성산구 내동 628-1",
                             "interest": true
                           },
@@ -27,6 +28,7 @@ public record CardResponseDTO(
                             "title": "푸들",
                             "tag": "실종신고",
                             "date": "2025-06-30",
+                            "createdAt": "2025-12-11",
                             "location": "강남구 논현동",
                             "interest": false
                           }
