@@ -1,11 +1,12 @@
 package com.kuit.findyou.domain.report.repository;
 
 import com.kuit.findyou.domain.report.model.MissingReport;
-import com.kuit.findyou.domain.report.model.ProtectingReport;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -14,4 +15,6 @@ public interface MissingReportRepository extends JpaRepository<MissingReport, Lo
 
     @EntityGraph(attributePaths = {"reportImages"})
     Optional<MissingReport> findWithImagesById(Long id);
+
+    List<MissingReport> findByDate(LocalDate date);
 }

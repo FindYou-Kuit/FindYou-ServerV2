@@ -1,10 +1,11 @@
 package com.kuit.findyou.domain.report.controller;
 
-import com.kuit.findyou.domain.image.repository.ReportImageRepository;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.model.MissingReport;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
+import com.kuit.findyou.domain.report.repository.MissingReportRepository;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
@@ -53,7 +54,7 @@ class ReportControllerTest {
     private ProtectingReportRepository protectingReportRepository;
 
     @Autowired
-    private ReportImageRepository reportImageRepository;
+    private MissingReportRepository missingReportRepository;
 
 
     @LocalServerPort
@@ -591,7 +592,7 @@ class ReportControllerTest {
                 .body("success", equalTo(true))
                 .body("code", equalTo(200))
                 .body("data.size()", equalTo(1))
-                .body("data[0].imageUrls[0]", equalTo("https://cdn.findyou.store/random1.jpg"))
+                .body(  "data[0].imageUrls[0]", equalTo("https://cdn.findyou.store/random1.jpg"))
                 .body("data[0].breed", equalTo("믹스견"))
                 .body("data[0].tag", equalTo("보호중"))
                 .body("data[0].careName", equalTo("광진보호소"));
@@ -614,4 +615,52 @@ class ReportControllerTest {
                 .log().all()
                 .statusCode(204);
     }
+    @Test
+    @DisplayName("실종글 랜덤 조회 -> S3 URL 포함 응답")
+    void getRandomMissingReportsWithS3_success() {
+        // given
+        User user = testInitializer.createTestUser();
+        MissingReport report =
+                testInitializer.createTestMissingReportWithImage(user);
+
+        ReflectionTestUtils.setField(report, "date", LocalDate.now().minusDays(1));
+
+        missingReportRepository.saveAndFlush(report);
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/missing-reports/random-s3")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200))
+                .body("data.size()", equalTo(1))
+                .body("data[0].imageUrls[0]", equalTo("https://img.com/missing.png"))
+                .body("data[0].breed", equalTo("포메라니안"))
+                .body("data[0].tag", equalTo("실종신고"));
+    }
+
+    @Test
+    @DisplayName("실종글이 없을 경우 -> 204 No Content 응답 (Body 없음)")
+    void getRandomMissingReportsWithS3_noContent() {
+        // given
+        // DB에 아무것도 저장하지 않음 (빈 상태)
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/missing-reports/random-s3")
+                .then()
+                .log().all()
+                .statusCode(204);
+    }
+
 }

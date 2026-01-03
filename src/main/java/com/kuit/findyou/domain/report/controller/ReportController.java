@@ -9,6 +9,7 @@ import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailRespons
 import com.kuit.findyou.domain.report.dto.response.WitnessReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.ReportTag;
 import com.kuit.findyou.domain.report.service.facade.ReportServiceFacade;
+import com.kuit.findyou.domain.report.service.retrieve.MissingReportRetrieveWithS3Service;
 import com.kuit.findyou.domain.report.service.retrieve.ProtectingReportRetrieveWithS3Service;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
 import com.kuit.findyou.global.common.response.BaseResponse;
@@ -40,6 +41,7 @@ public class ReportController {
 
     private final ReportServiceFacade reportServiceFacade;
     private final ProtectingReportRetrieveWithS3Service protectingReportRetrieveWithS3Service;
+    private final MissingReportRetrieveWithS3Service missingReportRetrieveWithS3Service;
 
     @Operation(summary = "보호글 상세 조회 API", description = "보호글의 정보를 상세 조회하기 위한 API")
     @GetMapping("/protecting-reports/{reportId}")
@@ -126,6 +128,24 @@ public class ReportController {
     ) {
         List<ProtectingReportDetailResponseDTO> details =
                 protectingReportRetrieveWithS3Service.getRandomProtectingReportsWithS3(count);
+
+        if (details.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(BaseResponse.ok(details));
+    }
+
+    @Operation(
+            summary = "실종글 S3 이미지 포함 랜덤 조회 API", description = "랜덤으로 실종글을 선택하여 원본 이미지를 S3에 업로드 후, S3 URL 포함 실종글을 리스트로 반환합니다."
+    )
+    @GetMapping("/missing-reports/random-s3")
+    @CustomExceptionDescription(DEFAULT)
+    public ResponseEntity<?> getRandomMissingReportsWithS3(
+            @RequestParam(name = "count", defaultValue = "1")
+            @Min(1) @Max(10) int count
+    ) {
+        List<MissingReportDetailResponseDTO> details =
+                missingReportRetrieveWithS3Service.getRandomMissingReportsWithS3(count);
 
         if (details.isEmpty()) {
             return ResponseEntity.noContent().build();
