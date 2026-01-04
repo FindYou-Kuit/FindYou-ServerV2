@@ -3,21 +3,22 @@ package com.kuit.findyou.domain.auth.controller;
 import com.kuit.findyou.domain.auth.dto.ReissueTokenRequest;
 import com.kuit.findyou.domain.auth.dto.ReissueTokenResponse;
 import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
+import com.kuit.findyou.domain.auth.dto.response.AdminLoginResponse;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
 import com.kuit.findyou.domain.auth.service.AuthServiceFacade;
 import com.kuit.findyou.global.common.annotation.CustomExceptionDescription;
+import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
+import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.UNAUTHORIZED;
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
 
 @Tag(name = "Login", description = "로그인 관련 API")
@@ -27,6 +28,9 @@ import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.
 @RestController
 public class AuthController {
     private final AuthServiceFacade authServiceFacade;
+
+    @Value("${admin.api.key}")
+    private String adminApiKey;
 
     @Operation(
             summary = "카카오 로그인 API",
@@ -57,5 +61,19 @@ public class AuthController {
     @PostMapping("/reissue/token")
     public BaseResponse<ReissueTokenResponse> reissueToken(@RequestBody ReissueTokenRequest request){
         return BaseResponse.ok(authServiceFacade.reissueToken(request));
+    }
+
+    @Operation(
+            summary = "서비스 계정 로그인 API (내부 자동화용)",
+            description = "내부 자동화/관리용 서비스 계정 토큰을 발급합니다. X-ADMIN-KEY 헤더가 필요합니다."
+    )
+    @PostMapping("/login/admin")
+    public BaseResponse<AdminLoginResponse> adminLogin(
+            @RequestHeader(value = "X-ADMIN-KEY", required = false) String adminKey
+    ) {
+        if (adminKey == null || adminKey.isBlank() || !adminApiKey.equals(adminKey)) {
+            throw new CustomException(UNAUTHORIZED);
+        }
+        return BaseResponse.ok(authServiceFacade.adminLogin());
     }
 }
