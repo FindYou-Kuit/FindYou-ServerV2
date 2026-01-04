@@ -3,13 +3,11 @@ package com.kuit.findyou.domain.user.service.facade;
 import com.kuit.findyou.domain.report.dto.response.CardResponseDTO;
 import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
-import com.kuit.findyou.domain.user.dto.request.ChangeProfileImageRequest;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.service.change_nickname.ChangeNicknameService;
-import com.kuit.findyou.domain.user.service.change_profileImage.ChangeProfileImageService;
 import com.kuit.findyou.domain.user.service.delete.DeleteUserService;
 import com.kuit.findyou.domain.user.service.interest_report.InterestReportService;
 import com.kuit.findyou.domain.user.service.query.QueryUserService;
@@ -28,7 +26,6 @@ public class UserServiceFacade {
     private final QueryUserService queryUserService;
     private final ChangeNicknameService changeNicknameService;
     private final DeleteUserService deleteUserService;
-    private final ChangeProfileImageService changeProfileImageService;
     private final UserReportService userReportService;
 
     public CardResponseDTO retrieveViewedAnimals(Long lastId, Long userId) {
@@ -62,8 +59,6 @@ public class UserServiceFacade {
     public void deleteUser(Long userId) {
         deleteUserService.deleteUser(userId);
     }
-
-    public void changeProfileImage(Long userId, ChangeProfileImageRequest request){ changeProfileImageService.changeProfileImage(userId, request); }
 
     public CardResponseDTO retrieveUserReports(Long userId, Long lastId){
         return userReportService.retrieveUserReports(userId, lastId, 20);
