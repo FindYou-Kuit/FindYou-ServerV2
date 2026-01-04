@@ -11,7 +11,10 @@ public record RegisterUserResponse(
                 example = "찾아유")
         String nickname,
         @Schema(description = "엑세스 토큰",
-                example = "accessToken")
-        String accessToken
+                example = "aaaa.bbbb.ccc")
+        String accessToken,
+        @Schema(description = "리프레시 토큰",
+                example = "aaaa.bbbb.ccc")
+        String refreshToken
 ) {
 }
