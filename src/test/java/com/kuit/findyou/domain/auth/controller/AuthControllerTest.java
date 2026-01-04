@@ -3,8 +3,9 @@ package com.kuit.findyou.domain.auth.controller;
 import com.kuit.findyou.domain.auth.dto.ReissueTokenRequest;
 import com.kuit.findyou.domain.auth.dto.ReissueTokenResponse;
 import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
-import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
+import com.kuit.findyou.domain.auth.dto.response.AdminLoginResponse;
+import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
 import com.kuit.findyou.domain.auth.repository.RedisRefreshTokenRepository;
 import com.kuit.findyou.domain.user.model.Role;
@@ -13,6 +14,7 @@ import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.response.BaseErrorResponse;
 import com.kuit.findyou.global.common.response.BaseResponse;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
+import com.kuit.findyou.global.common.util.TestInitializer;
 import com.kuit.findyou.global.config.RedisTestContainersConfig;
 import com.kuit.findyou.global.config.TestDatabaseConfig;
 import com.kuit.findyou.global.jwt.util.JwtClaimKey;
@@ -22,7 +24,10 @@ import io.jsonwebtoken.Jwts;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,6 +64,15 @@ class AuthControllerTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    TestInitializer testInitializer;
+
+    @Value("${admin.api.key}")
+    String adminApiKey;
+
+    @Value("${admin.admin-user-id}")
+    Long adminUserId;
 
     @Value("${findyou.jwt.secret-key}") 
     String secret;
@@ -255,4 +269,92 @@ class AuthControllerTest {
         assertThat(response.getCode()).isEqualTo(REFRESH_TOKEN_NOT_FOUND.getCode());
         assertThat(response.getMessage()).isEqualTo(REFRESH_TOKEN_NOT_FOUND.getMessage());
     }
+
+    @DisplayName("관리자 키가 유효하면 관리자 로그인 성공(토큰 반환 + Redis 저장)")
+    @Test
+    void adminLogin_shouldReturnTokens_WhenValidAdminKey() {
+        // given
+        testInitializer.insertAdminUserWithFixedId(9999L, Role.USER);
+
+        // when
+        BaseResponse<AdminLoginResponse> response = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .header("X-ADMIN-KEY", adminApiKey)
+                .body("{}")
+                .when()
+                .post("/api/v2/auth/login/admin")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<BaseResponse<AdminLoginResponse>>() {});
+
+        // then
+        String access = response.getData().accessToken();
+        String refresh = response.getData().refreshToken();
+
+        assertThat(access).isNotBlank();
+        assertThat(refresh).isNotBlank();
+
+        // access 토큰 검증
+        assertThat(jwtUtil.getUserId(access)).isEqualTo(adminUserId);
+        assertThat(jwtUtil.getTokenType(access)).isEqualTo(JwtTokenType.ACCESS_TOKEN);
+
+        // refresh 토큰 검증
+        assertThat(jwtUtil.getUserId(refresh)).isEqualTo(adminUserId);
+        assertThat(jwtUtil.getTokenType(refresh)).isEqualTo(JwtTokenType.REFRESH_TOKEN);
+
+        // Redis에 저장됐는지 확인 (현재 저장값 == 발급 refresh)
+        String saved = redisRefreshTokenRepository.findByUserId(adminUserId).orElse(null);
+        assertThat(saved).isEqualTo(refresh);
+    }
+
+    @DisplayName("관리자 키가 틀리면 401을 반환한다")
+    @Test
+    void adminLogin_shouldReturnUnauthorized_WhenInvalidAdminKey() {
+        // given
+        testInitializer.insertAdminUserWithFixedId(9999L, Role.USER);
+
+        // when
+        BaseErrorResponse response = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .header("X-ADMIN-KEY", "wrong-key")
+                .body("{}")
+                .when()
+                .post("/api/v2/auth/login/admin")
+                .then()
+                .extract()
+                .as(new TypeRef<BaseErrorResponse>() {});
+
+        // then
+        assertThat(response.getCode()).isEqualTo(UNAUTHORIZED.getCode());
+        assertThat(response.getMessage()).isEqualTo(UNAUTHORIZED.getMessage());
+        assertThat(response.getSuccess()).isFalse();
+    }
+
+    @DisplayName("관리자 유저가 존재하지 않으면 404(USER_NOT_FOUND)를 반환한다")
+    @Test
+    void adminLogin_shouldReturnNotFound_WhenAdminUserDoesNotExist() {
+        // given: insertAdminUserWithFixedId 호출 안 함
+
+        // when
+        BaseErrorResponse response = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .header("X-ADMIN-KEY", adminApiKey)
+                .body("{}")
+                .when()
+                .post("/api/v2/auth/login/admin")
+                .then()
+                .extract()
+                .as(new TypeRef<BaseErrorResponse>() {});
+
+        // then
+        assertThat(response.getCode()).isEqualTo(USER_NOT_FOUND.getCode());
+        assertThat(response.getMessage()).isEqualTo(USER_NOT_FOUND.getMessage());
+        assertThat(response.getSuccess()).isFalse();
+    }
+
+
 }
