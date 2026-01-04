@@ -1,11 +1,10 @@
-package com.kuit.findyou.domain.user.service;
+package com.kuit.findyou.domain.user.service.register;
 
 import com.kuit.findyou.domain.auth.service.IssueTokenService;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
-import com.kuit.findyou.domain.user.service.register.RegisterUserServiceImpl;
 import com.kuit.findyou.global.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class RegisterUserServiceTest {
     @InjectMocks
     private RegisterUserServiceImpl userService;
     @Mock
