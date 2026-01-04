@@ -72,6 +72,17 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String createRefreshJwt(Long userId, long expireMs) {
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .claim(JwtClaimKey.USER_ID.getKey(), userId)
+                .claim(JwtClaimKey.TOKEN_TYPE.getKey(), JwtTokenType.REFRESH_TOKEN)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expireMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
     public void validateJwt(String token){
         log.info("validateJwt");
         try{
