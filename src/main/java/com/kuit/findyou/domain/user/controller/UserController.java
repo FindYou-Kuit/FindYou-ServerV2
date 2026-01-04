@@ -73,7 +73,7 @@ public class UserController {
     )
     @CustomExceptionDescription(REGISTER_USER)
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
+    public BaseResponse<RegisterUserResponse> registerUser(@RequestBody RegisterUserRequest request){
         log.info("[registerUser] kakaoId = {}", request.kakaoId());
         return new BaseResponse<>(userServiceFacade.registerUser(request));
     }
