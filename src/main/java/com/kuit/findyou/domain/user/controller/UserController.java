@@ -65,10 +65,7 @@ public class UserController {
     @Operation(
             summary = "회원정보 등록 API",
             description = """
-                    회원 정보를 등록합니다. 회원 등록에 성공하면 유저 정보(식별자와 닉네임)와 엑세스 토큰을 얻을 수 있습니다. \n
-                    **[중요] profileImageFile과 defaultProfileImageName 중 하나만 선택해야 합니다.** \n                 
-                    - profileImageFile을 업로드하면 defaultProfileImageName은 무시됩니다. \n           
-                    - 둘 다 null이면 에러가 발생합니다.
+                    회원 정보를 등록합니다. 회원 등록에 성공하면 유저 정보(식별자와 닉네임)와 엑세스 토큰을 얻을 수 있습니다.
                     """
     )
     @CustomExceptionDescription(REGISTER_USER)
