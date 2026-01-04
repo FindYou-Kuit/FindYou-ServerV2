@@ -16,6 +16,12 @@ java {
 	}
 }
 
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
