@@ -1,12 +1,12 @@
 package com.kuit.findyou.domain.user.service;
 
+import com.kuit.findyou.domain.auth.service.IssueTokenService;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.domain.user.service.register.RegisterUserServiceImpl;
 import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.jwt.util.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private JwtUtil jwtUtil;
+    private IssueTokenService issueTokenService;
 
     @DisplayName("처음 로그인한 사용자가 회원등록을 하면 성공한다")
     @Test
@@ -38,6 +38,7 @@ class UserServiceTest {
         // given
         final Long USER_ID = 1L;
         final String ACCESS_TOKEN = "accessToken";
+        final String REFRESH_TOKEN = "refreshToken";
 
         RegisterUserRequest request = getRegisterUserRequest();
 
@@ -48,7 +49,8 @@ class UserServiceTest {
                 .name(request.nickname())
                 .build());
 
-        when(jwtUtil.createAccessJwt(any(), any())).thenReturn(ACCESS_TOKEN);
+        when(issueTokenService.issueAccessToken(any(), any())).thenReturn(ACCESS_TOKEN);
+        when(issueTokenService.issueRefreshToken(any())).thenReturn(REFRESH_TOKEN);
 
         // when
         RegisterUserResponse response = userService.registerUser(request);
@@ -57,6 +59,7 @@ class UserServiceTest {
         assertThat(response.userId()).isEqualTo(USER_ID);
         assertThat(response.nickname()).isEqualTo(request.nickname());
         assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
+        assertThat(response.refreshToken()).isEqualTo(REFRESH_TOKEN);
     }
 
     private static RegisterUserRequest getRegisterUserRequest() {
@@ -74,6 +77,7 @@ class UserServiceTest {
         // given
         final Long USER_ID = 1L;
         final String ACCESS_TOKEN = "accessToken";
+        final String REFRESH_TOKEN = "refreshToken";
 
         RegisterUserRequest request = getRegisterUserRequest();
 
@@ -86,17 +90,19 @@ class UserServiceTest {
                 .name(request.nickname())
                 .build());
 
-        when(jwtUtil.createAccessJwt(any(), any())).thenReturn(ACCESS_TOKEN);
+        when(issueTokenService.issueAccessToken(any(), any())).thenReturn(ACCESS_TOKEN);
+        when(issueTokenService.issueRefreshToken(any())).thenReturn(REFRESH_TOKEN);
 
         // when
         RegisterUserResponse response = userService.registerUser(request);
 
         // then
+        verify(user).upgradeToMember(eq(request.kakaoId()), eq(request.nickname()));
+
         assertThat(response.userId()).isEqualTo(USER_ID);
         assertThat(response.nickname()).isEqualTo(request.nickname());
         assertThat(response.accessToken()).isEqualTo(ACCESS_TOKEN);
-
-        verify(user).upgradeToMember(eq(request.kakaoId()), eq(request.nickname()));
+        assertThat(response.refreshToken()).isEqualTo(REFRESH_TOKEN);
     }
 
     @DisplayName("이미 가입한 회원이 회원등록을 하면 예외를 발생시킨다")
