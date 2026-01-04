@@ -135,9 +135,11 @@ class UserControllerTest {
                     .getObject("data", RegisterUserResponse.class);
 
         // then
-        Role role = jwtUtil.getRole(response.accessToken());
-
         assertThat(response.nickname()).isEqualTo(nickname);
+        assertThat(response.accessToken()).isNotBlank();
+        assertThat(response.refreshToken()).isNotBlank();
+
+        Role role = jwtUtil.getRole(response.accessToken());
         assertThat(role).isEqualTo(Role.USER);
     }
 
