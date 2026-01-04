@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
@@ -29,23 +30,16 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.time.LocalDate;
 import java.util.Map;
 
-import static com.kuit.findyou.domain.user.constant.DefaultProfileImage.PUPPY;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
-import static com.kuit.findyou.global.common.util.RestAssuredUtils.multipartText;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -122,16 +116,16 @@ class UserControllerTest {
     @Test
     void should_Succeed_When_registerAnyoneWhoFirstLoggedIn() {
         // given
-        final String NICKNAME = "유저1";
+        String nickname = "유저1";
+        Long kakaoId = 123456L;
+        String deviceId= "device-01";
 
         // when
         RegisterUserResponse response = given()
-//                    .log().all()
-                    .contentType(ContentType.MULTIPART)
-                    .multiPart(multipartText("defaultProfileImageName", "default"))
-                    .multiPart(multipartText("nickname", NICKNAME))
-                    .multiPart(multipartText("kakaoId", "123456"))
-                    .multiPart(multipartText("deviceId", "device-001"))
+                    .log().all()
+                    .contentType(ContentType.JSON)
+                    .accept(ContentType.JSON)
+                    .body(new RegisterUserRequest(nickname, kakaoId, deviceId))
                 .when()
                     .post("/api/v2/users")
                 .then()
@@ -143,7 +137,7 @@ class UserControllerTest {
         // then
         Role role = jwtUtil.getRole(response.accessToken());
 
-        assertThat(response.nickname()).isEqualTo(NICKNAME);
+        assertThat(response.nickname()).isEqualTo(nickname);
         assertThat(role).isEqualTo(Role.USER);
     }
 
