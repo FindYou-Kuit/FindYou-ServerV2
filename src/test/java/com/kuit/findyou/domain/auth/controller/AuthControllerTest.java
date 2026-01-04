@@ -274,7 +274,7 @@ class AuthControllerTest {
     @Test
     void adminLogin_shouldReturnTokens_WhenValidAdminKey() {
         // given
-        testInitializer.insertAdminUserWithFixedId(9999L, Role.USER);
+        testInitializer.insertAdminUserWithFixedId(adminUserId, Role.USER);
 
         // when
         BaseResponse<AdminLoginResponse> response = given()
@@ -313,7 +313,7 @@ class AuthControllerTest {
     @Test
     void adminLogin_shouldReturnUnauthorized_WhenInvalidAdminKey() {
         // given
-        testInitializer.insertAdminUserWithFixedId(9999L, Role.USER);
+        testInitializer.insertAdminUserWithFixedId(adminUserId, Role.USER);
 
         // when
         BaseErrorResponse response = given()
@@ -332,6 +332,53 @@ class AuthControllerTest {
         assertThat(response.getMessage()).isEqualTo(UNAUTHORIZED.getMessage());
         assertThat(response.getSuccess()).isFalse();
     }
+    @DisplayName("관리자 키 헤더가 없으면 401을 반환한다")
+    @Test
+    void adminLogin_shouldReturnUnauthorized_WhenAdminKeyMissing() {
+        // given
+        testInitializer.insertAdminUserWithFixedId(adminUserId, Role.USER);
+
+        // when
+        BaseErrorResponse response = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body("{}")
+                .when()
+                .post("/api/v2/auth/login/admin")
+                .then()
+                .extract()
+                .as(new TypeRef<BaseErrorResponse>() {});
+
+        // then
+        assertThat(response.getCode()).isEqualTo(UNAUTHORIZED.getCode());
+        assertThat(response.getMessage()).isEqualTo(UNAUTHORIZED.getMessage());
+        assertThat(response.getSuccess()).isFalse();
+    }
+
+    @DisplayName("관리자 키가 빈 문자열이면 401을 반환한다")
+    @Test
+    void adminLogin_shouldReturnUnauthorized_WhenAdminKeyIsBlank() {
+        // given
+        testInitializer.insertAdminUserWithFixedId(adminUserId, Role.USER);
+
+        // when
+        BaseErrorResponse response = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .header("X-ADMIN-KEY", "")
+                .body("{}")
+                .when()
+                .post("/api/v2/auth/login/admin")
+                .then()
+                .extract()
+                .as(new TypeRef<BaseErrorResponse>() {});
+
+        // then
+        assertThat(response.getCode()).isEqualTo(UNAUTHORIZED.getCode());
+        assertThat(response.getMessage()).isEqualTo(UNAUTHORIZED.getMessage());
+        assertThat(response.getSuccess()).isFalse();
+    }
+
 
     @DisplayName("관리자 유저가 존재하지 않으면 404(USER_NOT_FOUND)를 반환한다")
     @Test
