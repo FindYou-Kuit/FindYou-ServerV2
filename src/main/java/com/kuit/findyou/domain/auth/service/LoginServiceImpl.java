@@ -4,13 +4,11 @@ import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
-import com.kuit.findyou.domain.auth.repository.RedisRefreshTokenRepository;
 import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.jwt.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,18 +21,17 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Service
 public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
-    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
-    private final JwtUtil jwtUtil;
+    private final IssueTokenService issueTokenService;
+
     public KakaoLoginResponse kakaoLogin(KakaoLoginRequest request) {
         log.info("[kakaoLogin] kakaoId = {}", request.kakaoId());
 
         return userRepository.findByKakaoId(request.kakaoId())
-                .map(loginUser -> {
-                    String accessToken = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
-                    String refreshToken = jwtUtil.createRefreshJwt(loginUser.getId());
-                    redisRefreshTokenRepository.save(loginUser.getId(), refreshToken);
+                .map(user -> {
+                    String accessToken = issueTokenService.issueAccessToken(user.getId(), user.getRole());
+                    String refreshToken = issueTokenService.issueRefreshToken(user.getId());
                     log.info("[kakaoLogin] 카카오 로그인 성공");
-                    return KakaoLoginResponse.fromUserAndTokens(loginUser, accessToken, refreshToken);
+                    return KakaoLoginResponse.fromUserAndTokens(user, accessToken, refreshToken);
                 })
                 .orElseGet(() -> {
                     log.info("[kakaoLogin] 일치하는 유저가 없어서 카카오 로그인 실패");
@@ -67,9 +64,8 @@ public class LoginServiceImpl implements LoginService {
         }
 
         // 토큰 생성
-        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-        String refreshToken = jwtUtil.createRefreshJwt(user.getId());
-        redisRefreshTokenRepository.save(user.getId(), refreshToken);
+        String accessToken = issueTokenService.issueAccessToken(user.getId(), user.getRole());
+        String refreshToken = issueTokenService.issueRefreshToken(user.getId());
         log.info("[guestLogin] 게스트 로그인 성공");
         return new GuestLoginResponse(user.getId(), accessToken, refreshToken);
     }
