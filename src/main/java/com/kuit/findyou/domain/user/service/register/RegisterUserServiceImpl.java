@@ -1,13 +1,12 @@
 package com.kuit.findyou.domain.user.service.register;
 
+import com.kuit.findyou.domain.auth.service.IssueTokenService;
 import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.response.RegisterUserResponse;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.infrastructure.ImageUploader;
-import com.kuit.findyou.global.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,7 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Service
 public class RegisterUserServiceImpl implements RegisterUserService {
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
-
+    private final IssueTokenService issueTokenService;
     @Override
     public RegisterUserResponse registerUser(RegisterUserRequest request) {
         // 카카오 Id가 중복되는 사용자가 있는지 확인
@@ -43,8 +41,10 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         User save = userRepository.save(user);
 
         // 회원가입 완료 응답하기
-        String accessToken = jwtUtil.createAccessJwt(save.getId(), save.getRole());
-        return new RegisterUserResponse(save.getId(), save.getName(), accessToken);
+        String accessToken = issueTokenService.issueAccessToken(save.getId(), save.getRole());
+        String refreshToken = issueTokenService.issueRefreshToken(save.getId());
+
+        return new RegisterUserResponse(save.getId(), save.getName(), accessToken, refreshToken);
     }
 
     private User mapToUser(RegisterUserRequest request) {
