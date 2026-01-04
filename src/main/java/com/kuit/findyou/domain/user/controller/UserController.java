@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
@@ -69,7 +68,7 @@ public class UserController {
                     """
     )
     @CustomExceptionDescription(REGISTER_USER)
-    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     public BaseResponse<RegisterUserResponse> registerUser(@RequestBody RegisterUserRequest request){
         log.info("[registerUser] kakaoId = {}", request.kakaoId());
         return new BaseResponse<>(userServiceFacade.registerUser(request));
