@@ -28,7 +28,7 @@ public class QueryUserServiceImpl implements QueryUserService {
     @Override
     public GetUserProfileResponse getUserProfile(Long userId) {
         User user = userRepository.getReferenceById(userId);
-        return new GetUserProfileResponse(user.getName(), user.getProfileImageUrl());
+        return new GetUserProfileResponse(user.getName());
     }
 
     @Override
