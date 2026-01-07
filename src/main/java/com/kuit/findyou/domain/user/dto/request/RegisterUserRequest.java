@@ -9,19 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
         """ )
 @Builder
 public record RegisterUserRequest(
-        @Schema(description = """
-                사용자 지정 프로필 이미지 파일 (기본 프로필을 사용하지 않을 경우 업로드)  
-                """,
-                type = "string",
-                format = "binary",
-                nullable = true)
-        MultipartFile profileImageFile,
-        @Schema(description = """
-                기본 프로필 이미지 이름 (profileImageFile이 없을 경우 선택)
-                """,
-                example = "default",
-                nullable = true)
-        String defaultProfileImageName,
         @Schema(description = "회원 닉네임",
                 example = "찾아유",
                 required = true)

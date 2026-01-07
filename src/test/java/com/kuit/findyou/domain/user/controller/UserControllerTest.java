@@ -5,6 +5,7 @@ import com.kuit.findyou.domain.report.model.ProtectingReport;
 import com.kuit.findyou.domain.report.model.WitnessReport;
 import com.kuit.findyou.domain.report.repository.InterestReportRepository;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
+import com.kuit.findyou.domain.user.dto.request.RegisterUserRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
 import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
@@ -15,6 +16,7 @@ import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
+import com.kuit.findyou.global.config.RedisTestContainersConfig;
 import com.kuit.findyou.global.config.TestDatabaseConfig;
 import com.kuit.findyou.global.jwt.util.JwtUtil;
 import io.restassured.RestAssured;
@@ -29,29 +31,22 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.time.LocalDate;
 import java.util.Map;
 
-import static com.kuit.findyou.domain.user.constant.DefaultProfileImage.PUPPY;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
-import static com.kuit.findyou.global.common.util.RestAssuredUtils.multipartText;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-@Import(TestDatabaseConfig.class)
+@Import({RedisTestContainersConfig.class, TestDatabaseConfig.class})
 class UserControllerTest {
 
     @LocalServerPort
@@ -122,16 +117,16 @@ class UserControllerTest {
     @Test
     void should_Succeed_When_registerAnyoneWhoFirstLoggedIn() {
         // given
-        final String NICKNAME = "유저1";
+        String nickname = "유저1";
+        Long kakaoId = 123456L;
+        String deviceId= "device-01";
 
         // when
         RegisterUserResponse response = given()
-//                    .log().all()
-                    .contentType(ContentType.MULTIPART)
-                    .multiPart(multipartText("defaultProfileImageName", "default"))
-                    .multiPart(multipartText("nickname", NICKNAME))
-                    .multiPart(multipartText("kakaoId", "123456"))
-                    .multiPart(multipartText("deviceId", "device-001"))
+                    .log().all()
+                    .contentType(ContentType.JSON)
+                    .accept(ContentType.JSON)
+                    .body(new RegisterUserRequest(nickname, kakaoId, deviceId))
                 .when()
                     .post("/api/v2/users")
                 .then()
@@ -141,9 +136,11 @@ class UserControllerTest {
                     .getObject("data", RegisterUserResponse.class);
 
         // then
-        Role role = jwtUtil.getRole(response.accessToken());
+        assertThat(response.nickname()).isEqualTo(nickname);
+        assertThat(response.accessToken()).isNotBlank();
+        assertThat(response.refreshToken()).isNotBlank();
 
-        assertThat(response.nickname()).isEqualTo(NICKNAME);
+        Role role = jwtUtil.getRole(response.accessToken());
         assertThat(role).isEqualTo(Role.USER);
     }
 
@@ -498,116 +495,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("기본 이미지로 변경 성공")
-    void changeProfileImage_Default_Success() {
-        // given
-        User user = testInitializer.createTestUser();
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        // when & then
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart(multipartText("defaultProfileImageName", "chick"))
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("code", equalTo(SUCCESS.getCode()))
-                .body("message", equalTo(SUCCESS.getMessage()))
-                .body("data", nullValue());
-
-        User updated = userRepository.findById(user.getId()).orElseThrow();
-        assertThat(updated.getProfileImageUrl()).isEqualTo("chick");
-    }
-
-    @Test
-    @DisplayName("파일 업로드로 변경 성공")
-    void changeProfileImage_File_Success() {
-        // given
-        User user = testInitializer.createTestUser();
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        // when & then
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("code", equalTo(SUCCESS.getCode()))
-                .body("message", equalTo(SUCCESS.getMessage()))
-                .body("data", nullValue());
-
-        User updated = userRepository.findById(user.getId()).orElseThrow();
-        assertThat(updated.getProfileImageUrl()).startsWith("base-url");
-        assertThat(updated.getProfileImageUrl()).endsWith("_p.jpg");
-    }
-
-    @Test
-    @DisplayName("둘 다 제공(파일+기본명) → 400")
-    void changeProfileImage_BothProvided_BadRequest() {
-        // given
-        User user = testInitializer.createTestUser();
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart(multipartText("defaultProfileImageName", "puppy"))
-                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(false))
-                .body("code", equalTo(400))
-                .body("message", equalTo("Invalid request"));
-    }
-
-    @Test
-    @DisplayName("둘 다 제공 X → 400")
-    void changeProfileImage_NoneProvided_BadRequest() {
-        // given
-        User user = testInitializer.createTestUser();
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart("dummy", "dummy")
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(false))
-                .body("code", equalTo(400))
-                .body("message", equalTo("Invalid request"));
-    }
-
-    @Test
-    @DisplayName("잘못된 기본이미지 이름 → 400")
-    void changeProfileImage_InvalidDefaultName_BadRequest() {
-        // given
-        User user = testInitializer.createTestUser();
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart(multipartText("defaultProfileImageName", "cat"))
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(false))
-                .body("code", equalTo(BAD_REQUEST.getCode()))
-                .body("message", equalTo("Invalid request"));
-    }
-
-    @Test
     @DisplayName("사용자가 신고한 내역이 있다면 리턴한다.")
     void shouldReturnUserReports_WhenTheyExist() {
         // given
@@ -687,93 +574,6 @@ class UserControllerTest {
 
         // then
         assertThat(response.nickname()).isEqualTo(nickname);
-        assertThat(response.profileImage()).isEqualTo(profileImage);
-    }
-
-    @Test
-    @DisplayName("프로필 이미지 변경 후, 마이페이지 조회 시 변경된 URL이 반환")
-    void changeProfileImage_and_VerifyWithMypageApi() {
-        User user = testInitializer.createTestUser();
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
-                .thenReturn(PutObjectResponse.builder().build());
-
-        // === 프로필 이미지 변경 API 호출 ===
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(true));
-
-        // === 마이페이지 조회 API 호출 ===
-        String profileImageUrl = given()
-                .header("Authorization", "Bearer " + token)
-                .when()
-                .get("/api/v2/users/me") // 마이페이지 조회 API
-                .then()
-                .log().all()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getString("data.profileImage");
-
-        // === 반환된 URL이 CDN 주소 형식을 따르는지 확인 ===
-        assertThat(profileImageUrl).startsWith("base-url");
-    }
-
-    @Test
-    @DisplayName("프로필 - 기본이미지 -> 업로드 변경 시, 삭제 호출 없음")
-    void changeProfileImage_DefaultToUploaded_NoDelete() {
-        User user = testInitializer.createUserWithDefaultProfileImage(PUPPY);
-
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
-                .thenReturn(PutObjectResponse.builder().build());
-
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart("profileImageFile", "p.jpg", "fake".getBytes(), "image/jpeg")
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(true));
-
-        verify(s3Client, times(0)).deleteObject(any(DeleteObjectRequest.class));
-    }
-
-    @Test
-    @DisplayName("프로필 - 업로드된 파일 -> 새 업로드 변경 시, 기존 파일 삭제 호출됨")
-    void changeProfileImage_FileToFile_DeleteOldFile() {
-        // given
-        //기존 프로필 이미지 존재
-        User user = testInitializer.createUserWithUploadedProfileImage("base-url/old_profile.jpg");
-        String token = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-
-        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
-                .thenReturn(PutObjectResponse.builder().build());
-
-        // when
-        //새 프로필 업로드
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart("profileImageFile", "new.jpg", "fake".getBytes(), "image/jpeg")
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(200)
-                .body("success", equalTo(true));
-
-        // then
-        verify(s3Client, times(1)).deleteObject(any(DeleteObjectRequest.class));
     }
 
     @Test
@@ -864,27 +664,6 @@ class UserControllerTest {
                 .then()
                 .statusCode(403)
                 .contentType(ContentType.JSON)
-                .body("success", equalTo(FORBIDDEN.getSuccess()))
-                .body("code", equalTo(FORBIDDEN.getCode()))
-                .body("message", equalTo(FORBIDDEN.getMessage()));
-    }
-
-    @Test
-    @DisplayName("비회원은 프로필 이미지를 변경할 수 없다")
-    void shouldDenyRequest_WhenGuestChangesProfileImage() {
-        // given
-        User guest = testInitializer.createTestGuest();
-        String token = jwtUtil.createAccessJwt(guest.getId(), guest.getRole());
-
-        // when & then
-        given()
-                .header("Authorization", "Bearer " + token)
-                .contentType(ContentType.MULTIPART)
-                .multiPart(multipartText("defaultProfileImageName", "chick"))
-                .when()
-                .patch("/api/v2/users/me/profile-image")
-                .then()
-                .statusCode(403)
                 .body("success", equalTo(FORBIDDEN.getSuccess()))
                 .body("code", equalTo(FORBIDDEN.getCode()))
                 .body("message", equalTo(FORBIDDEN.getMessage()));

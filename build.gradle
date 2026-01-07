@@ -16,6 +16,12 @@ java {
 	}
 }
 
+test {
+    testLogging {
+        showStandardStreams = project.hasProperty("showLogs")
+    }
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor

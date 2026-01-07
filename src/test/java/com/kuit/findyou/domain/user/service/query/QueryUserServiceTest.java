@@ -27,17 +27,14 @@ class QueryUserServiceTest {
         // given
         final long userId = 1L;
         final String name = "name";
-        final String profileImage = "default";
         User mockUser = mock(User.class);
         when(userRepository.getReferenceById(anyLong())).thenReturn(mockUser);
         when(mockUser.getName()).thenReturn(name);
-        when(mockUser.getProfileImageUrl()).thenReturn(profileImage);
 
         // when
         GetUserProfileResponse userProfile = queryUserService.getUserProfile(userId);
 
         // then
         assertThat(userProfile.nickname()).isEqualTo(name);
-        assertThat(userProfile.profileImage()).isEqualTo(profileImage);
     }
 }

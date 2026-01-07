@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.kuit.findyou.global.common.swagger.SwaggerResponseDescription.*;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Slf4j
 @RestController
@@ -65,15 +64,12 @@ public class UserController {
     @Operation(
             summary = "회원정보 등록 API",
             description = """
-                    회원 정보를 등록합니다. 회원 등록에 성공하면 유저 정보(식별자와 닉네임)와 엑세스 토큰을 얻을 수 있습니다. \n
-                    **[중요] profileImageFile과 defaultProfileImageName 중 하나만 선택해야 합니다.** \n                 
-                    - profileImageFile을 업로드하면 defaultProfileImageName은 무시됩니다. \n           
-                    - 둘 다 null이면 에러가 발생합니다.
+                    회원 정보를 등록합니다. 회원 등록에 성공하면 유저 정보(식별자와 닉네임)와 엑세스 토큰을 얻을 수 있습니다.
                     """
     )
     @CustomExceptionDescription(REGISTER_USER)
-    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<RegisterUserResponse> registerUser(@ModelAttribute RegisterUserRequest request){
+    @PostMapping
+    public BaseResponse<RegisterUserResponse> registerUser(@RequestBody RegisterUserRequest request){
         log.info("[registerUser] kakaoId = {}", request.kakaoId());
         return new BaseResponse<>(userServiceFacade.registerUser(request));
     }
@@ -139,21 +135,6 @@ public class UserController {
     public BaseResponse<Void> deleteInterestAnimal(@Parameter(hidden = true) @LoginUserId Long userId,
                                                    @Parameter(name = "삭제할 동물신고글 식별자") @PathVariable Long reportId){
         userServiceFacade.deleteInterestAnimal(userId, reportId);
-        return BaseResponse.ok(null);
-    }
-
-    @Operation(
-            summary = "프로필 이미지 변경 API",
-            description = "프로필 이미지 변경을 수행합니다. 기본이미지는 enum값 이름으로 저장, 사용자 업로드 이미지는 cdn url로 저장됩니다."
-    )
-    @CustomExceptionDescription(CHANGE_PROFILE_IMAGE)
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @PatchMapping(value = "/me/profile-image", consumes = MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<Void> changeProfileImage(
-            @LoginUserId Long userId,
-            @Valid @ModelAttribute ChangeProfileImageRequest req
-    ) {
-        userServiceFacade.changeProfileImage(userId, req);
         return BaseResponse.ok(null);
     }
 
