@@ -1,6 +1,6 @@
-# FINDYOU V2 - 유실동물 찾기 및 보호 서비스
+# 찾아유 - 유기동물 관련 종합 애플리케이션
 
-## 👋 ABOUT FINDYOU
+## 👋 Project Overview
 **WHAT?**  
 유실동물을 찾고 보호하는 것을 돕는 통합 플랫폼입니다. 실종 신고, 목격 제보부터 보호 센터 정보, AI 품종 분석까지 반려동물을 잃어버린 슬픔을 덜고 빠른 구조를 돕습니다.
 
@@ -12,7 +12,7 @@
 
 <br>
 
-## 🤼‍♀️ Team Member
+## 🧑‍🧑‍🧒 Team Member
 <table>
   <tbody>
     <tr>
@@ -61,7 +61,7 @@
 
 ### Tools
 - **Swagger (OpenAPI)**: API Documentation
-- **Actuator & Prometheus**: Monitoring
+- **Actuator & Prometheus/Loki/Grafana/Alloy**: Monitoring
 
 <br>
 
@@ -103,7 +103,7 @@
 | `Test` | 테스트 코드 |
 
 #### Branch Strategy
-`prefix/#issue-description`  
+`prefix/#issue-description`
 예시: `feat/#123-login-api`, `fix/#45-bug-fix`
 
 <br>
