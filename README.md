@@ -84,7 +84,7 @@
 | **Function** | camelCase | `getUserInfo` |
 | **Variable** | camelCase | `userId` |
 | **DB Table** | snake_case | `user_profile` |
-| **Enum / Constant** | PascalCase / UPPER_SNAKE_CASE | `UserStatus`, `MAX_RETRY` |
+| **Enum / Constant** | UPPER_SNAKE_CASE | `MAX_RETRY` |
 
 ### Git Convention
 
@@ -103,7 +103,7 @@
 | `Test` | 테스트 코드 |
 
 #### Branch Strategy
-`prefix/#issue-description`
+`prefix/#issue-description`  
 예시: `feat/#123-login-api`, `fix/#45-bug-fix`
 
 <br>
