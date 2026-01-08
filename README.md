@@ -32,7 +32,8 @@
 <br>
 
 ## ⚒️ Tech Stack
-![Tech Stack](assets/tech_stack.png)
+<img src="assets/tech_stack.png" width="700">
+
 ### Backend
 | Tech | Version / Description |
 | --- | --- |
@@ -65,12 +66,12 @@
 <br>
 
 ## 🏗️ Architecture
-![Architecture](assets/system_architecture.png)
+<img src="assets/system_architecture.png" width="700">
 
 <br>
 
 ## 📍 ERD
-![ERD](./assets/erd.png)
+<img src="assets/erd.png" width="700">
 
 <br>
 
