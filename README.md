@@ -86,7 +86,7 @@
 | **DB Table** | snake_case | `user_profile` |
 | **Enum / Constant** | PascalCase / UPPER_SNAKE_CASE | `UserStatus`, `MAX_RETRY` |
 
-### ♣️ Git Convention
+### Git Convention
 
 #### Commit Message
 `[Prefix] #IssueNumber Description`  
