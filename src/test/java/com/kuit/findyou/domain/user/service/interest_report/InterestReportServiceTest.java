@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -158,6 +159,7 @@ class InterestReportServiceTest {
                         "breed" + i,
                         ReportTag.PROTECTING.getValue(),
                         LocalDate.of(2025, 1, 1),
+                        LocalDateTime.now(),
                         "city"
                 ))
                 .collect(Collectors.toList());

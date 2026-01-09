@@ -1,5 +1,6 @@
 package com.kuit.findyou.domain.user.service.query;
 
+import com.kuit.findyou.domain.user.dto.response.CheckGuestResponse;
 import com.kuit.findyou.domain.user.dto.response.GetUserProfileResponse;
 import com.kuit.findyou.domain.user.dto.request.CheckDuplicateNicknameRequest;
 import com.kuit.findyou.domain.user.dto.response.CheckDuplicateNicknameResponse;
@@ -21,14 +22,19 @@ public class QueryUserServiceImpl implements QueryUserService {
     @Override
     public CheckDuplicateNicknameResponse checkDuplicateNickname(CheckDuplicateNicknameRequest request) {
         boolean exists = userRepository.existsByName(request.nickname());
-        log.info("[checkDuplicateNickname] result = {}", exists);
         return new CheckDuplicateNicknameResponse(exists);
     }
 
     @Override
     public GetUserProfileResponse getUserProfile(Long userId) {
-        log.info("[getUserProfile] userId = {}", userId);
         User user = userRepository.getReferenceById(userId);
-        return new GetUserProfileResponse(user.getName(), user.getProfileImageUrl());
+        return new GetUserProfileResponse(user.getName());
+    }
+
+    @Override
+    public CheckGuestResponse checkGuest(Long userId) {
+        User user = userRepository.getReferenceById(userId);
+        boolean isGuest = user.isGuest();
+        return new CheckGuestResponse(isGuest);
     }
 }

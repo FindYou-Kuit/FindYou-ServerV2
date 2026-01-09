@@ -9,7 +9,6 @@ import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
 import com.kuit.findyou.global.common.exception.CustomException;
-import com.kuit.findyou.global.jwt.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,21 +19,23 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImpl implements AuthService {
+public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
+    private final IssueTokenService issueTokenService;
+
     public KakaoLoginResponse kakaoLogin(KakaoLoginRequest request) {
         log.info("[kakaoLogin] kakaoId = {}", request.kakaoId());
 
         return userRepository.findByKakaoId(request.kakaoId())
-                .map(loginUser -> {
-                    log.info("[kakaoLogin] user found");
-                    String token = jwtUtil.createAccessJwt(loginUser.getId(), loginUser.getRole());
-                    return KakaoLoginResponse.fromUserAndAccessToken(loginUser, token);
+                .map(user -> {
+                    String accessToken = issueTokenService.issueAccessToken(user.getId(), user.getRole());
+                    String refreshToken = issueTokenService.issueRefreshToken(user.getId());
+                    log.info("[kakaoLogin] 카카오 로그인 성공");
+                    return KakaoLoginResponse.fromUserAndTokens(user, accessToken, refreshToken);
                 })
                 .orElseGet(() -> {
-                    log.info("[kakaoLogin] user not found");
-                    return KakaoLoginResponse.notFound();
+                    log.info("[kakaoLogin] 일치하는 유저가 없어서 카카오 로그인 실패");
+                    return KakaoLoginResponse.firstLogin();
                 });
     }
 
@@ -46,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByDeviceId(request.deviceId())
                 .orElseGet(()->{
                     // 디바이스 id에 해당하는 유저가 없으면 게스트 추가
+                    log.info("[guestLogin] 새로운 게스트 추가");
                     User build = User.builder()
                             .name("게스트")
                             .profileImageUrl(DefaultProfileImage.DEFAULT.getName())
@@ -57,11 +59,14 @@ public class AuthServiceImpl implements AuthService {
 
         // 게스트가 아니면 로그인 실패
         if(!user.isGuest()){
+            log.info("[guestLogin] 게스트 권한이 없어서 게스트 로그인 실패");
             throw new CustomException(GUEST_LOGIN_FAILED);
         }
 
-        // 응답 반환
-        String accessToken = jwtUtil.createAccessJwt(user.getId(), user.getRole());
-        return new GuestLoginResponse(user.getId(), accessToken);
+        // 토큰 생성
+        String accessToken = issueTokenService.issueAccessToken(user.getId(), user.getRole());
+        String refreshToken = issueTokenService.issueRefreshToken(user.getId());
+        log.info("[guestLogin] 게스트 로그인 성공");
+        return new GuestLoginResponse(user.getId(), accessToken, refreshToken);
     }
 }

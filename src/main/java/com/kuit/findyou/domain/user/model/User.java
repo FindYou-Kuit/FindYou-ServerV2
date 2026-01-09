@@ -11,8 +11,6 @@ import com.kuit.findyou.global.common.exception.CustomException;
 import com.kuit.findyou.global.common.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +98,7 @@ public class User extends BaseEntity {
     public void addSubscribe(Subscribe subscribe) { subscribes.add(subscribe); }
     public void setFcmToken(FcmToken fcmToken) {this.fcmToken = fcmToken;}
 
-    public void upgradeToMember(Long kakaoId, String nickname, String profileImageUrl){
+    public void upgradeToMember(Long kakaoId, String nickname){
         // 비회원이어야 회원이 될 수 있음
         if(this.role != Role.GUEST){
             throw new CustomException(ALREADY_REGISTERED_USER);
@@ -108,7 +106,6 @@ public class User extends BaseEntity {
 
         this.kakaoId = kakaoId;
         this.name = nickname;
-        this.profileImageUrl = profileImageUrl;
         this.role = Role.USER;
     }
 
@@ -119,5 +116,4 @@ public class User extends BaseEntity {
     public void changeNickname(String newNickname) {
         this.name = newNickname;
     }
-    public void changeProfileImage(String newImage) {this.profileImageUrl = newImage;}
 }

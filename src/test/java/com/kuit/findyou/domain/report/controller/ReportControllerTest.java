@@ -3,6 +3,10 @@ package com.kuit.findyou.domain.report.controller;
 import com.kuit.findyou.domain.report.dto.request.CreateMissingReportRequest;
 import com.kuit.findyou.domain.report.dto.request.CreateWitnessReportRequest;
 import com.kuit.findyou.domain.report.dto.request.ReportViewType;
+import com.kuit.findyou.domain.report.model.MissingReport;
+import com.kuit.findyou.domain.report.model.ProtectingReport;
+import com.kuit.findyou.domain.report.repository.MissingReportRepository;
+import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.global.common.util.DatabaseCleaner;
 import com.kuit.findyou.global.common.util.TestInitializer;
@@ -21,6 +25,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +34,9 @@ import java.util.List;
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.FORBIDDEN;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,6 +46,16 @@ class ReportControllerTest {
 
     @MockitoBean
     private ImageUploader imageUploader;
+
+    @MockitoBean
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private ProtectingReportRepository protectingReportRepository;
+
+    @Autowired
+    private MissingReportRepository missingReportRepository;
+
 
     @LocalServerPort
     int port;
@@ -180,6 +199,7 @@ class ReportControllerTest {
                 .body("data.cards[0].title", equalTo("진돗개"))
                 .body("data.cards[0].tag", equalTo("목격신고"))
                 .body("data.cards[0].date", equalTo("2024-08-10"))
+                .body("data.cards[0].createdAt", equalTo(LocalDate.now().toString()))
                 .body("data.cards[0].location", equalTo("부산시 해운대구"))
                 .body("data.cards[0].interest", equalTo(true))
                 .body("data.cards[1].reportId", equalTo(2))
@@ -187,6 +207,7 @@ class ReportControllerTest {
                 .body("data.cards[1].title", equalTo("포메라니안"))
                 .body("data.cards[1].tag", equalTo("실종신고"))
                 .body("data.cards[1].date", equalTo("2024-10-05"))
+                .body("data.cards[1].createdAt", equalTo(LocalDate.now().toString()))
                 .body("data.cards[1].location", equalTo("서울시 강남구"))
                 .body("data.cards[1].interest", equalTo(true))
                 .body("data.cards[2].reportId", equalTo(1))
@@ -194,6 +215,7 @@ class ReportControllerTest {
                 .body("data.cards[2].title", equalTo("믹스견"))
                 .body("data.cards[2].tag", equalTo("보호중"))
                 .body("data.cards[2].date", equalTo(LocalDate.now().toString()))
+                .body("data.cards[2].createdAt", equalTo(LocalDate.now().toString()))
                 .body("data.cards[2].location", equalTo("서울"))
                 .body("data.cards[2].interest", equalTo(true))
                 .body("data.lastId", equalTo(1))
@@ -223,6 +245,7 @@ class ReportControllerTest {
                 .body("data.cards[0].title", equalTo("믹스견"))
                 .body("data.cards[0].tag", equalTo("보호중"))
                 .body("data.cards[0].date", equalTo(LocalDate.now().toString()))
+                .body("data.cards[0].createdAt", equalTo(LocalDate.now().toString()))
                 .body("data.cards[0].location", equalTo("서울"))
                 .body("data.cards[0].interest", equalTo(true))
                 .body("data.lastId", equalTo(1))
@@ -252,6 +275,7 @@ class ReportControllerTest {
                 .body("data.cards[0].title", equalTo("진돗개"))
                 .body("data.cards[0].tag", equalTo("목격신고"))
                 .body("data.cards[0].date", equalTo("2024-08-10"))
+                .body("data.cards[0].createdAt", equalTo(LocalDate.now().toString()))
                 .body("data.cards[0].location", equalTo("부산시 해운대구"))
                 .body("data.cards[0].interest", equalTo(true))
                 .body("data.cards[1].reportId", equalTo(2))
@@ -259,6 +283,7 @@ class ReportControllerTest {
                 .body("data.cards[1].title", equalTo("포메라니안"))
                 .body("data.cards[1].tag", equalTo("실종신고"))
                 .body("data.cards[1].date", equalTo("2024-10-05"))
+                .body("data.cards[1].createdAt", equalTo(LocalDate.now().toString()))
                 .body("data.cards[1].location", equalTo("서울시 강남구"))
                 .body("data.cards[1].interest", equalTo(true))
                 .body("data.lastId", equalTo(2))
@@ -537,4 +562,105 @@ class ReportControllerTest {
                 "건국대학교"
         );
     }
+    @Test
+    @DisplayName("보호글 랜덤 조회 -> S3 URL 포함 응답")
+    void getRandomProtectingReportsWithS3_success() {
+        // given
+        User user = testInitializer.createTestUser();
+        ProtectingReport report = testInitializer.createTestProtectingReportWithImage(user);
+        ReflectionTestUtils.setField(report, "date", LocalDate.now().minusDays(1));
+        protectingReportRepository.saveAndFlush(report);
+
+        String originalImageUrl = "https://img.com/1.png";
+
+        when(restTemplate.getForObject(eq(originalImageUrl),eq(byte[].class)))
+                .thenReturn(new byte[]{1, 2, 3});
+
+        when(imageUploader.upload(any(byte[].class), anyString(), eq("image/jpeg")))
+                .thenReturn("https://cdn.findyou.store/random1.jpg");
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+        .when()
+                .get("/api/v2/reports/protecting-reports/random-s3")
+        .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200))
+                .body("data.size()", equalTo(1))
+                .body(  "data[0].imageUrls[0]", equalTo("https://cdn.findyou.store/random1.jpg"))
+                .body("data[0].breed", equalTo("믹스견"))
+                .body("data[0].tag", equalTo("보호중"))
+                .body("data[0].careName", equalTo("광진보호소"));
+    }
+
+    @Test
+    @DisplayName("보호글이 없을 경우 -> 204 No Content 응답 (Body 없음)")
+    void getRandomProtectingReportsWithS3_noContent() {
+        // given
+        //DB에 아무것도 저장하지 않음 (빈 상태)
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/protecting-reports/random-s3")
+                .then()
+                .log().all()
+                .statusCode(204);
+    }
+    @Test
+    @DisplayName("실종글 랜덤 조회 -> S3 URL 포함 응답")
+    void getRandomMissingReportsWithS3_success() {
+        // given
+        User user = testInitializer.createTestUser();
+        MissingReport report =
+                testInitializer.createTestMissingReportWithImage(user);
+
+        ReflectionTestUtils.setField(report, "date", LocalDate.now().minusDays(1));
+
+        missingReportRepository.saveAndFlush(report);
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/missing-reports/random-s3")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("success", equalTo(true))
+                .body("code", equalTo(200))
+                .body("data.size()", equalTo(1))
+                .body("data[0].imageUrls[0]", equalTo("https://img.com/missing.png"))
+                .body("data[0].breed", equalTo("포메라니안"))
+                .body("data[0].tag", equalTo("실종신고"));
+    }
+
+    @Test
+    @DisplayName("실종글이 없을 경우 -> 204 No Content 응답 (Body 없음)")
+    void getRandomMissingReportsWithS3_noContent() {
+        // given
+        // DB에 아무것도 저장하지 않음 (빈 상태)
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .param("count", 1)
+                .when()
+                .get("/api/v2/reports/missing-reports/random-s3")
+                .then()
+                .log().all()
+                .statusCode(204);
+    }
+
 }

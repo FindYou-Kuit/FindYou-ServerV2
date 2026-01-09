@@ -16,6 +16,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -24,8 +25,11 @@ import static com.kuit.findyou.global.common.response.status.BaseExceptionRespon
 public class JwtUtil {
     private final SecretKey secretKey;
 
-    @Value("${findyou.jwt.access.expire-ms}")
+    @Value("${findyou.jwt.expiration-ms.access-token}")
     private long accessTokenExpireMs;
+
+    @Value("${findyou.jwt.expiration-ms.refresh-token}")
+    private long refreshTokenExpireMs;
 
     public JwtUtil(@Value("${findyou.jwt.secret-key}") String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -53,6 +57,17 @@ public class JwtUtil {
                 .claim(JwtClaimKey.TOKEN_TYPE.getKey(), JwtTokenType.ACCESS_TOKEN)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpireMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String createRefreshJwt(Long userId) {
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .claim(JwtClaimKey.USER_ID.getKey(), userId)
+                .claim(JwtClaimKey.TOKEN_TYPE.getKey(), JwtTokenType.REFRESH_TOKEN)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpireMs))
                 .signWith(secretKey)
                 .compact();
     }

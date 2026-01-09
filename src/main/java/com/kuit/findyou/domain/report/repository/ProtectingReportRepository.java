@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,5 +18,7 @@ public interface ProtectingReportRepository extends JpaRepository<ProtectingRepo
     Optional<ProtectingReport> findWithImagesById(Long id);
 
     List<ProtectingReport> findByNoticeNumberIn(Set<String> noticeNumbers);
+
+    List<ProtectingReport> findByDate(LocalDate date);
 }
 

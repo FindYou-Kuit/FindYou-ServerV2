@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 public class ReportProjectionImpl implements ReportProjection {
@@ -13,6 +14,7 @@ public class ReportProjectionImpl implements ReportProjection {
     private final String breed;
     private final String tag;
     private final LocalDate date;
+    private final LocalDateTime createdAt;
     private final String address;
 
     public Long getReportId() { return reportId; }
@@ -20,5 +22,6 @@ public class ReportProjectionImpl implements ReportProjection {
     public String getTitle() { return breed; }
     public String getTag() { return tag; }
     public LocalDate getDate() { return date; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
     public String getAddress() { return address; }
 }

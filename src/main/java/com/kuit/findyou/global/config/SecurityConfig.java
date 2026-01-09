@@ -62,6 +62,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v2/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v2/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v2/users/check/duplicate-nickname").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v2/reports/protecting-reports/random-s3").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v2/reports/missing-reports/random-s3").permitAll()
                         .anyRequest().authenticated());
 
         // 토큰 검증 필터 추가

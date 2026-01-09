@@ -2,14 +2,13 @@ package com.kuit.findyou.domain.report.service.detail.strategy;
 
 import com.kuit.findyou.domain.report.dto.response.ProtectingReportDetailResponseDTO;
 import com.kuit.findyou.domain.report.model.ProtectingReport;
-import com.kuit.findyou.domain.report.model.Report;
 import com.kuit.findyou.domain.report.repository.ProtectingReportRepository;
 import com.kuit.findyou.domain.report.util.ReportFormatUtil;
 import com.kuit.findyou.global.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 import static com.kuit.findyou.global.common.response.status.BaseExceptionResponseStatus.PROTECTING_REPORT_NOT_FOUND;
 
@@ -21,9 +20,17 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
 
     @Override
     public ProtectingReportDetailResponseDTO getDetail(ProtectingReport report, boolean interest) {
+        return toDetailDto(report, report.getReportImagesUrlList(), interest);
+    }
 
+    // 공통 매핑 메서드
+    public ProtectingReportDetailResponseDTO toDetailDto(
+            ProtectingReport report,
+            List<String> imageUrls,
+            boolean interest
+    ) {
         return new ProtectingReportDetailResponseDTO(
-                report.getReportImagesUrlList(),
+                imageUrls,
                 ReportFormatUtil.safeValue(report.getBreed()),
                 report.getTag().getValue(),
                 ReportFormatUtil.formatAge(report.getAge()),
@@ -45,7 +52,6 @@ public class ProtectingReportDetailStrategy implements ReportDetailStrategy<Prot
                 interest
         );
     }
-
 
     @Override
     public ProtectingReport getReport(Long reportId) {

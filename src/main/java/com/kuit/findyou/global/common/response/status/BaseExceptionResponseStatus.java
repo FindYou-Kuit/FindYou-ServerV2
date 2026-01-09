@@ -35,6 +35,9 @@ public enum BaseExceptionResponseStatus implements ResponseStatus{
     // 홈
     HOME_STATISTICS_UPDATE_FAILED(502, "홈화면 통계 업데이트에 실패했습니다."),
 
+    // 인증인가 - Auth
+    REFRESH_TOKEN_NOT_FOUND(404, "일치하는 리프레시 토큰이 없습니다"),
+
     // 유저 - User
     USER_NOT_FOUND(404, "존재하지 않는 유저입니다."),
     DUPLICATE_INTEREST_REPORT(400, "이미 관심글로 등록된 신고글입니다."),

@@ -4,6 +4,7 @@ import com.kuit.findyou.domain.auth.dto.request.GuestLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.GuestLoginResponse;
 import com.kuit.findyou.domain.auth.dto.request.KakaoLoginRequest;
 import com.kuit.findyou.domain.auth.dto.response.KakaoLoginResponse;
+import com.kuit.findyou.domain.auth.repository.RedisRefreshTokenRepository;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
@@ -26,14 +27,15 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class LoginServiceTest {
     @InjectMocks
-    private AuthServiceImpl authService;
+    private LoginServiceImpl authService;
     @Mock
     private UserRepository userRepository;
     @Mock
-    private JwtUtil jwtUtil;
+    private IssueTokenService issueTokenService;
 
+    @DisplayName("카카오 id와 일치하는 사용자가 없다면 isFirstLogin을 true로 반환하여 회원가입을 유도한다")
     @Test
     void should_ReturnfirstLoginWithTrue_When_UserWithKakaoIdNotFound(){
         // given
@@ -48,16 +50,19 @@ class AuthServiceTest {
         assertThat(response.userInfo()).isNull();
     }
 
+    @DisplayName("카카오 id와 일치하는 사용자가 있다면 정보를 리턴한다")
     @Test
     void should_ReturnUserInfo_When_UserWithKakaoIdExists(){
         // given
         final Long KAKAO_ID = 1234L;
-        final String ACCESS_TOKEN = "accessToken";
-        final String NAME = "유저";
+        String ACCESS_TOKEN = "accessToken";
+        String REFRESH_TOKEN = "accessToken";
+        String NAME = "유저";
 
         User user = mockUser(NAME, Role.USER, KAKAO_ID);
         when(userRepository.findByKakaoId(KAKAO_ID)).thenReturn(Optional.of(user));
-        when(jwtUtil.createAccessJwt(user.getId(), user.getRole())).thenReturn(ACCESS_TOKEN);
+        when(issueTokenService.issueAccessToken(user.getId(), user.getRole())).thenReturn(ACCESS_TOKEN);
+        when(issueTokenService.issueRefreshToken(user.getId())).thenReturn(REFRESH_TOKEN);
 
         // when
         KakaoLoginResponse response = authService.kakaoLogin(new KakaoLoginRequest(KAKAO_ID));
@@ -67,6 +72,7 @@ class AuthServiceTest {
         assertThat(response.userInfo()).isNotNull();
         assertThat(response.userInfo().userId()).isEqualTo(user.getId());
         assertThat(response.userInfo().accessToken()).isEqualTo(ACCESS_TOKEN);
+        assertThat(response.userInfo().refreshToken()).isEqualTo(REFRESH_TOKEN);
         assertThat(response.userInfo().nickname()).isEqualTo(NAME);
     }
 
@@ -85,49 +91,56 @@ class AuthServiceTest {
     @Test()
     void should_DoesNotSaveNewGuest_When_UserWithDeviceIdExists(){
         // given
-        final String deviceId = "asdf-1234-asdf";
-        final String accessToken = "accessToken";
+        String deviceId = "asdf-1234-asdf";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
 
         User user = mockUser("게스트", Role.GUEST, null);
         when(userRepository.findByDeviceId(eq(deviceId))).thenReturn(Optional.of(user));
-        when(jwtUtil.createAccessJwt(user.getId(), user.getRole())).thenReturn(accessToken);
+        when(issueTokenService.issueAccessToken(anyLong(), any(Role.class))).thenReturn(accessToken);
+        when(issueTokenService.issueRefreshToken(anyLong())).thenReturn(refreshToken);
 
         // when
         GuestLoginResponse response = authService.guestLogin(new GuestLoginRequest(deviceId));
 
         // then
         verify(userRepository, never()).save(any());
+
         assertThat(response.userId()).isEqualTo(user.getId());
         assertThat(response.accessToken()).isEqualTo(accessToken);
+        assertThat(response.refreshToken()).isEqualTo(refreshToken);
     }
 
     @DisplayName("디바이스 id가 일치하는 유저가 없으면 새로 게스트를 저장한다")
     @Test()
     void should_SaveNewGuest_When_UserWithDeviceIdDoesNotExists(){
         // given
-        final String deviceId = "asdf-1234-asdf";
-        final String accessToken = "accessToken";
+        String deviceId = "asdf-1234-asdf";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
 
         User user = mockUser("게스트", Role.GUEST, null);
         when(userRepository.findByDeviceId(eq(deviceId))).thenReturn(Optional.empty());
         when(userRepository.save(any())).thenReturn(user);
-        when(jwtUtil.createAccessJwt(user.getId(), user.getRole())).thenReturn(accessToken);
+        when(issueTokenService.issueAccessToken(anyLong(), any(Role.class))).thenReturn(accessToken);
+        when(issueTokenService.issueRefreshToken(anyLong())).thenReturn(refreshToken);
 
         // when
         GuestLoginResponse response = authService.guestLogin(new GuestLoginRequest(deviceId));
 
         // then
         verify(userRepository).save(any(User.class));
+
         assertThat(response.userId()).isEqualTo(user.getId());
         assertThat(response.accessToken()).isEqualTo(accessToken);
+        assertThat(response.refreshToken()).isEqualTo(refreshToken);
     }
 
     @DisplayName("게스트가 아니면 예외가 발생한다.")
     @Test()
     void should_ThrowException_When_NonGuestUserLogsIn(){
         // given
-        final String deviceId = "asdf-1234-asdf";
-        final String accessToken = "accessToken";
+        String deviceId = "asdf-1234-asdf";
 
         User user = mockUser("게스트", Role.USER, null);
         when(userRepository.findByDeviceId(eq(deviceId))).thenReturn(Optional.of(user));

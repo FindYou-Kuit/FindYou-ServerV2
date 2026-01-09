@@ -404,23 +404,6 @@ public class TestInitializer {
         sigunguRepository.save(Sigungu.builder().name("해운대구").sido(busan).build());
     }
 
-    public User createUserWithDefaultProfileImage(DefaultProfileImage img) {
-        User user = createTestUser();
-        user.changeProfileImage(img.getName());
-        return userRepository.save(user);
-    }
-
-    public User createUserWithUploadedProfileImage(String imageUrl) {
-        User user = User.builder()
-                .name("홍길동")
-                .role(Role.USER)
-                .deviceId("device-uploaded")
-                .profileImageUrl(imageUrl)
-                .build();
-
-        return userRepository.save(user);
-    }
-
     public User createTestGuest() {
         User user = User.builder()
                 .name("게스트")
