@@ -6,5 +6,4 @@ public interface RedisRefreshTokenRepository {
     Optional<String> findByUserId(Long userId);
 
     void save(Long id, String refreshToken);
-    void save(Long id, String refreshToken, long ttlMs);
 }

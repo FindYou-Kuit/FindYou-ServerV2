@@ -30,9 +30,4 @@ public class RedisRefreshTokenRepositoryImpl implements RedisRefreshTokenReposit
     public void save(Long userId, String refreshToken) {
         redisTemplate.opsForValue().set(key(userId), refreshToken, Duration.ofMillis(refreshTokenExpireMs));
     }
-
-    @Override
-    public void save(Long userId, String refreshToken, long ttlMs) {
-        redisTemplate.opsForValue().set(key(userId), refreshToken, Duration.ofMillis(ttlMs));
-    }
 }
