@@ -270,11 +270,11 @@ class AuthControllerTest {
         assertThat(response.getMessage()).isEqualTo(REFRESH_TOKEN_NOT_FOUND.getMessage());
     }
 
-    @DisplayName("관리자 키가 유효하면 관리자 로그인 성공(토큰 반환 + Redis 저장)")
+    @DisplayName("관리자 키가 유효하면 관리자 로그인 성공(access 토큰 반환)")
     @Test
-    void adminLogin_shouldReturnTokens_WhenValidAdminKey() {
+    void adminLogin_shouldReturnAccessToken_WhenValidAdminKey() {
         // given
-        testInitializer.insertAdminUserWithFixedId(adminUserId, Role.USER);
+        testInitializer.insertAdminUserWithFixedId(adminUserId, Role.ADMIN);
 
         // when
         BaseResponse<AdminLoginResponse> response = given()
@@ -291,22 +291,13 @@ class AuthControllerTest {
 
         // then
         String access = response.getData().accessToken();
-        String refresh = response.getData().refreshToken();
 
         assertThat(access).isNotBlank();
-        assertThat(refresh).isNotBlank();
 
         // access 토큰 검증
         assertThat(jwtUtil.getUserId(access)).isEqualTo(adminUserId);
+        assertThat(jwtUtil.getRole(access)).isEqualTo(Role.ADMIN);
         assertThat(jwtUtil.getTokenType(access)).isEqualTo(JwtTokenType.ACCESS_TOKEN);
-
-        // refresh 토큰 검증
-        assertThat(jwtUtil.getUserId(refresh)).isEqualTo(adminUserId);
-        assertThat(jwtUtil.getTokenType(refresh)).isEqualTo(JwtTokenType.REFRESH_TOKEN);
-
-        // Redis에 저장됐는지 확인 (현재 저장값 == 발급 refresh)
-        String saved = redisRefreshTokenRepository.findByUserId(adminUserId).orElse(null);
-        assertThat(saved).isEqualTo(refresh);
     }
 
     @DisplayName("관리자 키가 틀리면 401을 반환한다")
