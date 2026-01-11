@@ -21,7 +21,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
-        BaseErrorResponse body =  new BaseErrorResponse(FORBIDDEN);
+        String message = accessDeniedException.getMessage();
+        BaseErrorResponse body = (message == null || message.isBlank())
+                ? new BaseErrorResponse(FORBIDDEN)
+                : new BaseErrorResponse(FORBIDDEN, message);
         String json = objectMapper.writeValueAsString(body);
 
         response.setStatus(FORBIDDEN.getCode());

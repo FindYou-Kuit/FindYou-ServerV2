@@ -62,3 +62,9 @@ openapi:
     api-key: test-key
   volunteer-work:
     api-url: http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrSearchWordList
+
+admin:
+  api:
+    key: test-admin-key
+  admin-user-id: 9999
+  access-ttl-ms: 5184000000

@@ -29,7 +29,7 @@ public class ImageController {
 
     @Operation(summary = "신고글 이미지 업로드 API", description = "멀티파트 이미지 업로드 후 CDN URL 리스트 반환")
     @CustomExceptionDescription(IMAGE_UPLOAD)
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     @PostMapping(value = "/upload", consumes = MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<ReportImageResponse> uploadImages(@RequestPart(value = "files", required = false) List<MultipartFile> files, @LoginUserId Long userId) {
         List<String> urls = imageUploadService.uploadImages(files);

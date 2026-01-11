@@ -20,6 +20,7 @@ import com.kuit.findyou.domain.user.constant.DefaultProfileImage;
 import com.kuit.findyou.domain.user.model.Role;
 import com.kuit.findyou.domain.user.model.User;
 import com.kuit.findyou.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,8 @@ public class TestInitializer {
     private final BreedRepository breedRepository;
     private final SidoRepository sidoRepository;
     private final SigunguRepository sigunguRepository;
+
+    private final EntityManager em;
 
     private User defaultUser;
 
@@ -412,5 +415,17 @@ public class TestInitializer {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void insertAdminUserWithFixedId(Long id, Role role) {
+        em.createNativeQuery("""
+        INSERT INTO users (id, name, role, receive_notification, status, device_id, kakao_id, profile_image_url)
+        VALUES (?1, ?2, ?3, 'N', 'Y', NULL, NULL, NULL)
+    """)
+                .setParameter(1, id)
+                .setParameter(2, "관리자")
+                .setParameter(3, role.name())
+                .executeUpdate();
     }
 }
