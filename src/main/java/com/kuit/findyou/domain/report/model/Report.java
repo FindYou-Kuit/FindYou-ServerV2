@@ -28,7 +28,7 @@ public abstract class Report extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "breed", length = 20, nullable = false)
+    @Column(name = "breed", length = 50, nullable = false)
     private String breed;
 
     @Column(name = "species", length = 100, nullable = false)

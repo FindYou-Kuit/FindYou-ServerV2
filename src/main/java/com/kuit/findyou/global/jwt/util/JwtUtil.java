@@ -61,6 +61,17 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String createAccessJwt(Long userId, Role role, long expireMs) {
+        return Jwts.builder()
+                .claim(JwtClaimKey.USER_ID.getKey(), userId)
+                .claim(JwtClaimKey.ROLE.getKey(), role.name())
+                .claim(JwtClaimKey.TOKEN_TYPE.getKey(), JwtTokenType.ACCESS_TOKEN)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expireMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
     public String createRefreshJwt(Long userId) {
         return Jwts.builder()
                 .id(UUID.randomUUID().toString())
